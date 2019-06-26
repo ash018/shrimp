@@ -1,0 +1,138 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+
+        <style type="text/css">
+        </style>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>Complain View </h2>
+                <ol class="breadcrumb">
+
+                </ol>
+            </div>
+            <div class="col-sm-8">
+
+
+            </div>
+        </div>
+
+        {% if Message|length > 0 %}
+            <div class="alert alert-info">
+                <strong>{{ Message }}</strong>
+            </div>
+        {% endif %}
+
+        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="wrapper wrapper-content animated fadeInRight ">
+
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Given Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Machine</td>
+                        <td>{{ complain.MachineId__MachineName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Machine Code</td>
+                        <td>{{ complain.MachineId__MachineCode }}</td>
+                    </tr>
+                    <tr>
+                        <td>Machine Type</td>
+                        <td>{{ complain.MachineId__MachineType }}</td>
+                    </tr>
+                    <tr>
+                        <td>Complain Type</td>
+                        <td>{{ complain.ComTypeId__ComplainName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Note</td>
+                        <td>{{ complain.Comments }}</td>
+                    </tr>
+                    <tr>
+                        <td>Entry Date</td>
+                        <td>{{ complain.EntryDate }}</td>
+                    </tr>
+                    <tr>
+                        <td>Entry By</td>
+                        <td>{{ complain.EntryBy__UserName }}</td>
+                    </tr>
+                    <tr>
+                        <td>Designation</td>
+                        <td>{{ complain.EntryBy__Designation }}</td>
+                    </tr>
+                    <tr>
+                        <td>Stuff Id</td>
+                        <td>{{ complain.EntryBy__StaffId }}</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile Number</td>
+                        <td>{{ complain.EntryBy__Mobile }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            {% comment %}<div class="form-group row col-lg-3 col-md-3 col-sm-3">
+                <a href="{% url 'FrdUpdateForService' %}?ComplainId={{ complain.ComplainId }} " class="btn btn-success block full-width m-b " >Forward</a>
+            </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+            <div class="form-group row col-lg-3 col-md-3 col-sm-3">
+                <a href="{% url 'ReviewComplain' %}?ComplainId={{ complain.ComplainId }}" class="btn btn-primary block full-width m-b ">Review</a>
+            </div>{% endcomment %}
+
+            </div>
+
+        </div>
+    </div>
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
+    <script>
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.document_updatedate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+            $('#date_to').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+        });
+    </script>
+
+{% endblock %}

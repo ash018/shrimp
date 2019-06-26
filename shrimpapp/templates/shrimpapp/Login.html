@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+{% include 'shrimpapp/public/CommonHeader.html' %}
+<style>
+body  {
+  background-image: url("{% static "assets/img/factory-automation-Login page-background.png" %}");
+  background-color: #cccccc;
+  background-repeat: no-repeat;
+  background-size:cover;
+
+}
+.loginscreen.middle-box {
+    width: 100%;
+}
+#content {
+	background: #FE6F5F;
+	padding: 10px;
+	min-width: 450px;
+	border-radius: 5px;
+}
+input[type=text] {
+  background-color: #6E9896;
+  border: 1px solid #6E9896;
+  color: white;
+}
+input[type=password] {
+  background-color: #6E9896;
+  border: 1px solid #6E9896;
+  color: white;
+}
+input::placeholder {
+  color: white !important;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+ color: red;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+ color: red;
+}
+</style>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div class="text-center">
+			<div id="content" class="text-center">
+				<div class="box" style="margin: 20px;">
+					<h3 style="color:#ffffff;">SHRIMP</h3>
+					{#<p>Please provide your credentials to look into dashboards</p>#}
+					{#<p>Login in. To see it in action.</p>#}
+
+					{% if message is not None %}
+						<div class="alert alert-danger">
+							<strong>Sorry!</strong> {{ message }}
+						</div>
+					{% endif %}
+					<form class="form-horizontal" method="post" enctype="multipart/form-data" action="{% url 'Login' %}">
+						{% csrf_token %}
+						<div class="form-group">
+							<input type="text" name="UserId" class="form-control" placeholder="Username" required="">
+						</div>
+						<div class="form-group">
+							<input type="password" name="Password" class="form-control" placeholder="Password" required="">
+						</div>
+						<div class="text-center" style="width:100%; float:left;">
+							<div class="text-center" style="width:130px; float:left;">&nbsp;</div>
+							<div class="text-center" style="width:130px; float:left;"><button type="submit" class="btn btn-default block full-width m-b">Login</button></div>
+						</div>			
+					</form>
+					<p style="color:#ffffff;">Or</p>
+					<p style="color:#ffffff;">Do not have an account ?</p>
+				</div>
+			</div>            
+        </div>
+    </div>
+	<p class="m-t text-center" style="color:#ffffff; text-align:center; padding-left:50px;"><small>Powered By MIS. All rights reserved &copy; 2019</small> </p>
+
+    <!-- Mainly scripts -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+</body>
+
+
+</html>

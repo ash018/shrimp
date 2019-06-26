@@ -1,0 +1,62 @@
+{% load static %}
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <span>
+                        <img alt="image" class="img-circle" src="{% static "assets/img/ppl-logo.png" %}"/>
+                     </span>
+
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold" style="align-content: center;">Welcome</strong>
+                            </span>
+                            <h3><span class="text-muted text-xs block">{{ request.session.UserName }}</span></h3>
+                            <h5><span class="text-muted text-xs block">{{ request.session.Designation }}</span></h5>
+                        </span>
+                    </a>
+
+                </div>
+                <div class="logo-element">
+                    MIS+
+                </div>
+            </li>
+
+            <li class="{% if request.resolver_match.url_name == "Home" %}active{% endif %}">
+                <a href="{% url 'Home' %}"><i class="fa fa-registered"></i> <span class="nav-label">Home</span></a>
+            </li>
+
+            {% if request.session.Roll == '1' or request.session.Roll == '3' and request.session.Department == '1' %}
+                <li>
+                    <a href="{% url 'CreateComplain' %}"><i class="fa fa-user"></i><span
+                            class="nav-label">New Complain</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'ComplainList' %}"><i class="fa fa-list"></i><span
+                            class="nav-label">Complain List</span></a>
+                </li>
+            {% endif %}
+
+            {% if request.session.Roll == '2' and request.session.Department == '2' %}
+                <li>
+                    <a href="{% url 'STComplainList' %}"><i class="fa fa-list"></i><span
+                            class="nav-label">Complain List</span></a>
+                </li>
+            {% endif %}
+
+            {% if request.session.Roll == '4' and request.session.Department == '2' %}
+                <li>
+                    <a href="{% url 'CmpLstForServiceOffice' %}"><i class="fa fa-list"></i><span class="nav-label">Complain List</span></a>
+                </li>
+            {% endif %}
+
+            <li class="">
+                <a href="{% url 'Logout' %}"><i class="fa fa-sign-out"></i> <span class="nav-label">Logout</span></a>
+            </li>
+
+        </ul>
+
+    </div>
+</nav>

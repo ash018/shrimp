@@ -1,0 +1,19 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+{% include 'shrimpapp/public/CommonHeader.html' %}
+
+<body>
+    <div id="wrapper">
+        {% include 'shrimpapp/public/LeftNavigationPanel.html' %}
+    
+        {% block main_content %}
+
+        {% endblock %}
+
+        {% include 'shrimpapp/public/RightNavigationPanel.html' %}
+    </div>
+</body>
+</html>
