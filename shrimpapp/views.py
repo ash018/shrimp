@@ -54,9 +54,8 @@ def Login(request):
                 request.session['UserId'] = str(userObj.UserId)
                 request.session['Password'] = password
                 request.session['UserName'] = str(userObj.UserName)
-                request.session['Designation'] = str(userObj.Designation)
-                request.session['Department'] = str(userObj.DepartmentId.DepartmentId)
-                request.session['Roll'] = str(userObj.RoleId.RoleId)
+                request.session['Designation'] = str(userObj.DepartmentId.DepartmentName)
+                request.session['Department'] = str(userObj.DepartmentId.Id)
 
                 if not request.session.session_key:
                     request.session.save()
@@ -65,16 +64,25 @@ def Login(request):
 
                 return HttpResponseRedirect('Home')
             else:
-                return render(request, 'shrimppp/Login.html',{'message':'UserName password mismass'})
+                return render(request, 'shrimpapp/Login.html',{'message':'UserName password mismass'})
         else:
-            return render(request, 'shrimppp/Login.html',{'message':'UserName password mismass'})
+            return render(request, 'shrimpapp/Login.html',{'message':'UserName password mismass'})
 
 
-    return render(request, 'shrimppp/Login.html')
+    return render(request, 'shrimpapp/Login.html')
 
+def Home(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        context = {'PageTitle': 'Home'}
+        return render(request, 'shrimpapp/Home.html',context)
 
 def Logout(self):
-    if 'UserId' not in self.session: return HttpResponseRedirect('/')
-    self.session.flush()
-    self.session.clear()
-    del self.session
+    if 'UserId' not in self.session:
+        return HttpResponseRedirect('/')
+    else:
+        self.session.flush()
+        self.session.clear()
+        del self.session
+        return HttpResponseRedirect('/')

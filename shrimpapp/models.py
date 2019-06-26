@@ -6,8 +6,8 @@ from django.db import models
 
 class Department(models.Model):
     Id = models.AutoField(primary_key=True, db_column='DepartmentId')
-    DepartmentCode = models.CharField(max_length=50, db_column='DepartmentCode', null=False)
-    DepartmentName = models.CharField(max_length=100, db_column='DepartmentName', null=False)
+    DepartmentCode = models.CharField(max_length=50, db_column='DepartmentCode')
+    DepartmentName = models.CharField(max_length=100, db_column='DepartmentName')
 
     class Meta:
         managed = False
@@ -15,8 +15,8 @@ class Department(models.Model):
 
 class Designation(models.Model):
     Id = models.AutoField(primary_key=True, db_column='DesignatioId')
-    DesignatioCode = models.CharField(max_length=50, db_column='DesignatioCode', null=False)
-    DesignatioName = models.CharField(max_length=100, db_column='DesignatioName', null=False)
+    DesignatioCode = models.CharField(max_length=50, db_column='DesignatioCode')
+    DesignatioName = models.CharField(max_length=100, db_column='DesignatioName')
 
     class Meta:
         managed = False

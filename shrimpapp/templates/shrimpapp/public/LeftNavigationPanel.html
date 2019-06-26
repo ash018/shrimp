@@ -28,29 +28,29 @@
                 <a href="{% url 'Home' %}"><i class="fa fa-registered"></i> <span class="nav-label">Home</span></a>
             </li>
 
-            {% if request.session.Roll == '1' or request.session.Roll == '3' and request.session.Department == '1' %}
-                <li>
-                    <a href="{% url 'CreateComplain' %}"><i class="fa fa-user"></i><span
-                            class="nav-label">New Complain</span></a>
-                </li>
-                <li>
-                    <a href="{% url 'ComplainList' %}"><i class="fa fa-list"></i><span
-                            class="nav-label">Complain List</span></a>
-                </li>
-            {% endif %}
-
-            {% if request.session.Roll == '2' and request.session.Department == '2' %}
-                <li>
-                    <a href="{% url 'STComplainList' %}"><i class="fa fa-list"></i><span
-                            class="nav-label">Complain List</span></a>
-                </li>
-            {% endif %}
-
-            {% if request.session.Roll == '4' and request.session.Department == '2' %}
-                <li>
-                    <a href="{% url 'CmpLstForServiceOffice' %}"><i class="fa fa-list"></i><span class="nav-label">Complain List</span></a>
-                </li>
-            {% endif %}
+{#            {% if request.session.Roll == '1' or request.session.Roll == '3' and request.session.Department == '1' %}#}
+{#                <li>#}
+{#                    <a href="{% url 'CreateComplain' %}"><i class="fa fa-user"></i><span#}
+{#                            class="nav-label">New Complain</span></a>#}
+{#                </li>#}
+{#                <li>#}
+{#                    <a href="{% url 'ComplainList' %}"><i class="fa fa-list"></i><span#}
+{#                            class="nav-label">Complain List</span></a>#}
+{#                </li>#}
+{#            {% endif %}#}
+{##}
+{#            {% if request.session.Roll == '2' and request.session.Department == '2' %}#}
+{#                <li>#}
+{#                    <a href="{% url 'STComplainList' %}"><i class="fa fa-list"></i><span#}
+{#                            class="nav-label">Complain List</span></a>#}
+{#                </li>#}
+{#            {% endif %}#}
+{##}
+{#            {% if request.session.Roll == '4' and request.session.Department == '2' %}#}
+{#                <li>#}
+{#                    <a href="{% url 'CmpLstForServiceOffice' %}"><i class="fa fa-list"></i><span class="nav-label">Complain List</span></a>#}
+{#                </li>#}
+{#            {% endif %}#}
 
             <li class="">
                 <a href="{% url 'Logout' %}"><i class="fa fa-sign-out"></i> <span class="nav-label">Logout</span></a>
