@@ -1,5 +1,6 @@
 from django.db import models
 from .models import *
+#Todays Last push
 
 class ProdType(models.Model):
     Id = models.AutoField(primary_key=True, db_column='PrTyId')

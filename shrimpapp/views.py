@@ -33,6 +33,11 @@ from collections import defaultdict
 SESSION_ID = "ABC"
 
 #https://simpleisbetterthancomplex.com/tips/2016/09/27/django-tip-15-cbv-mixins.html
+#
+# Git catch command
+#  git rm -r --cached .
+# git add .
+# git commit -m "fixed untracked files"
 
 
 def Login(request):

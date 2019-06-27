@@ -2,7 +2,7 @@ from django.db import models
 
 #python manage.py makemigrations shrimpapp
 #python manage.py migrate
-
+#Todays Last push
 
 class Department(models.Model):
     Id = models.AutoField(primary_key=True, db_column='DepartmentId')
