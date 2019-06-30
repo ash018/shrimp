@@ -117,15 +117,25 @@
             });
 
             $("#AddNewRow").click(function(){
-                var allItem = '';
-                $("#ComplainType option").each(function(){
-                    allItem = allItem + '<option value="'+$(this).val()+'">'+$(this).html()+'</option>'
+                var ShrimpType = '';
+                $("#ShrimpType option").each(function(){
+                    ShrimpType = ShrimpType + '<option value="'+$(this).val()+'">'+$(this).html()+'</option>'
+                });
+
+                var ShrimpItem = '';
+                $("#ShrimpItem option").each(function(){
+                    ShrimpItem = ShrimpItem + '<option value="'+$(this).val()+'">'+$(this).html()+'</option>'
                 });
 
                 var tableRow = '<tr>'+
-                                    '<td><select name="Service" class="form-control SparePartsItem">' +allItem+
+                                    '<td><select name="Service" class="form-control SparePartsItem">' +ShrimpType+
                                     '</select></td>'+
-                                    '<td><input type="text" class="form-control"  name="Service" required="required"></td>'+
+                                    '<td><input name="Service" class="form-control" required="required" value=""/></td>'+
+                                    '<td><select name="Service" class="form-control SparePartsItem">' +ShrimpItem+
+                                    '</select></td>'+
+                                    '<td><input name="Service" class="form-control" required="required" value=""/></td>'+
+                                    '<td><input name="Service" type="number" class="form-control" required="required" value="0.0"/></td>'+
+                                    ' <td><input name="Service" class="form-control" required="required" value="N/A"/></td>'+
                                     '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>'+
                                 '</tr>';
 
