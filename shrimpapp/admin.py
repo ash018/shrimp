@@ -46,7 +46,8 @@ class SupplierAdmin(admin.ModelAdmin):
 admin.site.register(UserManager, UserManagerAdmin)
 admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
-
+admin.site.register(ShrimpType)
+admin.site.register(ShrimpItem)
 
 # class FarmerAdminForm(forms.ModelForm):
 #     tags = forms.ModelMultipleChoiceField(
@@ -73,5 +74,3 @@ admin.site.register(Supplier, SupplierAdmin)
 
 #admin.site.register(SupplierFarmer, SupplierFarmerAdmin)
 #admin.site.register(SupplierFarmer)
-admin.site.register(ShrimpType)
-admin.site.register(ShrimpItem)
