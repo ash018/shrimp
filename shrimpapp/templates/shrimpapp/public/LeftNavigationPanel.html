@@ -5,7 +5,7 @@
             <li class="nav-header">
                 <div class="dropdown profile-element">
                     <span>
-                        <img alt="image" class="img-circle" src="{% static "assets/img/ppl-logo.png" %}"/>
+                        <img alt="image" class="img-circle" src="{% static "assets/img/a4.jpg" %}"/>
                      </span>
 
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -26,6 +26,10 @@
 
             <li class="{% if request.resolver_match.url_name == "Home" %}active{% endif %}">
                 <a href="{% url 'Home' %}"><i class="fa fa-registered"></i> <span class="nav-label">Home</span></a>
+            </li>
+                <li>
+            <a href="{% url 'Weightment' %}"><i class="fa fa-user"></i><span
+                    class="nav-label">New Weightment</span></a>
             </li>
 
 {#            {% if request.session.Roll == '1' or request.session.Roll == '3' and request.session.Department == '1' %}#}

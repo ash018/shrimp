@@ -78,11 +78,29 @@ def Login(request):
 
 #@login_required(login_url='/')
 def Home(request):
+    print('2222'+ str(request.session))
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
         context = {'PageTitle': 'Home'}
         return render(request, 'shrimpapp/Home.html',context)
+
+def Weightment(request):
+
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        shrimpType = ShrimpType.objects.all().values('Id','Name')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+        context = {'PageTitle': 'Weightment', 'shrimpType':shrimpType,
+                   'shrimpItem':shrimpItem, 'farmerList':farmerList,
+                   'supplierList' : supplierList
+                   }
+        return render(request, 'shrimpapp/Weightment.html',context)
+
+
 
 def Logout(self):
     if 'UserId' not in self.session:

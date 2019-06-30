@@ -1,0 +1,163 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+
+        <style type="text/css">
+        </style>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>New Weightment </h2>
+                <ol class="breadcrumb">
+
+                </ol>
+            </div>
+            <div class="col-sm-8">
+
+
+            </div>
+        </div>
+
+        {% if Message|length > 0 %}
+            <div class="alert alert-info">
+                <strong>{{ Message }}</strong>
+            </div>
+        {% endif %}
+
+        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="wrapper wrapper-content animated fadeInRight ">
+
+            <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">{% for sType in shrimpType %}
+                                <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}</select></div>
+            <div style="display:none"><select id="ShrimpItem" name="ShrimpItem" class="form-control">{% for sItem in shrimpItem %}
+                                <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
+
+                <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
+                      action="{% url 'SaveWeightment' %}">
+                    {% csrf_token %}
+                    <div class="row col-lg-4 col-md-4 col-sm-4">
+                    <div class="form-group ">
+                        <label for="Machine">Choose Farmer</label>
+                        <select name="Farmer" class="form-control" >{% for sType in farmerList %}<option value="{{ sType.Id }}">{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}</select>
+                    </div>
+
+                    <div class="form-group ">
+                        <label for="Machine">Choose Supplier</label>
+                        <select name="Supplier" class="form-control" >{% for sType in supplierList %}<option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}</select>
+                    </div>
+
+                    <div class="form-group ">
+                        <label for="SparepartsDate">Collection Date</label>
+                        <input type="text" name="WgDate" class="form-control" id="SparepartsDate"/>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="Machine">Weightment Details</label>
+                    <table class=" table table-bordered" id="AllPartsAdd">
+                        <thead>
+                        <tr>
+                            <th>Choose Type</th>
+                            <th>Change Count</th>
+                            <th>Item</th>
+                            <th>Measure Unit(Kg/lb)</th>
+                            <th>Rate</th>
+                            <th>Remarks</th>
+                            <th>
+                                <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><select name="Service" class="form-control SparePartsItem">{% for cType in shrimpType %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><input name="Service" class="form-control" required="required" value=""/></td>
+                            <td><select name="Service" class="form-control SparePartsItem">{% for cType in shrimpItem %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><input name="Service" class="form-control" required="required" value=""/></td>
+                            <td><input name="Service" type="number" class="form-control" required="required" value="0.0"/></td>
+                            <td><input name="Service" class="form-control" required="required" value="N/A"/></td>
+{#                            <td><input type="button" class="btn btn-danger btn-block RemoveRow" value="Remove"/></td>#}
+                        </tr>
+
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="row center col-lg-4 col-md-4 col-sm-4">
+                    <div class="form-group ">
+                        <button type="submit" class="btn btn-primary block full-width m-b ">Save</button>
+                    </div>
+                        </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
+    <script>
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+
+            $("table").on("click","input.RemoveRow",function(){
+                $(this).parent().parent().remove();
+            });
+
+            $("#AddNewRow").click(function(){
+                var allItem = '';
+                $("#ComplainType option").each(function(){
+                    allItem = allItem + '<option value="'+$(this).val()+'">'+$(this).html()+'</option>'
+                });
+
+                var tableRow = '<tr>'+
+                                    '<td><select name="Service" class="form-control SparePartsItem">' +allItem+
+                                    '</select></td>'+
+                                    '<td><input type="text" class="form-control"  name="Service" required="required"></td>'+
+                                    '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>'+
+                                '</tr>';
+
+                $("#AllPartsAdd").append(tableRow);
+                return false;
+            });
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.document_updatedate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+            $('#SparepartsDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+        });
+    </script>
+
+{% endblock %}
