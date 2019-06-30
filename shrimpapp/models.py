@@ -4,10 +4,24 @@ from django.db import models
 #python manage.py migrate
 #Todays Last push
 
+class RowStatus(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='Id')
+    Name = models.CharField(max_length=50, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'RowStatus'
+
 class Department(models.Model):
     Id = models.AutoField(primary_key=True, db_column='DepartmentId')
     DepartmentCode = models.CharField(max_length=50, db_column='DepartmentCode')
     DepartmentName = models.CharField(max_length=100, db_column='DepartmentName')
+
+    def __str__(self):
+        return self.DepartmentName
 
     class Meta:
         managed = False
@@ -18,6 +32,9 @@ class Designation(models.Model):
     DesignatioCode = models.CharField(max_length=50, db_column='DesignatioCode')
     DesignatioName = models.CharField(max_length=100, db_column='DesignatioName')
 
+    def __str__(self):
+        return self.DesignatioName
+
     class Meta:
         managed = False
         db_table = 'Designation'
@@ -27,12 +44,15 @@ class UserManager(models.Model):
     UserId = models.CharField(max_length=255, db_column='UserId', unique=True)
     UserName = models.CharField(max_length=255, db_column='UserName')
     Password = models.CharField(max_length=255, db_column='Password')
-    Status = models.CharField(max_length=10, db_column='Status', default='Y')
+    Status =  models.ForeignKey(RowStatus, db_column='Status', on_delete=models.CASCADE)
     StaffId = models.CharField(max_length=100, db_column='StaffId')
     Mobile = models.CharField(max_length=100, db_column='Mobile')
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     DepartmentId = models.ForeignKey(Department, db_column='DepartmentId', on_delete=models.CASCADE)
     DesignationId = models.ForeignKey(Designation, db_column='DesignatioId', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.UserId
 
     class Meta:
         managed = False
@@ -44,11 +64,13 @@ class Farmer(models.Model):
     FarmerCode = models.CharField(max_length=50, db_column='FarmerCode')
     FarmerMobile = models.CharField(max_length=20, db_column='FarmerMobile')
     Address = models.CharField(max_length=100, db_column='Address')
-    IsActive = models.CharField(max_length=5, db_column='IsActive', default='Y')
+    IsActive = models.ForeignKey(RowStatus, db_column='IsActive', on_delete=models.CASCADE)
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
-    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=1)
 
+    def __str__(self):
+        return self.FarmerName
     class Meta:
         managed = False
         db_table = 'Farmer'
@@ -59,10 +81,14 @@ class Supplier(models.Model):
     SupplierCode = models.CharField(max_length=50, db_column='SupplierCode')
     SupplierMobile = models.CharField(max_length=20, db_column='SupplierMobile')
     Address = models.CharField(max_length=100, db_column='Address')
-    IsActive = models.CharField(max_length=5, db_column='IsActive', default='Y')
+    IsActive = models.ForeignKey(RowStatus, db_column='IsActive', on_delete=models.CASCADE)
+    FarmerId = models.ManyToManyField(Farmer, db_column='FarmerId')
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    def __str__(self):
+        return self.SupplierName
 
     class Meta:
         managed = False
@@ -71,10 +97,10 @@ class Supplier(models.Model):
 class SupplierFarmer(models.Model):
     Id = models.AutoField(primary_key=True, db_column='Id')
     SupplierId = models.ForeignKey(Supplier, db_column='SupplierId', on_delete=models.CASCADE)
-    FarmerId = models.ForeignKey(Farmer, db_column='FarmerId', on_delete=models.CASCADE)
+    FarmerId = models.ManyToManyField(Farmer, db_column='FarmerId')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'SupplierFarmer'
 
 
@@ -83,6 +109,9 @@ class ShrimpType(models.Model):
     Name = models.CharField(max_length=100, db_column='Name')
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    def __str__(self):
+        return self.Name
 
     class Meta:
         managed = False
@@ -95,6 +124,9 @@ class ShrimpItem(models.Model):
     MeasurUnit = models.CharField(max_length=100, db_column='MeasurUnit')
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    def __str__(self):
+        return self.Name
 
     class Meta:
         managed = False
