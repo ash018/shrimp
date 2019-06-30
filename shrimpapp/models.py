@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 #python manage.py makemigrations shrimpapp
 #python manage.py migrate
 #Todays Last push
@@ -39,7 +39,22 @@ class Designation(models.Model):
         managed = False
         db_table = 'Designation'
 
+class MyUserManager(BaseUserManager):
+    use_in_migrations = True
+
+    # python manage.py createsuperuser
+    def create_superuser(self, UserId, is_staff, Password):
+        user = self.model(
+            email=UserId,
+            is_staff=is_staff,
+        )
+        user.set_password(Password)
+        user.save(using=self._db)
+        return user
+
+
 class UserManager(models.Model):
+#class UserManager(AbstractBaseUser):
     Id = models.AutoField(primary_key=True, db_column='Id')
     UserId = models.CharField(max_length=255, db_column='UserId', unique=True)
     UserName = models.CharField(max_length=255, db_column='UserName')
@@ -51,8 +66,22 @@ class UserManager(models.Model):
     DepartmentId = models.ForeignKey(Department, db_column='DepartmentId', on_delete=models.CASCADE)
     DesignationId = models.ForeignKey(Designation, db_column='DesignatioId', on_delete=models.CASCADE)
 
+    # objects = MyUserManager()
+    #
+    # USERNAME_FIELD = "UserId"
+    # REQUIRED_FIELDS = ['Status']
+
     def __str__(self):
         return self.UserId
+
+    def get_full_name(self):
+        return self.UserName
+
+    def get_full_Departmen(self):
+        return self.DepartmentId.DepartmentName
+
+    def get_full_Departmen(self):
+        return self.DesignationId.DesignatioName
 
     class Meta:
         managed = False

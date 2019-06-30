@@ -70,7 +70,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'shrimp.wsgi.application'
 
-
+#AUTH_USER_MODEL = 'shrimpapp.UserManager'
+#AUTHENTICATION_BACKENDS = ('shrimpapp.MyAuthBackend','django.contrib.auth.backends.ModelBackend',)
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 

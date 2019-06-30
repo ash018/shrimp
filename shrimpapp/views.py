@@ -76,6 +76,7 @@ def Login(request):
 
     return render(request, 'shrimpapp/Login.html')
 
+#@login_required(login_url='/')
 def Home(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
