@@ -84,7 +84,7 @@ def Home(request):
         context = {'PageTitle': 'Home'}
         return render(request, 'shrimpapp/Home.html',context)
 
-def Weightment(request):
+def WeightmentView(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
@@ -116,36 +116,46 @@ def SaveWeightment(request):
             entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
             print('----entryDate----->' + str(entryDate))
             serDayTime = wgDate.split('-')
-            wegmentDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]), int(10), int(30),
-                                          26, 140)
+            wegmentDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]), int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
+                                            int(entryDate.split('-')[5]), 140)
 
-
+            wgEntryDate = datetime.datetime.now()
             weightmentDetail = request.POST.getlist('Weightment')
-            srv = np.reshape(weightmentDetail, (-1, 6))
+            srv = np.reshape(weightmentDetail, (-1, 7))
+            farmerId = Farmer.objects.filter(pk=int(farmer)).first()
+            supplierId = Supplier.objects.filter(pk=int(supplier)).first()
 
-            # shrimpType = ShrimpType.objects.all().values('Id','Name')
-            # shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
-            # farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
-            # supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
-
+            weightment = Weightment(FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
+            weightment.save()
+            sType = ''
+            changeCount = ''
+            sItem = ''
+            mUnit = ''
+            mQnty = ''
+            rate = ''
+            remark = ''
             for i in range(len(srv)):
                 j = 0
                 serviceTypeId = 0
                 for j in range(len(srv[i])):
                     if j == 0:
-                        sty = srv[i][j]
+                        sType = srv[i][j]
                         #serviceTypeId = ServiceType.objects.filter(pk=int(sty)).first()
                     if j == 1:
-                        com = srv[i][j]
+                        changeCount = srv[i][j]
                     if j == 2:
-                        sch = srv[i][j]
+                        sItem = srv[i][j]
                     if j == 3:
-                        req = srv[i][j]
+                        mUnit = srv[i][j]
                     if j == 4:
-                        pai = srv[i][j]
+                        mQnty = srv[i][j]
                     if j == 5:
-                        vis = srv[i][j]
-
+                        rate = srv[i][j]
+                    if j == 6:
+                        remark = srv[i][j]
+                ShrItemId = ShrimpItem.objects.filter(pk=int(sItem)).first()
+                WeightmentDetail(WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
+                print("sty-" + str(sType)+ "-com-"+ str(changeCount)+"-sch-"+ str(sItem)+"-mUnit-"+ str(mUnit)+"-mQnty-"+mQnty+"-rate-" + str(rate)+"-remark-"+str(remark))
             return HttpResponseRedirect('/Weightment')
         # context = {'PageTitle': 'Weightment', 'shrimpType':shrimpType,
         #            'shrimpItem':shrimpItem, 'farmerList':farmerList,
