@@ -157,11 +157,24 @@ def SaveWeightment(request):
                 WeightmentDetail(WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
                 print("sty-" + str(sType)+ "-com-"+ str(changeCount)+"-sch-"+ str(sItem)+"-mUnit-"+ str(mUnit)+"-mQnty-"+mQnty+"-rate-" + str(rate)+"-remark-"+str(remark))
             return HttpResponseRedirect('/Weightment')
-        # context = {'PageTitle': 'Weightment', 'shrimpType':shrimpType,
-        #            'shrimpItem':shrimpItem, 'farmerList':farmerList,
-        #            'supplierList' : supplierList
-        #            }
-        # return render(request, 'shrimpapp/Weightment.html',context)
+
+def ListWeightment(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+
+        weghtmentList = Weightment.objects.filter(EntryBy=user).values('Id','WgDate','FarmerId__FarmerCode', 'SupplierId__SupplierCode', 'IsQcPass').order_by('-Id')
+
+
+        context = {'PageTitle': 'Weightment List', 'farmerList':farmerList,
+                   'supplierList' : supplierList, 'weghtmentList':weghtmentList
+                   }
+        return render(request, 'shrimpapp/WeightmentList.html',context)
 
 def Logout(self):
     if 'UserId' not in self.session:

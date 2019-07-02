@@ -27,9 +27,12 @@
             <li class="{% if request.resolver_match.url_name == "Home" %}active{% endif %}">
                 <a href="{% url 'Home' %}"><i class="fa fa-registered"></i> <span class="nav-label">Home</span></a>
             </li>
-                <li>
-            <a href="{% url 'WeightmentView' %}"><i class="fa fa-user"></i><span
-                    class="nav-label">New Weightment</span></a>
+            <li>
+                <a href="{% url 'WeightmentView' %}"><i class="fa fa-ellipsis-h"></i><span class="nav-label">New Weightment</span></a>
+            </li>
+
+            <li>
+                <a href="{% url 'ListWeightment' %}"><i class="fa fa-list"></i><span class="nav-label">List Weightment</span></a>
             </li>
 
 {#            {% if request.session.Roll == '1' or request.session.Roll == '3' and request.session.Department == '1' %}#}
