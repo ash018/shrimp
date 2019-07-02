@@ -152,6 +152,7 @@ class ShrimpItem(models.Model):
     ItemCount = models.IntegerField(db_column='ItemCount', default=0)
     MeasurUnit = models.CharField(max_length=100, db_column='MeasurUnit')
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    ShrimpTypeId = models.ForeignKey(ShrimpType, db_column='ShrimpTypeId', on_delete=models.CASCADE, default=100)
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
 
     def __str__(self):

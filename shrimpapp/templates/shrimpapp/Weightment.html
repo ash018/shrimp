@@ -64,7 +64,7 @@
 
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <label for="Machine">Weightment Details</label>
-                    <table class=" table table-bordered" id="AllPartsAdd">
+                    <table id="AllPartsAdd" class=" table table-bordered">
                         <thead>
                         <tr>
                             <th>Choose Type</th>
@@ -80,12 +80,13 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td><select name="Service" class="form-control ">{% for cType in shrimpType %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><input name="Service" class="form-control" required="required" value=""/></td>
-                            <td><select name="Service" class="form-control ">{% for cType in shrimpItem %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><select name="Service" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>
-                            <td><input name="Service" type="number" class="form-control" required="required" value="0.0"/></td>
-                            <td><input name="Service" class="form-control" required="required" value="N/A"/></td>
+                            <td><select name="Weightment" class="form-control ">{% for cType in shrimpType %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>
+                            <td><select name="Weightment" class="form-control ">{% for cType in shrimpItem %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><select name="Weightment" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>
+                            <td><input name="Weightment"  class="form-control numeric" required="required" value="0.0"/></td>
+                            <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>
+                            <td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>
 {#                            <td><input type="button" class="btn btn-danger btn-block RemoveRow" value="Remove"/></td>#}
                         </tr>
 
@@ -110,7 +111,28 @@
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
+
         $(document).ready(function () {
+{#             $(".numeric").on("input", function(evt) {#}
+{#                var self = $(this);#}
+{#                   self.val(self.val().replace(/[^0-9\.]/g, ''));#}
+{#                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))#}
+{#                   {#}
+{#                     evt.preventDefault();#}
+{#                   }#}
+{#             });#}
+
+             $("table").on("input","input.numeric",function(evt){
+
+                 console.log("This is Input");
+                 var self = $(this);
+                   self.val(self.val().replace(/[^0-9\.]/g, ''));
+                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))
+                   {
+                     evt.preventDefault();
+                   }
+                });
+
 
             $("table").on("click","input.RemoveRow",function(){
                 $(this).parent().parent().remove();
@@ -128,18 +150,18 @@
                 });
 
                 var tableRow = '<tr>'+
-                                    '<td><select name="Service" class="form-control ">' +ShrimpType+
+                                    '<td><select name="Weightment" class="form-control ">' +ShrimpType+
                                     '</select></td>'+
-                                    '<td><input name="Service" class="form-control" required="required" value=""/></td>'+
-                                    '<td><select name="Service" class="form-control ">' +ShrimpItem+
+                                    '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>'+
+                                    '<td><select name="Weightment" class="form-control ">' +ShrimpItem+
                                     '</select></td>'+
-                                    '<td><select name="Service" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
-                                    '<td><input name="Service" type="number" class="form-control" required="required" value="0.0"/></td>'+
-                                    ' <td><input name="Service" class="form-control" required="required" value="N/A"/></td>'+
+                                    '<td><select name="Weightment" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
+                                    '<td><input name="Weightment"  class="form-control numeric" required="required" value="0.0"/></td>'+
+                                    ' <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>'+
                                     '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>'+
                                 '</tr>';
 
-                $("#AllPartsAdd").append(tableRow);
+                $("#AllPartsAdd").prepend(tableRow);
                 return false;
             });
 

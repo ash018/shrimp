@@ -98,7 +98,60 @@ def Weightment(request):
                    }
         return render(request, 'shrimpapp/Weightment.html',context)
 
+def SaveWeightment(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        if request.method == 'POST':
 
+            farmer = request.POST.get('Farmer')
+            supplier = request.POST.get('Supplier')
+            wgDate = request.POST.get('WgDate')
+
+            userId = request.session['uid']
+            user = UserManager.objects.filter(pk=int(userId)).first()
+
+            dt = str(datetime.datetime.now())
+            _datetime = datetime.datetime.now()
+            entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
+            print('----entryDate----->' + str(entryDate))
+            serDayTime = wgDate.split('-')
+            wegmentDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]), int(10), int(30),
+                                          26, 140)
+
+
+            weightmentDetail = request.POST.getlist('Weightment')
+            srv = np.reshape(weightmentDetail, (-1, 6))
+
+            # shrimpType = ShrimpType.objects.all().values('Id','Name')
+            # shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+            # farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+            # supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+            for i in range(len(srv)):
+                j = 0
+                serviceTypeId = 0
+                for j in range(len(srv[i])):
+                    if j == 0:
+                        sty = srv[i][j]
+                        #serviceTypeId = ServiceType.objects.filter(pk=int(sty)).first()
+                    if j == 1:
+                        com = srv[i][j]
+                    if j == 2:
+                        sch = srv[i][j]
+                    if j == 3:
+                        req = srv[i][j]
+                    if j == 4:
+                        pai = srv[i][j]
+                    if j == 5:
+                        vis = srv[i][j]
+
+            return HttpResponseRedirect('/Weightment')
+        # context = {'PageTitle': 'Weightment', 'shrimpType':shrimpType,
+        #            'shrimpItem':shrimpItem, 'farmerList':farmerList,
+        #            'supplierList' : supplierList
+        #            }
+        # return render(request, 'shrimpapp/Weightment.html',context)
 
 def Logout(self):
     if 'UserId' not in self.session:
