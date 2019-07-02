@@ -52,7 +52,7 @@ def Login(request):
         password = request.POST.get('Password')
         userObj = UserManager.objects.filter(UserId=userName, Password=password).first()
 
-        print('--OBject--' + str(userObj))
+
         if userObj is not None:
             if password == str(userObj.Password):
                 request.session['uid'] = str(userObj.Id)
@@ -78,7 +78,6 @@ def Login(request):
 
 #@login_required(login_url='/')
 def Home(request):
-    print('2222'+ str(request.session))
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
@@ -86,7 +85,6 @@ def Home(request):
         return render(request, 'shrimpapp/Home.html',context)
 
 def Weightment(request):
-
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
