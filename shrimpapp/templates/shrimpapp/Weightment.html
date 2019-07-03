@@ -81,10 +81,10 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td><select name="Weightment" class="form-control ">{% for cType in shrimpType %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
                             <td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>
-                            <td><select name="Weightment" class="form-control ">{% for cType in shrimpItem %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><select name="Weightment" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>
+                            <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpItem %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><select name="Weightment" class="form-control" style="width: 100px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>
                             <td><input name="Weightment"  class="form-control numeric" required="required" value="0.0"/></td>
                             <td><input name="Weightment"  class="form-control numeric" required="required" value="0.0"/></td>
                             <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>
@@ -152,12 +152,12 @@
                 });
 
                 var tableRow = '<tr>'+
-                                    '<td><select name="Weightment" class="form-control ">' +ShrimpType+
+                                    '<td><select name="Weightment" class="form-control" style="width: 100px">' +ShrimpType+
                                     '</select></td>'+
                                     '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>'+
-                                    '<td><select name="Weightment" class="form-control ">' +ShrimpItem+
+                                    '<td><select name="Weightment" class="form-control" style="width: 100px">' +ShrimpItem+
                                     '</select></td>'+
-                                    '<td><select name="Weightment" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
+                                    '<td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
                                     '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>'+
                                     '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>'+
                                     '<td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>'+

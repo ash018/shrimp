@@ -42,7 +42,7 @@
                                 <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
 
                 <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                      action="{% url 'UpdateWeightment' %}">
+                      action="{% url 'QCPassOfWeightment' %}">
                     {% csrf_token %}
                     <div class="row col-lg-4 col-md-4 col-sm-4">
                     <div class="form-group ">
@@ -69,27 +69,33 @@
                         <tr>
                             <th>Choose Type</th>
                             <th>Change Count</th>
+                            <th>QC CC</th>
                             <th>Item</th>
                             <th>Unit(Kg/lb)</th>
-                             <th>Measure Qnty</th>
-                            <th>Rate(TK)</th>
+                            <th>Measure Qnty</th>
+                            <th>QC MQnty</th>
+{#                            <th>Rate(TK)</th>#}
                             <th>Remarks</th>
+                            <th>QC Remarks</th>
                             <th>
-                                <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
+{#                                <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>#}
                             </th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for wd in weightmentDetails %}
                         <tr>
-                            <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id  %} selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><input name="Weightment" class="form-control numeric" required="required" value="{{ wd.CngCount }}"/></td>
-                            <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpItem %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id  %} selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg" {% if wb.MeasurUnit == 'Kg' %} selected="selected" {% endif %}>Kg</option><option value="lb" {% if wb.MeasurUnit == 'lb' %} selected="selected" {% endif %}>lb</option></select></td>
-                            <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.MeasurQnty }}"/></td>
-                            <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.Rate }}"/></td>
-                            <td><input name="Weightment" class="form-control" required="required" value="{{ wd.Remarks }}"/></td>
-                            <td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>
+                            <td><select disabled="disabled" name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id  %} selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><input disabled="disabled" name="Weightment" class="form-control numeric" required="required" value="{{ wd.CngCount }}"/></td>
+                            <td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>
+                            <td><select disabled="disabled" name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpItem %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id  %} selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td><select disabled="disabled" name="Weightment" class="form-control" style="width: 80px"><option value="Kg" {% if wb.MeasurUnit == 'Kg' %} selected="selected" {% endif %}>Kg</option><option value="lb" {% if wb.MeasurUnit == 'lb' %} selected="selected" {% endif %}>lb</option></select></td>
+                            <td><input disabled="disabled" name="Weightment"  class="form-control numeric" required="required" value="{{ wd.MeasurQnty }}"/></td>
+{#                            <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.Rate }}"/></td>#}
+                            <td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>
+                            <td><input disabled="disabled" name="Weightment" class="form-control" required="required" value="{{ wd.Remarks }}"/></td>
+                        <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>
+                            <td><!--<input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove">--></td>
 
                         </tr>
                        {% endfor %}
@@ -99,7 +105,7 @@
                     </div>
                     <div class="row center col-lg-4 col-md-4 col-sm-4">
                     <div class="form-group ">
-                        <button type="submit" class="btn btn-primary block full-width m-b ">Update</button>
+                        <button type="submit" class="btn btn-primary block full-width m-b ">QC Pass</button>
                     </div>
                         </div>
                 </form>
@@ -154,12 +160,12 @@
                 });
 
                 var tableRow = '<tr>'+
-                                    '<td><select name="Weightment" class="form-control" style="width: 100px">' +ShrimpType+
+                                    '<td><select name="Weightment" class="form-control ">' +ShrimpType+
                                     '</select></td>'+
                                     '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>'+
-                                    '<td><select name="Weightment" class="form-control" style="width: 100px">' +ShrimpItem+
+                                    '<td><select name="Weightment" class="form-control ">' +ShrimpItem+
                                     '</select></td>'+
-                                    '<td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
+                                    '<td><select name="Weightment" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
                                     '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>'+
                                     '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>'+
                                     '<td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>'+
