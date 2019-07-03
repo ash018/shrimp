@@ -202,11 +202,16 @@ def EditWeightment(request):
                                                                                     'ShrItemId__ShrimpTypeId__Id', 'MeasurUnit',
                                                                                     'MeasurQnty', 'Rate', 'Remarks')
 
-        weightData = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).values('Id', 'FarmerId__Id', 'SupplierId__Id', 'WgDate').first()
+        weightData = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).values('Id', 'FarmerId__Id', 'SupplierId__Id', 'IsQcPass', 'WgDate').first()
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        page = ''
+        if weightData['IsQcPass']=='Y':
+            page = 'Weightment View'
+        else:
+            page = 'Weightment Edit'
 
-        context = {'PageTitle': 'Weightment Edit', 'shrimpType':shrimpType,
+        context = {'PageTitle': page, 'shrimpType':shrimpType,
                    'shrimpItem':shrimpItem, 'farmerList':farmerList,
                    'supplierList' : supplierList, 'weightData':weightData,
                    'weightmentDetails':weightmentDetails,
@@ -289,6 +294,44 @@ def UpdateWeightment(request):
                 #     mUnit) + "-mQnty-" + mQnty + "-rate-" + str(rate) + "-remark-" + str(remark))
 
         return HttpResponseRedirect('/ListWeightment')
+
+
+def ListSearchWeightment(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmer = request.POST.get('Farmer')
+        supplier = request.POST.get('Supplier')
+        fromDate = request.POST.get('FromDate')
+        toDate = request.POST.get('ToDate')
+        userId = request.session['uid']
+
+        frmObj = Farmer.objects.filter(pk=int(farmer)).first()
+        supObj = Supplier.objects.filter(pk=int(supplier)).first()
+        serDayTime = fromDate.split('-')
+        serToDayTime = toDate.split('-')
+
+        wegFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        wegToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                        int(23), int(59),
+                                        int(59), 0)
+
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        user = UserManager.objects.filter(pk=int(userId)).first()
+
+        weghtmentList = Weightment.objects.filter(EntryBy=user, FarmerId=frmObj, SupplierId=supObj, EntryDate__range=(wegFromDate, wegToDate)).values('Id', 'WgDate', 'FarmerId__FarmerCode',
+                                                                       'SupplierId__SupplierCode', 'IsQcPass').order_by(
+            '-Id')
+
+        context = {'PageTitle': 'Weightment List', 'farmerList': farmerList,
+                   'supplierList': supplierList, 'weghtmentList': weghtmentList,
+                   'wegFromDate':wegFromDate, 'wegToDate':wegToDate
+                   }
+        return render(request, 'shrimpapp/WeightmentList.html', context)
 
 
 def Logout(self):

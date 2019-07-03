@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^UpdateWeightment', views.UpdateWeightment, name='UpdateWeightment'),
     url(r'^SaveWeightment', views.SaveWeightment, name='SaveWeightment'),
 
+    url(r'^ListSearchWeightment', views.ListSearchWeightment, name='ListSearchWeightment'),
+
     url(r'^QCWeightmentList', qcweightmentview.QCWeightmentList, name='QCWeightmentList'),
     url(r'^QCSearch', qcweightmentview.QCSearch, name='QCSearch'),
     url(r'^ShowDetailForQC', qcweightmentview.ShowDetailForQC, name='ShowDetailForQC'),
