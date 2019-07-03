@@ -12,7 +12,7 @@
 
         <div class="row wrapper border-bottom white-bg page-heading">
             <div class="col-sm-4">
-                <h2>Edit Weightment </h2>
+                <h2>QC Weightment </h2>
                 <ol class="breadcrumb">
 
                 </ol>
@@ -46,18 +46,18 @@
                     {% csrf_token %}
                     <div class="row col-lg-4 col-md-4 col-sm-4">
                     <div class="form-group ">
-                        <label for="Machine">Choose Farmer</label>
-                        <select name="Farmer" class="form-control">{% for sType in farmerList %}<option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %} selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}</select>
+                        <label for="Machine">Farmer</label>
+                        <select disabled="disabled" name="Farmer" class="form-control">{% for sType in farmerList %}<option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %} selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}</select>
                     </div>
 
                     <div class="form-group ">
-                        <label for="Machine">Choose Supplier</label>
-                        <select name="Supplier" class="form-control">{% for sType in supplierList %}<option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %} selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}</select>
+                        <label for="Machine">Supplier</label>
+                        <select disabled="disabled" name="Supplier" class="form-control">{% for sType in supplierList %}<option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %} selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}</select>
                     </div>
 
                     <div class="form-group ">
                         <label for="SparepartsDate">Collection Date</label>
-                        <input type="text" name="WgDate" class="form-control" id="SparepartsDate" value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
+                        <input disabled="disabled" type="text" name="WgDate" class="form-control" id="SparepartsDate" value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
                         <input type="hidden" name="WgId" class="form-control" id="WgId" value="{{ weightData.Id }}"/>
                     </div>
                 </div>
@@ -74,28 +74,26 @@
                             <th>Unit(Kg/lb)</th>
                             <th>Measure Qnty</th>
                             <th>QC MQnty</th>
-{#                            <th>Rate(TK)</th>#}
                             <th>Remarks</th>
                             <th>QC Remarks</th>
-                            <th>
-{#                                <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>#}
-                            </th>
+
                         </tr>
                         </thead>
                         <tbody>
                         {% for wd in weightmentDetails %}
                         <tr>
-                            <td><select disabled="disabled" name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id  %} selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}</select></td>
+                            <td>
+                                <input type="hidden" name="Weightment" class="form-control" id="WgId" value="{{  wd.Id }}"/>
+                                <select disabled="disabled" name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id  %} selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}</select>
+                            </td>
                             <td><input disabled="disabled" name="Weightment" class="form-control numeric" required="required" value="{{ wd.CngCount }}"/></td>
                             <td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>
                             <td><select disabled="disabled" name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpItem %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id  %} selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}</select></td>
                             <td><select disabled="disabled" name="Weightment" class="form-control" style="width: 80px"><option value="Kg" {% if wb.MeasurUnit == 'Kg' %} selected="selected" {% endif %}>Kg</option><option value="lb" {% if wb.MeasurUnit == 'lb' %} selected="selected" {% endif %}>lb</option></select></td>
                             <td><input disabled="disabled" name="Weightment"  class="form-control numeric" required="required" value="{{ wd.MeasurQnty }}"/></td>
-{#                            <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.Rate }}"/></td>#}
                             <td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>
                             <td><input disabled="disabled" name="Weightment" class="form-control" required="required" value="{{ wd.Remarks }}"/></td>
-                        <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>
-                            <td><!--<input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove">--></td>
+                            <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>
 
                         </tr>
                        {% endfor %}
@@ -123,15 +121,6 @@
         window.CSRF_TOKEN = "{{ csrf_token }}";
 
         $(document).ready(function () {
-{#             $(".numeric").on("input", function(evt) {#}
-{#                var self = $(this);#}
-{#                   self.val(self.val().replace(/[^0-9\.]/g, ''));#}
-{#                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))#}
-{#                   {#}
-{#                     evt.preventDefault();#}
-{#                   }#}
-{#             });#}
-
              $("table").on("input","input.numeric",function(evt){
 
                  console.log("This is Input");
@@ -142,7 +131,6 @@
                      evt.preventDefault();
                    }
                 });
-
 
             $("table").on("click","input.RemoveRow",function(){
                 $(this).parent().parent().remove();

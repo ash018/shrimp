@@ -12,7 +12,7 @@
 
         <div class="row wrapper border-bottom white-bg page-heading">
             <div class="col-sm-4">
-                <h2>Edit Weightment </h2>
+                <h2>{% if weightData.IsQcPass == 'N' %}Edit{% endif %} {% if weightData.IsQcPass == 'Y' %}View{% endif %} Weightment </h2>
                 <ol class="breadcrumb">
 
                 </ol>
@@ -74,9 +74,11 @@
                              <th>Measure Qnty</th>
                             <th>Rate(TK)</th>
                             <th>Remarks</th>
+                            {% if weightData.IsQcPass == 'N' %}
                             <th>
                                 <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
                             </th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -89,19 +91,22 @@
                             <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.MeasurQnty }}"/></td>
                             <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.Rate }}"/></td>
                             <td><input name="Weightment" class="form-control" required="required" value="{{ wd.Remarks }}"/></td>
-                            <td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>
-
+                            {% if weightData.IsQcPass == 'N' %}
+                                <td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>
+                            {% endif %}
                         </tr>
                        {% endfor %}
 
                         </tbody>
                     </table>
                     </div>
+                {% if weightData.IsQcPass == 'N' %}
                     <div class="row center col-lg-4 col-md-4 col-sm-4">
                     <div class="form-group ">
                         <button type="submit" class="btn btn-primary block full-width m-b ">Update</button>
                     </div>
                         </div>
+                {% endif %}
                 </form>
 
             </div>

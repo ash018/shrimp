@@ -18,5 +18,7 @@ urlpatterns = [
     url(r'^QCPassOfWeightment', qcweightmentview.QCPassOfWeightment, name='QCPassOfWeightment'),
 
 
+
+
     url(r'^Logout', views.Logout, name='Logout'),
 ]

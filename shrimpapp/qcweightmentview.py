@@ -61,10 +61,10 @@ def ShowDetailForQC(request):
         wegtId = request.GET.get('WeightmentId')
 
         weightment = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).first()
-        weightmentDetails = WeightmentDetail.objects.filter(WgId=weightment).values('CngCount', 'ShrItemId__Id',
+        weightmentDetails = WeightmentDetail.objects.filter(WgId=weightment).values('Id', 'CngCount', 'ShrItemId__Id',
                                                                                     'ShrItemId__ShrimpTypeId__Id',
-                                                                                    'MeasurUnit',
-                                                                                    'MeasurQnty', 'Rate', 'Remarks')
+                                                                                    'MeasurUnit','MeasurQnty',
+                                                                                    'Rate', 'Remarks')
 
         weightData = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).values('Id', 'FarmerId__Id',
                                                                                     'SupplierId__Id', 'WgDate').first()
@@ -82,15 +82,68 @@ def QCPassOfWeightment(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
-        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
-        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        wegId = request.POST.get('WgId')
+        weightmentDetail = request.POST.getlist('Weightment')
+        srv = np.reshape(weightmentDetail, (-1, 4))
+
         userId = request.session['uid']
         user = UserManager.objects.filter(pk=int(userId)).first()
-        weghtmentList = Weightment.objects.all().values('Id', 'WgDate', 'FarmerId__FarmerCode',
-                                                                       'SupplierId__SupplierCode', 'IsQcPass').order_by(
-            '-Id')
-        context = {'PageTitle': 'Weightment For QC','weghtmentList':weghtmentList,
-                   'farmerList':farmerList,'supplierList' : supplierList,}
+        qcWgEntryDate = datetime.datetime.now()
+
+        Weightment.objects.filter(pk=int(wegId)).update(IsQcPass='Y')
+        wgObje = Weightment.objects.filter(pk=int(wegId)).first()
+        weghtment = Weightment.objects.filter(pk=int(wegId)).values('FarmerId__Id','SupplierId__Id', 'WgDate').first()
+
+        qcWeight = QCWeightment(WgId=wgObje, FarmerId=Farmer.objects.filter(pk=int(weghtment['FarmerId__Id'])).first(),
+                                SupplierId=Supplier.objects.filter(pk=int(weghtment['SupplierId__Id'])).first(),
+                                WgDate=weghtment['WgDate'],IsQcPass='Y', IsProductionUsed='N',
+                                EntryDate=qcWgEntryDate, EditDate=qcWgEntryDate, EntryBy=user)
+        qcWeight.save()
+
+        lQcWg = LogQCWeightment(QCWgId=qcWeight, WgId=wgObje,
+                                FarmerId=Farmer.objects.filter(pk=int(weghtment['FarmerId__Id'])).first(),
+                                SupplierId=Supplier.objects.filter(pk=int(weghtment['SupplierId__Id'])).first(),
+                                WgDate=weghtment['WgDate'],IsQcPass='Y', IsProductionUsed='N',
+                                EntryDate=qcWgEntryDate, EditDate=qcWgEntryDate, EntryBy=user)
+        lQcWg.save()
+
+        wdId = ''
+        qcCnty = ''
+        qcMQnty = ''
+        qcRemark = ''
+        for i in range(len(srv)):
+            j = 0
+            serviceTypeId = 0
+            for j in range(len(srv[i])):
+                if j == 0:
+                    wdId = srv[i][j]
+                    wegDetail = WeightmentDetail.objects.filter(pk=int(wdId)).values('CngCount','ShrItemId__Id',
+                                                                                     'MeasurUnit', 'MeasurQnty',
+                                                                                     'Rate','Remarks').first()
+                if j == 1:
+                    qcCnty = srv[i][j]
+                if j == 2:
+                    qcMQnty = srv[i][j]
+                if j == 3:
+                    qcRemark = srv[i][j]
+
+
+            QCWeightmentDetail(WgId=wgObje, GivenCngCount=wegDetail['CngCount'],
+                               QCCngCount=Decimal(qcCnty),
+                               ShrItemId=ShrimpItem.objects.filter(pk=int(wegDetail['ShrItemId__Id'])).first(),
+                               MeasurUnit=wegDetail['MeasurUnit'], MeasurQnty=wegDetail['MeasurQnty'],
+                               QCMeasurQnty=Decimal(qcMQnty), Rate=wegDetail['Rate'],
+                               Remarks=wegDetail['Remarks'], QCRemarks=str(qcRemark)).save()
+
+            LogQCWeightmentDetail(LogQcId=lQcWg, QCWgId=qcWeight, WgId=wgObje, GivenCngCount=wegDetail['CngCount'],
+                                  QCCngCount=Decimal(qcCnty),
+                                  ShrItemId=ShrimpItem.objects.filter(pk=int(wegDetail['ShrItemId__Id'])).first(),
+                                  MeasurUnit=wegDetail['MeasurUnit'], MeasurQnty=wegDetail['MeasurQnty'],
+                                  QCMeasurQnty=Decimal(qcMQnty), Rate=wegDetail['Rate'],
+                                  Remarks=wegDetail['Remarks'], QCRemarks=str(qcRemark)).save()
+
+
         return HttpResponseRedirect('/QCWeightmentList')
 
 

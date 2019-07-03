@@ -97,9 +97,9 @@
                             <td> {{ us.WgDate }}</td>
                             <td> {{ us.FarmerId__FarmerCode }}</td>
                             <td> {{ us.SupplierId__SupplierCode }}</td>
-                            <td>  {% if us.IsQcPass == 'Y'%}Yes{% else %}No{% endif %} </td>
+                            <td> {% if us.IsQcPass == 'Y'%}Yes{% else %}No{% endif %} </td>
                             <td>
-                                <a href="{% url 'EditWeightment' %}?WeightmentId={{ us.Id }} " class="btn btn-info btn-block">Edit</a>
+                                <a href="{% url 'EditWeightment' %}?WeightmentId={{ us.Id }} " class="btn {% if us.IsQcPass == 'N'%}btn-info{% endif %}{% if us.IsQcPass == 'Y'%}btn-success{% endif %} btn-block">{% if us.IsQcPass == 'N'%}Edit{% endif %}{% if us.IsQcPass == 'Y'%}View{% endif %}</a>
                              </td>
                         </tr>
                     {% endfor %}

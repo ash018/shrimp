@@ -98,16 +98,16 @@
                             <td> {{ us.SupplierId__SupplierCode }}</td>
                             <td>  {% if us.IsQcPass == 'Y'%}Yes{% else %}No{% endif %} </td>
                             <td>
+                            {% if us.IsQcPass == 'N'%}
                                 <a href="{% url 'ShowDetailForQC' %}?WeightmentId={{ us.Id }} " class="btn btn-info btn-block">QC</a>
-                             </td>
+                            {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
 
                         </tbody>
                     </table>
-
             </div>
-
         </div>
     </div>
     <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
@@ -119,15 +119,6 @@
         window.CSRF_TOKEN = "{{ csrf_token }}";
 
         $(document).ready(function () {
-            {#             $(".numeric").on("input", function(evt) {#}
-            {#                var self = $(this);#}
-            {#                   self.val(self.val().replace(/[^0-9\.]/g, ''));#}
-            {#                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))#}
-            {#                   {#}
-            {#                     evt.preventDefault();#}
-            {#                   }#}
-            {#             });#}
-
             $("table").on("input", "input.numeric", function (evt) {
 
                 console.log("This is Input");
@@ -137,7 +128,6 @@
                     evt.preventDefault();
                 }
             });
-
 
             $("table").on("click", "input.RemoveRow", function () {
                 $(this).parent().parent().remove();
@@ -214,7 +204,6 @@
                 todayHighlight: true,
                 toggleActive: true
             });
-
         });
     </script>
 
