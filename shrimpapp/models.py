@@ -207,6 +207,7 @@ class LogWeightment(models.Model):
 
 class LogWeightmentDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='LogWgDtlId')
+    LgWgId = models.ForeignKey(LogWeightment, db_column='LgWgId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
     CngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='CngCount', default=0.0)
     ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)

@@ -13,6 +13,7 @@ admin.site.register(Designation)
 #https://books.agiliq.com/projects/django-admin-cookbook/en/latest/many_to_many.html
 #https://reinout.vanrees.org/weblog/2011/11/29/many-to-many-field-save-method.html
 #https://www.pythoncircle.com/post/28/creating-custom-user-model-and-custom-authentication-in-django/
+#https://automationstepbystep.com/jenkins/
 
 
 
@@ -49,6 +50,8 @@ admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(ShrimpType)
 admin.site.register(ShrimpItem)
+
+#admin.site.unregister(Group)
 
 # class FarmerAdminForm(forms.ModelForm):
 #     tags = forms.ModelMultipleChoiceField(

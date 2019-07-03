@@ -92,6 +92,7 @@ def WeightmentView(request):
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
         farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
         supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
         context = {'PageTitle': 'Weightment', 'shrimpType':shrimpType,
                    'shrimpItem':shrimpItem, 'farmerList':farmerList,
                    'supplierList' : supplierList
@@ -127,6 +128,10 @@ def SaveWeightment(request):
 
             weightment = Weightment(FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
             weightment.save()
+
+            logWeightment = LogWeightment(WgId=weightment, FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
+            logWeightment.save()
+
             sType = ''
             changeCount = ''
             sItem = ''
@@ -155,8 +160,10 @@ def SaveWeightment(request):
                         remark = srv[i][j]
                 ShrItemId = ShrimpItem.objects.filter(pk=int(sItem)).first()
                 WeightmentDetail(WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
+                LogWeightmentDetail(LgWgId=logWeightment, WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
                 print("sty-" + str(sType)+ "-com-"+ str(changeCount)+"-sch-"+ str(sItem)+"-mUnit-"+ str(mUnit)+"-mQnty-"+mQnty+"-rate-" + str(rate)+"-remark-"+str(remark))
             return HttpResponseRedirect('/Weightment')
+
 
 def ListWeightment(request):
     if 'uid' not in request.session:
@@ -175,6 +182,114 @@ def ListWeightment(request):
                    'supplierList' : supplierList, 'weghtmentList':weghtmentList
                    }
         return render(request, 'shrimpapp/WeightmentList.html',context)
+
+
+
+def EditWeightment(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        wegtId = request.GET.get('WeightmentId')
+
+
+        weightment = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).first()
+        weightmentDetails = WeightmentDetail.objects.filter(WgId=weightment).values('CngCount', 'ShrItemId__Id',
+                                                                                    'ShrItemId__ShrimpTypeId__Id', 'MeasurUnit',
+                                                                                    'MeasurQnty', 'Rate', 'Remarks')
+
+        weightData = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).values('Id', 'FarmerId__Id', 'SupplierId__Id', 'WgDate').first()
+        shrimpType = ShrimpType.objects.all().values('Id', 'Name')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+
+        context = {'PageTitle': 'Weightment Edit', 'shrimpType':shrimpType,
+                   'shrimpItem':shrimpItem, 'farmerList':farmerList,
+                   'supplierList' : supplierList, 'weightData':weightData,
+                   'weightmentDetails':weightmentDetails,
+                   }
+        return render(request, 'shrimpapp/EditWeightment.html',context)
+
+
+def UpdateWeightment(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        if request.method == 'POST':
+            wegId = request.POST.get('WgId')
+            farmer = request.POST.get('Farmer')
+            supplier = request.POST.get('Supplier')
+            wgDate = request.POST.get('WgDate')
+
+            userId = request.session['uid']
+            user = UserManager.objects.filter(pk=int(userId)).first()
+            weightment = Weightment.objects.filter(pk=int(wegId)).first()
+            weightmentDetail = request.POST.getlist('Weightment')
+
+            dt = str(datetime.datetime.now())
+            _datetime = datetime.datetime.now()
+            entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
+            print('----entryDate----->' + str(entryDate))
+            serDayTime = wgDate.split('-')
+            wegmentDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                            int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
+                                            int(entryDate.split('-')[5]), 140)
+
+            wgEntryDate = datetime.datetime.now()
+
+            srv = np.reshape(weightmentDetail, (-1, 7))
+            farmerId = Farmer.objects.filter(pk=int(farmer)).first()
+            supplierId = Supplier.objects.filter(pk=int(supplier)).first()
+
+            WeightmentDetail.objects.filter(WgId=weightment).delete()
+            Weightment.objects.filter(pk=int(wegId), EntryBy=user).update(FarmerId=farmerId, SupplierId=supplierId,WgDate=wegmentDate, EditDate=wgEntryDate)
+
+
+            logWeightment = LogWeightment(WgId=weightment, FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate,
+                                          IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
+            logWeightment.save()
+
+            sType = ''
+            changeCount = ''
+            sItem = ''
+            mUnit = ''
+            mQnty = ''
+            rate = ''
+            remark = ''
+            for i in range(len(srv)):
+                j = 0
+                serviceTypeId = 0
+                for j in range(len(srv[i])):
+                    if j == 0:
+                        sType = srv[i][j]
+                        # serviceTypeId = ServiceType.objects.filter(pk=int(sty)).first()
+                    if j == 1:
+                        changeCount = srv[i][j]
+                    if j == 2:
+                        sItem = srv[i][j]
+                    if j == 3:
+                        mUnit = srv[i][j]
+                    if j == 4:
+                        mQnty = srv[i][j]
+                    if j == 5:
+                        rate = srv[i][j]
+                    if j == 6:
+                        remark = srv[i][j]
+                ShrItemId = ShrimpItem.objects.filter(pk=int(sItem)).first()
+                WeightmentDetail(WgId=weightment, CngCount=Decimal(changeCount), ShrItemId=ShrItemId,
+                                 MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate),
+                                 Remarks=str(remark)).save()
+                LogWeightmentDetail(LgWgId=logWeightment, WgId=weightment, CngCount=Decimal(changeCount),
+                                    ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty),
+                                    Rate=Decimal(rate), Remarks=str(remark)).save()
+                # print("sty-" + str(sType) + "-com-" + str(changeCount) + "-sch-" + str(sItem) + "-mUnit-" + str(
+                #     mUnit) + "-mQnty-" + mQnty + "-rate-" + str(rate) + "-remark-" + str(remark))
+
+        return HttpResponseRedirect('/ListWeightment')
+
 
 def Logout(self):
     if 'UserId' not in self.session:
