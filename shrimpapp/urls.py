@@ -2,6 +2,7 @@ from django.conf.urls import url
 from .views import *
 from . import views
 from . import qcweightmentview
+from . import productionview
 
 urlpatterns = [
     url(r'^$', views.Login, name='Login'),
@@ -19,8 +20,8 @@ urlpatterns = [
     url(r'^ShowDetailForQC', qcweightmentview.ShowDetailForQC, name='ShowDetailForQC'),
     url(r'^QCPassOfWeightment', qcweightmentview.QCPassOfWeightment, name='QCPassOfWeightment'),
 
-
-
+    url(r'^SearchWgForProduction', productionview.SearchWgForProduction, name='SearchWgForProduction'),
+    url(r'^AllPassWgForProduction', productionview.AllPassWgForProduction, name='AllPassWgForProduction'),
 
     url(r'^Logout', views.Logout, name='Logout'),
 ]

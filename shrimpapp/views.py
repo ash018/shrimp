@@ -329,9 +329,9 @@ def ListSearchWeightment(request):
 
         context = {'PageTitle': 'Weightment List', 'farmerList': farmerList,
                    'supplierList': supplierList, 'weghtmentList': weghtmentList,
-                   'wegFromDate':wegFromDate, 'wegToDate':wegToDate
-                   }
+                   'wegFromDate':wegFromDate, 'wegToDate':wegToDate }
         return render(request, 'shrimpapp/WeightmentList.html', context)
+
 
 
 def Logout(self):

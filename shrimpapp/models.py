@@ -237,9 +237,9 @@ class QCWeightment(models.Model):
         managed = False
         db_table = 'QCWeightment'
 
-
 class QCWeightmentDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WgDtlId')
+    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
     GivenCngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='GivenCngCount', default=0.0)
     QCCngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCCngCount', default=0.0)

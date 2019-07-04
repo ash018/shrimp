@@ -1,0 +1,155 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+
+        <style type="text/css">
+        </style>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-sm-4">
+                <h2>Production Weightment </h2>
+                <ol class="breadcrumb">
+
+                </ol>
+            </div>
+            <div class="col-sm-8">
+            </div>
+        </div>
+
+        {% if Message|length > 0 %}
+            <div class="alert alert-info">
+                <strong>{{ Message }}</strong>
+            </div>
+        {% endif %}
+
+        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="wrapper wrapper-content animated fadeInRight ">
+
+                <div class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
+                     action="{% url 'ListSearchWeightment' %}">
+                    {% csrf_token %}
+                    <div class="row col-lg-6 col-md-6 col-sm-6">
+                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
+                            <label for="SparepartsDate">From Date</label>
+                            <input type="text" name="FromDate" class="form-control" id="FromDate" required
+                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                        </div>
+                        <div class="mt-2 col-md-12">
+                        </div>
+                        <div class="form-group  col-lg-10 col-md-10 col-sm-10 ">
+                            <label for="SparepartsDate">To Date</label>
+                            <input type="text" name="ToDate" class="form-control" id="ToDate" required
+                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                        </div>
+                    </div>
+
+                    <div class="row col-lg-10 col-md-10 col-sm-10">
+                        <button type="submit" id="searchbtn" class="btn btn-primary block">Search</button>
+                    </div>
+                </div>
+
+                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+
+                </div>
+
+            </div>
+        </div>
+        <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+        <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+        <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+        <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+        {% csrf_token %}
+        <script>
+            window.CSRF_TOKEN = "{{ csrf_token }}";
+
+            $(document).ready(function () {
+                var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+                $("#searchbtn").click(function () {
+
+                    var fromDate = $("#FromDate").val();
+                    var toDate = $("#ToDate").val();
+
+                    var baseurl = "{% url 'AllPassWgForProduction' %}";
+                    $.ajax({
+
+                        url: baseurl,
+                        type: "GET",
+                        data: "FromDate=" + fromDate +"&ToDate=" +toDate +"&csrfmiddlewaretoken=" + csrftoken,
+                        cache: false,
+                        dataType: 'json',
+                        success: function (data) {
+
+                            console.log('---Data----' + data.toStrin());
+                            $('#search-data').html(data);
+{#                            var response = $.parseJSON(JSON.stringify(data));#}
+{#                            var dep = $.parseJSON(JSON.stringify(response.data));#}
+{##}
+{#                            var jDep = JSON.parse(dep);#}
+{#                            var depCode = jDep[0].DepartmentCode;#}
+{#                            var depName = jDep[0].DepartmentName;#}
+{#                            var depId = jDep[0].Id;#}
+{#                            $("#depId").val(depId);#}
+{#                            $("#depCode").val(depCode);#}
+{#                            $("#depName").val(depName);#}
+                        }
+                    });
+                });
+
+                $('.i-checks').iCheck({
+                    checkboxClass: 'icheckbox_square-green',
+                    radioClass: 'iradio_square-green',
+                });
+
+                $('.document_updatedate').datepicker({
+                    autoclose: true,
+                    format: "yyyy-mm-dd",
+                    todayBtn: true,
+                    calendarWeeks: true,
+                    autoclose: true,
+                    todayHighlight: true,
+                    toggleActive: true
+                });
+
+                $('#SparepartsDate').datepicker({
+                    autoclose: true,
+                    format: "yyyy-mm-dd",
+                    todayBtn: true,
+                    calendarWeeks: true,
+                    autoclose: true,
+                    todayHighlight: true,
+                    toggleActive: true
+                });
+                $('#FromDate').datepicker({
+                    autoclose: true,
+                    format: "yyyy-mm-dd",
+                    todayBtn: true,
+                    calendarWeeks: true,
+                    autoclose: true,
+                    todayHighlight: true,
+                    toggleActive: true
+                });
+
+                $('#ToDate').datepicker({
+                    autoclose: true,
+                    format: "yyyy-mm-dd",
+                    todayBtn: true,
+                    calendarWeeks: true,
+                    autoclose: true,
+                    todayHighlight: true,
+                    toggleActive: true
+                });
+
+            });
+        </script>
+
+{% endblock %}

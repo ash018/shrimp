@@ -1,0 +1,25 @@
+<table id="AllPartsAdd" class=" table table-bordered">
+    <thead>
+    <tr>
+        <th>SL</th>
+        <th>Farmer</th>
+        <th>Supplier</th>
+        <th>Is Qc Pass</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for us in weghtmentList %}
+        <tr id="Complain_{{ us.QCWgId }}">
+            <td>{{ forloop.counter }}</td>
+            <td> {{ us.total_count }}</td>
+            <td> {{ us.total_kgs }}</td>
+            <td>
+                <a href="{% url 'EditWeightment' %}?WeightmentId={{ us.QCWgId }}"
+                   class="btn btn-info btn-block">Production</a>
+            </td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
