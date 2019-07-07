@@ -96,7 +96,7 @@
                         {% for us in weghtmentList %}
                             <tr id="Complain_{{ us.ComplainId }}">
                                 <td>{{ forloop.counter }}</td>
-                                <td> {{us.WgDate|date:"d/M/y" }}</td>
+                                <td> {{us.WgDate|date:'Y-m-d' }}</td>
                                 <td> {{ us.FarmerId__FarmerCode }}</td>
                                 <td> {{ us.SupplierId__SupplierCode }}</td>
                                 <td> {% if us.IsQcPass == 'Y' %}Yes{% else %}No{% endif %} </td>

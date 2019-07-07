@@ -69,7 +69,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'shrimp.wsgi.application'
-
+CORS_ORIGIN_ALLOW_ALL = True
 #AUTH_USER_MODEL = 'shrimpapp.UserManager'
 #AUTHENTICATION_BACKENDS = ('shrimpapp.MyAuthBackend','django.contrib.auth.backends.ModelBackend',)
 # Database
@@ -138,6 +138,8 @@ USE_I18N = True
 USE_L10N = False
 
 USE_TZ = False
+
+USE_L10N = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

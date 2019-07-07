@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db import connection, connections
 from django.shortcuts import render
+from django import template
 from django.http import HttpResponse, StreamingHttpResponse
 import re
 import csv
@@ -29,6 +30,8 @@ from rest_framework.response import Response
 from django.db.models import F, Sum, Subquery, OuterRef
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.http import JsonResponse
 
 import numpy as np
 import datetime
@@ -57,7 +60,10 @@ def SearchWgForProduction(request):
                    }
         return render(request, 'shrimpapp/SearchWgForProduction.html', context)
 
+#@csrf_exempt
 def AllPassWgForProduction(request):
+    from django.shortcuts import render
+    from django.template import RequestContext
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
@@ -73,24 +79,15 @@ def AllPassWgForProduction(request):
                                       int(23), int(59),
                                       int(59), 0)
 
-        #QCWeightmentDetail.objects.values('',)
-        # qry = QCWeightment.objects.filter(IsQcPass='Y',
-        #                             IsProductionUsed='N',
-        #                             EntryDate__range=(wegFromDate, wegToDate)).values('Id',)\
-        #     .annotate(totalcc=Subquery(QCWeightmentDetail.objects.filter(QCWgId=OuterRef('pk')).values(ccCount=sum('QCCngCount'))))
-
-
-        #qry = QCWeightmentDetail.objects.filter(QCWgId__in=(QCWeightment.objects.filter(EntryDate__range=(wegFromDate,wegToDate)).values('Id'))).aggregate(F('QCCngCount'))#.values('QCWgId__Id', 'sqcct') #QCWeightmentDetail.objects.filter(QCWgId__EntryDate__range=(wegFromDate,wegToDate)).annotate(st = sum('QCCngCount'))
-
-        #qry = QCWeightmentDetail.objects.all().values('QCWgId').annotate(sum('QCCngCount'))
-        weghtmentList = QCWeightmentDetail.objects.filter(QCWgId__in=(QCWeightment.objects.filter(IsProductionUsed='N', IsQcPass='Y', EntryDate__range=(wegFromDate,wegToDate)))).values('QCWgId',).annotate(total_count=Sum('QCCngCount'), total_kgs=Sum('QCMeasurQnty'))
+        weghtmentList = QCWeightmentDetail.objects.filter(QCWgId__in=(QCWeightment.objects.filter(IsProductionUsed='N', IsQcPass='Y', EntryDate__range=(wegFromDate,wegToDate)))).values('QCWgId','QCWgId__IsProductionUsed','QCWgId__EntryDate' ).annotate(total_count=Sum('QCCngCount'), total_kgs=Sum('QCMeasurQnty'))
 
         html = render_to_string('shrimpapp/AllPassWgForProduction.html', {'weghtmentList': weghtmentList})
+        context = {'weghtmentList': weghtmentList}
+        template = 'shrimpapp/AllPassWgForProduction.html'
 
-        #print(html)
-        #return StreamingHttpResponse(html)
-        return HttpResponse(html)
-        # print( qry)
-        # context = {'PageTitle': 'Weightment Edit',
-        #            }
-        #return render(request, 'shrimpapp/ShowDetailForQC.html', context)
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })

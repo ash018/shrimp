@@ -2,9 +2,9 @@
     <thead>
     <tr>
         <th>SL</th>
-        <th>Farmer</th>
-        <th>Supplier</th>
-        <th>Is Qc Pass</th>
+        <th>QC pass Date</th>
+        <th>Total QC Count</th>
+        <th>Total Weight(kg/lb)</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -12,11 +12,12 @@
     {% for us in weghtmentList %}
         <tr id="Complain_{{ us.QCWgId }}">
             <td>{{ forloop.counter }}</td>
+            <td>{{ us.QCWgId__EntryDate|date:'Y-m-d' }}</td>
             <td> {{ us.total_count }}</td>
             <td> {{ us.total_kgs }}</td>
             <td>
-                <a href="{% url 'EditWeightment' %}?WeightmentId={{ us.QCWgId }}"
-                   class="btn btn-info btn-block">Production</a>
+                <a href="{% url 'EditWeightment' %}?QcWgId={{ us.QCWgId }}"
+                   class="btn btn-info block">Production</a>
             </td>
         </tr>
     {% endfor %}
