@@ -9,6 +9,7 @@ import requests
 import time
 import sys
 from .models import *
+from .inventorymodel import *
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -55,7 +56,7 @@ def SearchWgForProduction(request):
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
 
-        context = {'PageTitle': 'Weightment Edit', 'shrimpType': shrimpType,
+        context = {'PageTitle': 'Production Process', 'shrimpType': shrimpType,
                    'shrimpItem': shrimpItem, 'farmerList': farmerList,
                    }
         return render(request, 'shrimpapp/SearchWgForProduction.html', context)
@@ -91,3 +92,49 @@ def AllPassWgForProduction(request):
                 "html": render_to_string(template, context),
                 "status": "ok"
             })
+
+def StartProduction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        qcWgId = request.GET.get('QcWgId')
+        produType = ProdType.objects.all().values('Id', 'Name');
+
+        shrimpType = ShrimpType.objects.all().values('Id', 'Name')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+
+        context = {'PageTitle': 'New Production',
+                   'shrimpType': shrimpType,
+                   'shrimpItem': shrimpItem,
+                   'produType': produType,
+                   'qcWgId':qcWgId}
+
+        return render(request, 'shrimpapp/StartProduction.html', context)
+
+def PrdItemForm(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        prodType = request.GET.get('ProdType')
+
+        if request.is_ajax():
+            template = 'shrimpapp/ProdItem.html'
+            pType = ProdType.objects.filter(pk=int(prodType)).first()
+            proType = ProdType.objects.filter(pk=int(prodType)).values('Id','Name').first()
+            sItem = ShrimpItem.objects.all().values('Id','Name')
+            pItem = ProdItem.objects.filter(PrTyId=pType).values('Id','Name')
+
+            listIt = []
+            for i in range(0, len(pItem)):
+                listIt.append(i)
+
+            context = {'proType': proType, 'pItem':pItem, 'sItem':sItem, 'listIt':listIt}
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok",
+                "productionType":proType['Name']
+            })
+

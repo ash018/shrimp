@@ -12,7 +12,7 @@
 
         <div class="row wrapper border-bottom white-bg page-heading">
             <div class="col-sm-4">
-                <h2>Production Weightment </h2>
+                <h2>Production</h2>
                 <ol class="breadcrumb">
 
                 </ol>
@@ -73,15 +73,12 @@
         {% csrf_token %}
         <script>
             window.CSRF_TOKEN = "{{ csrf_token }}";
-
             $(document).ready(function () {
                 var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
                 $("#searchbtn").click(function () {
-
                     var fromDate = $("#FromDate").val();
                     var toDate = $("#ToDate").val();
                     var baseurl = "{% url 'AllPassWgForProduction' %}";
-                    //console.log("---" + fromDate + "---"+toDate);
                     if(fromDate == '' || toDate == ''){
                         sweetAlert({
                                 title: "Please Select Two Date.",
