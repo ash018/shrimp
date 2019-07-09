@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 from .models import Department, Designation, Farmer, Supplier, SupplierFarmer, ShrimpType, ShrimpItem, UserManager
+from .inventorymodel import ShrimpProdItem, PackagingMaterial
 # Register your models here.
 
 admin.site.site_header = 'Shrimp Administration'
@@ -50,6 +51,9 @@ admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(ShrimpType)
 admin.site.register(ShrimpItem)
+admin.site.register(ShrimpProdItem)
+admin.site.register(PackagingMaterial)
+
 
 #admin.site.unregister(Group)
 

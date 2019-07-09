@@ -10,19 +10,6 @@
         <style type="text/css">
         </style>
 
-        <div class="row wrapper border-bottom white-bg page-heading">
-            <div class="col-sm-4">
-                <h2>New Production </h2>
-                <ol class="breadcrumb">
-
-                </ol>
-            </div>
-            <div class="col-sm-8">
-
-
-            </div>
-        </div>
-
         {% if Message|length > 0 %}
             <div class="alert alert-info">
                 <strong>{{ Message }}</strong>
@@ -43,26 +30,30 @@
                 </div>
 
                 <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                      action="{% url 'SaveWeightment' %}">
+                      action="{% url 'SavPrdDetail' %}">
                     {% csrf_token %}
-                    <div class="row col-lg-4 col-md-4 col-sm-4">
-                        <div class="form-group ">
-                            <label for="Machine">Product Type</label>
-                            <select id="ProductionType" name="ProductionType" class="form-control">
-                                {% for sType in produType %}
-                                    <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}
-                            </select>
-                            <input type="hidden" name="QcWegid" class="form-control" id="QcWegid" value="{{ qcWgId }}"/>
+                    <div class="row col-lg-6 col-md-6 col-sm-6">
+                        <div class="row col-lg-10 col-md-10 col-sm-10">
+                            <div class="form-group ">
+                                <label for="Machine">Product Type</label>
+                                <select id="ProductionType" name="ProductionType" class="form-control">
+                                <option value="0">--Select--</option>
+                                    {% for sType in produType %}
+                                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}
+                                </select>
+                                <input type="hidden" name="QcWegId" class="form-control" id="QcWegId" value="{{ qcWgId }}"/>
+                            </div>
                         </div>
+                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
+                                <label for="SparepartsDate">Date</label>
+                                <input type="text" name="ProdctDate" class="form-control" id="FromDate" required
+                                       value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                            </div>
                     </div>
-                <div class="row col-lg-4 col-md-4 col-sm-4">
-
-                    </div>
-
 
                     <div id="add_prod_tab"></div>
 
-                    <div class="row center col-lg-4 col-md-4 col-sm-4">
+                    <div class="row center col-lg-8 col-md-8 col-sm-8">
                         <div class="form-group ">
                             <button type="submit" class="btn btn-primary block full-width m-b ">Save</button>
                         </div>
@@ -73,17 +64,19 @@
 
         </div>
     </div>
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
     <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
     <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
     <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
     <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
     {% csrf_token %}
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
         var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
         $(document).ready(function () {
-            $("table").on("input", "input.numeric", function (evt) {
+            $("#add_prod_tab").on("input", "input.numeric", function (evt) {
                 console.log("This is Input");
                 var self = $(this);
                 self.val(self.val().replace(/[^0-9\.]/g, ''));
@@ -94,72 +87,71 @@
 
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;
-                var baseurl = "{% url 'PrdItemForm' %}";
+                var selectedText = $("#ProductionType option:selected").html();
 
-                $.ajax({
-                    url: baseurl,
-                    type: "GET",
-                    data: "ProdType=" + prodType + "&csrfmiddlewaretoken=" + csrftoken,
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        //console.log(data);
-                        var response = $.parseJSON(JSON.stringify(data));
-                        var dep = $.parseJSON(JSON.stringify(response.status));
-                        var html = $.parseJSON(JSON.stringify(response.html));
-                        //$('#prod_tab').html(html);
-
-                        $('#add_prod_tab').append(html);
+                if($("#hiderowforappend_"+selectedText).length > 0){
+                     sweetAlert({
+                        title: "This Item has already exist in this page.",
+                        text: "Please find the specific Table and add row. Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                }
+                else{
+                    if(prodType == "0"){
+                        sweetAlert({
+                        title: "Please Select a Item",
+                        text: " Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
                     }
-                });
+                    else{
+                       var baseurl = "{% url 'PrdItemForm' %}";
+                        $.ajax({
+                            url: baseurl,
+                            type: "GET",
+                            data: "ProdType=" + prodType + "&csrfmiddlewaretoken=" + csrftoken,
+                            cache: false,
+                            dataType: 'json',
+                            success: function (data) {
+                                var response = $.parseJSON(JSON.stringify(data));
+                                var dep = $.parseJSON(JSON.stringify(response.status));
+                                var html = $.parseJSON(JSON.stringify(response.html));
+                                $('#add_prod_tab').append(html);
+                            }
+                        });
+                    }
+
+                }
             });
 
-            $("table").on("click", "input.RemoveRow", function () {
+            $("#add_prod_tab").on("click", "input.add_child_row", function () {
+                var addId = $(this).attr("id");
+                var prodType = addId.split("_")[1];
+
+                var subProductionRow = "<tr>"+$("#hiderowforappend_"+prodType+" tr:first" ).html()+"</tr>";
+                $("#AddProdTo_"+prodType).prepend(subProductionRow);
+                return false;
+
+            });
+
+            $("#add_prod_tab").on("click", "input.RemoveRow", function () {
+                console.log("thia is a test");
                 $(this).parent().parent().remove();
             });
 
-{#            $(".tbl_view_space.add_child_row").click(function(){#}
-{#                var addId = $(this).attr("id");#}
-{#                console.log("----this ----"+addId);#}
-{#            });#}
-            $("#add_prod_tab").on("click", "input.add_child_row", function () {
-                //$(this).parent().parent().remove();
-                var addId = $(this).attr("id");
-                console.log("----this ----"+addId);
+            $('#FromDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
             });
-
-
-
-            $("#AddNewRow").click(function () {
-                var ShrimpType = '';
-                $("#ShrimpType option").each(function () {
-                    ShrimpType = ShrimpType + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
-                });
-
-                var ShrimpItem = '';
-                $("#ShrimpItem option").each(function () {
-                    ShrimpItem = ShrimpItem + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
-                });
-
-                var tableRow = '<tr>' +
-                    '<td><select name="Weightment" class="form-control" style="width: 100px">' + ShrimpType +
-                    '</select></td>' +
-                    '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>' +
-                    '<td><select name="Weightment" class="form-control" style="width: 100px">' + ShrimpItem +
-                    '</select></td>' +
-                    '<td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>' +
-                    '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
-                    '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
-                    '<td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>' +
-                    '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>' +
-                    '</tr>';
-
-                $("#AllPartsAdd").prepend(tableRow);
-                return false;
-            });
-
-
         });
     </script>
-
 {% endblock %}
