@@ -70,6 +70,7 @@
     <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
     <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
     <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+    <script src="{% static "assets/js/table-form-validation.js" %}"></script>
     {% csrf_token %}
 
     <script>
@@ -88,6 +89,9 @@
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;
                 var selectedText = $("#ProductionType option:selected").html();
+
+                divTableProducItemCheck();
+
 
                 if($("#hiderowforappend_"+selectedText).length > 0){
                      sweetAlert({

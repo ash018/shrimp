@@ -9,7 +9,7 @@
         <table>
             <tr>
                 <td>
-                    <select name="{{ proType.Name }}" class="form-control" style="width: 100px">{% for cType in sItem %}
+                    <select name="{{ proType.Name }}" class="form-control ShrimPItem" style="width: 100px">{% for cType in sItem %}
                         <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
                 {% for k in pItem %}
                     <td>
@@ -68,7 +68,7 @@
             <tbody>
             <tr>
                 <td>
-                    <select name="{{ proType.Name }}" class="form-control" style="width: 100px">{% for cType in sItem %}
+                    <select name="{{ proType.Name }}" class="form-control ShrimPItem" style="width: 100px">{% for cType in sItem %}
                         <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
                 {% for i in pItem %}
                     <td><input type="hidden" name="{{ proType.Name }}" class="form-control numeric" required="required" value="{{ i.Id }}"/>
