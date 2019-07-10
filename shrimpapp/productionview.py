@@ -93,6 +93,28 @@ def AllPassWgForProduction(request):
                 "status": "ok"
             })
 
+@csrf_exempt
+def ModalTableShow(request):
+    from django.shortcuts import render
+    from django.template import RequestContext
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        pakMat = PackagingMaterial.objects.all().values('Id','Name','PackSize','Stock')
+
+        #html = render_to_string('shrimpapp/ModalTableShow.html', {'weghtmentList': weghtmentList})
+        context = {'pakMat': pakMat}
+        template = 'shrimpapp/ModalTableShow.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })
+
+
+
 def StartProduction(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')

@@ -24,8 +24,10 @@ urlpatterns = [
     url(r'^AllPassWgForProduction', productionview.AllPassWgForProduction, name='AllPassWgForProduction'),
     url(r'^StartProduction', productionview.StartProduction, name='StartProduction'),
     url(r'^PrdItemForm', productionview.PrdItemForm, name='PrdItemForm'),
+    url(r'^ModalTableShow', productionview.ModalTableShow, name='ModalTableShow'),
 
     url(r'^SavPrdDetail', productionview.SavPrdDetail, name='SavPrdDetail'),
+
 
 
     url(r'^Logout', views.Logout, name='Logout'),

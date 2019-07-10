@@ -81,31 +81,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                 <h3 id="myModalLabel">Package Material</h3>
                             </div>
-                            <div class="modal-body">
-
-                                <table id="PkgMaterailAdd" class=" table table-bordered ">
-                                <thead>
-                                <tr>
-                                    <th>Click</th>
-                                    <th>Quantity</th>
-                                    <th>Item</th>
-                                    <th>Pack Size</th>
-                                    <th>Stock</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for pg in pakMat %}
-                                <tr>
-                                    <td><input class="CBoxInPkgMat" type="checkbox" value="{{ pg.Id }}"/></td>
-                                    <td><input class="form-control numeric" required="required" value="0"/></td>
-                                    <td>{{ pg.Name }}</td>
-                                    <td>{{ pg.PackSize }}</td>
-                                    <td>{{ pg.Stock }}</td>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-
+                            <div id="PkgMaterailAdd" class="modal-body">
                             </div>
                             <div class="modal-footer">
                                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -160,8 +136,8 @@
                     evt.preventDefault();
                 }
             });
-
-            pkgMatModal();
+            var modalShowTable = "{% url 'ModalTableShow' %}";
+            pkgMatModal(modalShowTable);
 
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;
