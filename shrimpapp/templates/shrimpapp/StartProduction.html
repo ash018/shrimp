@@ -1,7 +1,18 @@
 {% extends "./public/dashboardBase.html" %}
 {% load static %}
 
+
 {% block main_content %}
+    <style>
+    .form-control{
+        padding: 0px 0px !important;
+        height: auto !important;
+    }
+    .btn_s {
+        padding: 0px 0px !important;
+        font-size: 10px;
+    }
+</style>
 
     <div id="page-wrapper" class="gray-bg">
 
@@ -26,7 +37,7 @@
 
                 <div style="display:none">
                     <select name="Weightment" class="form-control" style="width: 100px">{% for cType in sItem %}
-                    <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select>
+                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select>
                 </div>
 
                 <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
@@ -37,28 +48,72 @@
                             <div class="form-group ">
                                 <label for="Machine">Product Type</label>
                                 <select id="ProductionType" name="ProductionType" class="form-control">
-                                <option value="0">--Select--</option>
+                                    <option value="0">--Select--</option>
                                     {% for sType in produType %}
                                         <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}
                                 </select>
-                                <input type="hidden" name="QcWegId" class="form-control" id="QcWegId" value="{{ qcWgId }}"/>
+                                <input type="hidden" name="QcWegId" class="form-control" id="QcWegId"
+                                       value="{{ qcWgId }}"/>
                             </div>
                         </div>
                         <div class="form-group  col-lg-10 col-md-10 col-sm-10">
-                                <label for="SparepartsDate">Date</label>
-                                <input type="text" name="ProdctDate" class="form-control" id="FromDate" required
-                                       value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                            </div>
+                            <label for="SparepartsDate">Date</label>
+                            <input type="text" name="ProdctDate" class="form-control" id="FromDate" required
+                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                        </div>
                     </div>
 
                     <div id="add_prod_tab"></div>
 
                     <div class="row center col-lg-8 col-md-8 col-sm-8">
                         <div class="form-group ">
-                            <button type="submit" class="btn btn-primary block full-width m-b ">Save</button>
+                            <button id="SaveButtonProduction" type="submit"
+                                    class="btn btn-primary block full-width m-b ">Save
+                            </button>
                         </div>
                     </div>
                 </form>
+
+                <div class="modal fade modal-lg" id="myModal" role="dialog">
+                    <div class="modal-dialog modal-sm vertical-align-center">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h3 id="myModalLabel">Package Material</h3>
+                            </div>
+                            <div class="modal-body">
+
+                                <table id="PkgMaterailAdd" class=" table table-bordered ">
+                                <thead>
+                                <tr>
+                                    <th>Click</th>
+                                    <th>Quantity</th>
+                                    <th>Item</th>
+                                    <th>Pack Size</th>
+                                    <th>Stock</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for pg in pakMat %}
+                                <tr>
+                                    <td><input class="CBoxInPkgMat" type="checkbox" value="{{ pg.Id }}"/></td>
+                                    <td><input class="form-control numeric" required="required" value="0"/></td>
+                                    <td>{{ pg.Name }}</td>
+                                    <td>{{ pg.PackSize }}</td>
+                                    <td>{{ pg.Stock }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                <button class="btn btn-primary">Save Package</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -72,6 +127,26 @@
     <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
     <script src="{% static "assets/js/table-form-validation.js" %}"></script>
     {% csrf_token %}
+    <style>
+    #PkgMaterailAdd {
+          table-layout: fixed;
+          word-wrap: break-word;
+        }
+
+    .modal-dialog{
+        width: 60%;
+        position: absolute;
+        top: 5%;
+        left: 35%
+{#       margin: auto;#}
+    }
+
+{#    #myModal{#}
+{#        width: 80%; /* respsonsive width */#}
+{#        margin-left:-40%; /* width/2) */#}
+{#    }#}
+
+    </style>
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
@@ -86,15 +161,15 @@
                 }
             });
 
+            pkgMatModal();
+
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;
                 var selectedText = $("#ProductionType option:selected").html();
-
                 divTableProducItemCheck();
 
-
-                if($("#hiderowforappend_"+selectedText).length > 0){
-                     sweetAlert({
+                if ($("#hiderowforappend_" + selectedText).length > 0) {
+                    sweetAlert({
                         title: "This Item has already exist in this page.",
                         text: "Please find the specific Table and add row. Thank You. ",
                         type: "warning",
@@ -102,18 +177,18 @@
                         confirmButtonText: "DISMISS"
                     });
                 }
-                else{
-                    if(prodType == "0"){
+                else {
+                    if (prodType == "0") {
                         sweetAlert({
-                        title: "Please Select a Item",
-                        text: " Thank You. ",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "DISMISS"
-                    });
+                            title: "Please Select a Item",
+                            text: " Thank You. ",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "DISMISS"
+                        });
                     }
-                    else{
-                       var baseurl = "{% url 'PrdItemForm' %}";
+                    else {
+                        var baseurl = "{% url 'PrdItemForm' %}";
                         $.ajax({
                             url: baseurl,
                             type: "GET",
@@ -128,7 +203,6 @@
                             }
                         });
                     }
-
                 }
             });
 
@@ -136,8 +210,8 @@
                 var addId = $(this).attr("id");
                 var prodType = addId.split("_")[1];
 
-                var subProductionRow = "<tr>"+$("#hiderowforappend_"+prodType+" tr:first" ).html()+"</tr>";
-                $("#AddProdTo_"+prodType).prepend(subProductionRow);
+                var subProductionRow = "<tr>" + $("#hiderowforappend_" + prodType + " tr:first").html() + "</tr>";
+                $("#AddProdTo_" + prodType).prepend(subProductionRow);
                 return false;
 
             });

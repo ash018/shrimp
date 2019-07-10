@@ -105,11 +105,14 @@ def StartProduction(request):
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
 
+        pakMat = PackagingMaterial.objects.all().values('Id','Name','PackSize','Stock')
+
         context = {'PageTitle': 'New Production',
                    'shrimpType': shrimpType,
                    'shrimpItem': shrimpItem,
                    'produType': produType,
-                   'qcWgId':qcWgId}
+                   'qcWgId':qcWgId,
+                   'pakMat':pakMat}
 
         return render(request, 'shrimpapp/StartProduction.html', context)
 
@@ -174,12 +177,12 @@ def SavPrdDetail(request):
                     if pt['Id'] == 1:
                         proDetail = request.POST.getlist(str(pt['Name']))
 
-                        srv = np.reshape(proDetail, (-1, 25))
+                        srv = np.reshape(proDetail, (-1, 17))
                         for i in range(len(srv)):
                             if i != 0:
                                 print(str(i) + "***" + "----Data Is -----" + str(srv[i][0]))
                                 sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
-                                subPr = np.reshape(srv[i][1:], (-1, 6))
+                                subPr = np.reshape(srv[i][1:], (-1, 4))
                                 for k in range(len(subPr)):
                                     pItem = ''
                                     pCount = ''
@@ -196,31 +199,30 @@ def SavPrdDetail(request):
                                             pMunit = subPr[k][m]
                                         if m == 3:
                                             pQty = subPr[k][m]
-                                        if m == 4:
-                                            pPkMat = PackagingMaterial.objects.filter(pk=int(subPr[k][m])).first()
-                                        if m == 5:
-                                            pPkQty =  subPr[k][m]
+                                        # if m == 4:
+                                        #     pPkMat = PackagingMaterial.objects.filter(pk=int(subPr[k][m])).first()
+                                        # if m == 5:
+                                        #     pPkQty =  subPr[k][m]
 
-                                    ProductionDetail(ProdId=prod, EntryDate=_datetime, SmpProdId=sPrdItem, PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit, ProdAmount=pQty, PakMatId=pPkMat, PakMatPcs=pPkQty).save()
-                                    LogProductionDetail(LogProdId=lgProd, ProdId=prod, EntryDate=_datetime, SmpProdId=sPrdItem,
+                                    ProductionDetail(ProdId=prod, SmpProdId=sPrdItem, PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit, ProdAmount=pQty).save()
+                                    LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem,
                                                      PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
-                                                     ProdAmount=pQty, PakMatId=pPkMat, PakMatPcs=pPkQty).save()
+                                                     ProdAmount=pQty).save()
                     else:
                         proDetail = request.POST.getlist(str(pt['Name']))
 
-                        srv = np.reshape(proDetail, (-1, 31))
+                        srv = np.reshape(proDetail, (-1, 21))
                         for i in range(len(srv)):
                             if i != 0:
                                 print(str(i) + "***" + "----Data Is -----" + str(srv[i][0]))
                                 sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
-                                subPr = np.reshape(srv[i][1:], (-1, 6))
+                                subPr = np.reshape(srv[i][1:], (-1, 4))
                                 for k in range(len(subPr)):
                                     pItem = ''
                                     pCount = ''
                                     pMunit = ''
                                     pQty = ''
-                                    pPkMat = ''
-                                    pPkQty = ''
+
                                     for m in range(len(subPr[k])):
                                         if m == 0:
                                             pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
@@ -230,18 +232,17 @@ def SavPrdDetail(request):
                                             pMunit = subPr[k][m]
                                         if m == 3:
                                             pQty = subPr[k][m]
-                                        if m == 4:
-                                            pPkMat = PackagingMaterial.objects.filter(pk=int(subPr[k][m])).first()
-                                        if m == 5:
-                                            pPkQty = subPr[k][m]
+                                        # if m == 4:
+                                        #     pPkMat = PackagingMaterial.objects.filter(pk=int(subPr[k][m])).first()
+                                        # if m == 5:
+                                        #     pPkQty = subPr[k][m]
 
-                                    ProductionDetail(ProdId=prod, EntryDate=_datetime, SmpProdId=sPrdItem,
+                                    ProductionDetail(ProdId=prod, SmpProdId=sPrdItem,
                                                      PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
-                                                     ProdAmount=pQty, PakMatId=pPkMat, PakMatPcs=pPkQty).save()
-                                    LogProductionDetail(LogProdId=lgProd, ProdId=prod, EntryDate=_datetime,
-                                                        SmpProdId=sPrdItem,
+                                                     ProdAmount=pQty).save()
+                                    LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem,
                                                         PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
-                                                        ProdAmount=pQty, PakMatId=pPkMat, PakMatPcs=pPkQty).save()
+                                                        ProdAmount=pQty).save()
 
             return HttpResponseRedirect('/SearchWgForProduction')
 

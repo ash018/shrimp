@@ -6,6 +6,7 @@ class PackagingMaterial(models.Model):
     Id = models.AutoField(primary_key=True, db_column='Id')
     Name = models.CharField(max_length=100, db_column='Name')
     PackSize = models.CharField(max_length=100, db_column='PackSize')
+    Stock = models.IntegerField(max_length=100, db_column='Stock')
 
     def __str__(self):
         return self.Name
@@ -61,9 +62,9 @@ class Production(models.Model):
 class ProductionDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='ProDtlId')
     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE, default=100)
-    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
-
     SmpProdId = models.ForeignKey(ShrimpProdItem, db_column='SmpProdId', on_delete=models.CASCADE, default=100)
+
+    PrTyId = models.ForeignKey(ProdType, db_column='PrTyId', on_delete=models.CASCADE, default=100)
     PrItmId = models.ForeignKey(ProdItem, db_column='PrItmId', on_delete=models.CASCADE, default=100)
     ProdItemPcs = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdItemPcs', default=0.0)
     ProdItemUnit = models.CharField(max_length=10, db_column='ProdItemUnit')
@@ -75,6 +76,18 @@ class ProductionDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'ProductionDetail'
+
+
+class ProdDtlPkgMaterial(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='PrDePkId')
+    ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE, default=100)
+    ProDtlId = models.ForeignKey(ProductionDetail, db_column='ProDtlId', on_delete=models.CASCADE, default=100)
+    PkgMatId = models.ForeignKey(PackagingMaterial, db_column='PkgMatId', on_delete=models.CASCADE, default=100)
+    Qnty = models.IntegerField(max_length=100, db_column='Qnty', default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'ProdDtlPkgMaterial'
 
 
 class LogProduction(models.Model):
@@ -97,8 +110,8 @@ class LogProductionDetail(models.Model):
     LogProdId = models.ForeignKey(LogProduction, db_column='LogProdId', on_delete=models.CASCADE, default=100)
     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE, default=100)
     SmpProdId = models.ForeignKey(ShrimpProdItem, db_column='SmpProdId', on_delete=models.CASCADE, default=100)
-    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
 
+    PrTyId = models.ForeignKey(ProdType, db_column='PrTyId', on_delete=models.CASCADE, default=100)
     PrItmId = models.ForeignKey(ProdItem, db_column='PrItmId', on_delete=models.CASCADE, default=100)
     ProdItemPcs = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdItemPcs', default=0.0)
     ProdItemUnit = models.CharField(max_length=10, db_column='ProdItemUnit')
@@ -111,5 +124,13 @@ class LogProductionDetail(models.Model):
         managed = False
         db_table = 'LogProductionDetail'
 
-
-
+# class LogProdDtlPkgMaterial(models.Model):
+#     Id = models.AutoField(primary_key=True, db_column='LogPrDePkId')
+#     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE, default=100)
+#     ProDtlId = models.ForeignKey(ProductionDetail, db_column='ProDtlId', on_delete=models.CASCADE, default=100)
+#     PkgMatId = models.ForeignKey(PackagingMaterial, db_column='PkgMatId', on_delete=models.CASCADE, default=100)
+#     Qnty = models.IntegerField(max_length=100, db_column='Qnty', default=100)
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'LogProdDtlPkgMaterial'
