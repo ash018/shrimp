@@ -2,21 +2,63 @@
  * Created by shakil.ahammad on 7/9/2019.
  */
 
+function writeDataModalToCell(){
+    $("#myModal").on("click", "button#PkgMatSave", function () {
+        var tableId = $('#myModal input#TableIdForModal').val();
+        var rowIndex = $('#myModal input#TableRowIdxForModal').val();
+        var cellIndex = $('#myModal input#TableCellIdxForModal').val();
+        var pakMatNQnt = '';
+        var userPkgData = '-';
+        $('#PakMatCheckTable input[type=checkbox]:checked').each(function () {
+                var row = $(this).closest("tr")[0];
+                //console.log('------'+$(this).val()+'--'+row.cells[1].children[0].value);
+                userPkgData = $(this).val() + '*' + row.cells[1].children[0].value;
+                //PakMatNQnt =
+
+                // message += row.cells[1].innerHTML;
+                // message += "   " + row.cells[2].innerHTML;
+                // message += "   " + row.cells[3].innerHTML;
+                // message += "\n";
+            });
+
+        //$('table [id="'+tableId+'"]') $('table [id="'+tableId+'"] tr')
+        var pkgHtml = '<input name="'+tableId+'" type="hidden" value="'+userPkgData+'"/>';
+        //$('#AddProdTo_HOSO tr:eq(' + rowIndex + ')').find('td:eq('+cellIndex+')').append('<input type="hidden" value="0"/>');
+        //$('#'+tableId+' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', 'green');
+        $('#'+tableId+' tbody tr').eq(rowIndex).find('td').eq(cellIndex).append(pkgHtml);
+        //console.log("----XXX---"+$("#"+tableId+" tr:eq(" + rowIndex + ") td:eq(" + cellIndex + ")").innerHTML);
+        $('#myModal').modal('hide');
+
+    });
+}
+
+
 function pkgMatModal(baseurl) {
     $("#add_prod_tab").on("click", "input.PkgMaterial", function () {
         var pItem = $(this).attr('data');
-        $("#myModal").modal('show');
+
+        var  row = $(this).closest("tr").index();
+        var  tableId = $(this).closest("table").attr("id");
+        var cell = $(this).closest("td").index();
+
+        $('#TableIdForModal').val(tableId);
+        $('#TableRowIdxForModal').val(row);
+        $('#TableCellIdxForModal').val(cell);
+
+        $('#myModal').modal('show');
+        $('#myModalLabel').empty();
         $('#PkgMaterailAdd').empty();
         $.ajax({
             url: baseurl,
             type: "GET",
-            data: "csrfmiddlewaretoken=" + csrftoken,
+            data: "ProdItem="+pItem+"&csrfmiddlewaretoken=" + csrftoken,
             cache: false,
             dataType: 'json',
             success: function (data) {
                 var response = $.parseJSON(JSON.stringify(data));
-                var dep = $.parseJSON(JSON.stringify(response.status));
+                var prodItem = $.parseJSON(JSON.stringify(response.ProdItem));
                 var html = $.parseJSON(JSON.stringify(response.html));
+                $('#myModalLabel').html("Package Material For "+ prodItem);
                 $('#PkgMaterailAdd').append(html);
             }
         });

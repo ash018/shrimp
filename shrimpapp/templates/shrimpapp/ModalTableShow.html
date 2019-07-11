@@ -1,21 +1,21 @@
-<table class=" table table-bordered ">
+<table id="PakMatCheckTable" class=" table table-bordered ">
     <thead>
     <tr>
-        <th>Click</th>
-        <th>Quantity</th>
-        <th>Item</th>
-        <th>Pack Size</th>
-        <th>Stock</th>
+        <th class="text-center">Click</th>
+        <th class="text-center">Quantity</th>
+        <th class="text-center">Item</th>
+        <th class="text-center">Pack Size</th>
+        <th class="text-center">Stock</th>
     </tr>
     </thead>
     <tbody>
     {% for pg in pakMat %}
         <tr>
-            <td><input class="CBoxInPkgMat" type="checkbox" value="{{ pg.Id }}"/></td>
-            <td><input class="form-control numeric" required="required" value="0"/></td>
-            <td>{{ pg.Name }}</td>
-            <td>{{ pg.PackSize }}</td>
-            <td>{{ pg.Stock }}</td>
+            <td class="text-center"><input class="CBoxInPkgMat" type="checkbox" value="{{ pg.Id }}"/></td>
+            <td class="center"><input class="form-control numeric PkgMatCount" value="" style="width: 50px;"/></td>
+            <td class="text-center">{{ pg.Name }}</td>
+            <td class="text-center">{{ pg.PackSize }}</td>
+            <td class="text-center">{{ pg.Stock }}</td>
         </tr>
     {% endfor %}
     </tbody>

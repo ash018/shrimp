@@ -1,10 +1,15 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group, User
 from django import forms
 from .models import Department, Designation, Farmer, Supplier, SupplierFarmer, ShrimpType, ShrimpItem, UserManager
 from .inventorymodel import ShrimpProdItem, PackagingMaterial
 # Register your models here.
 
 admin.site.site_header = 'Shrimp Administration'
+#admin.site.site_header = "UMSRA Admin"
+admin.site.site_title = "Shrimp Admin"
+admin.site.index_title = "Shrimp Admin Portal"
+
 admin.site.register(Department)
 admin.site.register(Designation)
 
@@ -55,7 +60,8 @@ admin.site.register(ShrimpProdItem)
 admin.site.register(PackagingMaterial)
 
 
-#admin.site.unregister(Group)
+admin.site.unregister(Group)
+admin.site.unregister(User)
 
 # class FarmerAdminForm(forms.ModelForm):
 #     tags = forms.ModelMultipleChoiceField(

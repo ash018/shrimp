@@ -80,12 +80,15 @@
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                 <h3 id="myModalLabel">Package Material</h3>
+                                <input type="hidden" id="TableIdForModal" value=""/>
+                                <input type="hidden" id="TableRowIdxForModal" value=""/>
+                                <input type="hidden" id="TableCellIdxForModal" value=""/>
                             </div>
                             <div id="PkgMaterailAdd" class="modal-body">
                             </div>
                             <div class="modal-footer">
                                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                                <button class="btn btn-primary">Save Package</button>
+                                <button id="PkgMatSave" class="btn btn-primary PkgMatSave">Save Package</button>
                             </div>
                         </div>
                     </div>
@@ -136,8 +139,19 @@
                     evt.preventDefault();
                 }
             });
+
+            $("#myModal").on("input", "input.numeric", function (evt) {
+                console.log("This is Input");
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
             var modalShowTable = "{% url 'ModalTableShow' %}";
             pkgMatModal(modalShowTable);
+            writeDataModalToCell();
 
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;

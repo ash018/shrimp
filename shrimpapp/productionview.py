@@ -100,6 +100,9 @@ def ModalTableShow(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
+        prodItem = request.GET.get('ProdItem')
+
+        pItem = ProdItem.objects.filter(pk=int(prodItem)).values('Name').first()
         pakMat = PackagingMaterial.objects.all().values('Id','Name','PackSize','Stock')
 
         #html = render_to_string('shrimpapp/ModalTableShow.html', {'weghtmentList': weghtmentList})
@@ -110,7 +113,8 @@ def ModalTableShow(request):
             html = render_to_string(template, context)
             return JsonResponse({
                 "html": render_to_string(template, context),
-                "status": "ok"
+                "status": "ok",
+                "ProdItem":pItem['Name']
             })
 
 
