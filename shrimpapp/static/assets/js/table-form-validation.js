@@ -8,11 +8,11 @@ function writeDataModalToCell(){
         var rowIndex = $('#myModal input#TableRowIdxForModal').val();
         var cellIndex = $('#myModal input#TableCellIdxForModal').val();
         var pakMatNQnt = '';
-        var userPkgData = '-';
+        var userPkgData = '';
         $('#PakMatCheckTable input[type=checkbox]:checked').each(function () {
                 var row = $(this).closest("tr")[0];
                 //console.log('------'+$(this).val()+'--'+row.cells[1].children[0].value);
-                userPkgData = $(this).val() + '*' + row.cells[1].children[0].value;
+                userPkgData += $(this).val() + '*' + row.cells[1].children[0].value+'-';
                 //PakMatNQnt =
 
                 // message += row.cells[1].innerHTML;
@@ -21,12 +21,10 @@ function writeDataModalToCell(){
                 // message += "\n";
             });
 
-        //$('table [id="'+tableId+'"]') $('table [id="'+tableId+'"] tr')
-        var pkgHtml = '<input name="'+tableId+'" type="hidden" value="'+userPkgData+'"/>';
-        //$('#AddProdTo_HOSO tr:eq(' + rowIndex + ')').find('td:eq('+cellIndex+')').append('<input type="hidden" value="0"/>');
-        //$('#'+tableId+' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', 'green');
+        var pkgHtml = '<input name="'+tableId.split("_")[1]+'" type="hidden" class="PkgMatInput" value="'+userPkgData+'"/>';
+        $('#'+tableId+' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', '#DDA0DD');
+        $('#'+tableId+' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatInput').remove();
         $('#'+tableId+' tbody tr').eq(rowIndex).find('td').eq(cellIndex).append(pkgHtml);
-        //console.log("----XXX---"+$("#"+tableId+" tr:eq(" + rowIndex + ") td:eq(" + cellIndex + ")").innerHTML);
         $('#myModal').modal('hide');
 
     });

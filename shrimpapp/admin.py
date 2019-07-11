@@ -6,7 +6,6 @@ from .inventorymodel import ShrimpProdItem, PackagingMaterial
 # Register your models here.
 
 admin.site.site_header = 'Shrimp Administration'
-#admin.site.site_header = "UMSRA Admin"
 admin.site.site_title = "Shrimp Admin"
 admin.site.index_title = "Shrimp Admin Portal"
 
