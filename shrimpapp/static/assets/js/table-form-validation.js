@@ -12,7 +12,7 @@ function writeDataModalToCell(){
         $('#PakMatCheckTable input[type=checkbox]:checked').each(function () {
                 var row = $(this).closest("tr")[0];
                 //console.log('------'+$(this).val()+'--'+row.cells[1].children[0].value);
-                userPkgData += $(this).val() + '*' + row.cells[1].children[0].value+'-';
+                userPkgData += $(this).val() + '!' + row.cells[1].children[0].value+'-';
                 //PakMatNQnt =
 
                 // message += row.cells[1].innerHTML;
@@ -35,9 +35,13 @@ function pkgMatModal(baseurl) {
     $("#add_prod_tab").on("click", "input.PkgMaterial", function () {
         var pItem = $(this).attr('data');
 
-        var  row = $(this).closest("tr").index();
-        var  tableId = $(this).closest("table").attr("id");
+        var row = $(this).closest("tr").index();
+        var tableId = $(this).closest("table").attr("id");
         var cell = $(this).closest("td").index();
+
+        var pkgMat = $('#'+tableId+' tbody tr').eq(row).find('td').eq(cell).find('input.PkgMatInput').val();
+
+        console.log("--this--" + pkgMat);
 
         $('#TableIdForModal').val(tableId);
         $('#TableRowIdxForModal').val(row);
@@ -49,7 +53,7 @@ function pkgMatModal(baseurl) {
         $.ajax({
             url: baseurl,
             type: "GET",
-            data: "ProdItem="+pItem+"&csrfmiddlewaretoken=" + csrftoken,
+            data: "ProdItem="+pItem+"&PkgMat="+pkgMat+"&csrfmiddlewaretoken=" + csrftoken,
             cache: false,
             dataType: 'json',
             success: function (data) {

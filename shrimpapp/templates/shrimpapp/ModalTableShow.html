@@ -1,3 +1,4 @@
+{% load filter_tags %}
 <table id="PakMatCheckTable" class=" table table-bordered ">
     <thead>
     <tr>
@@ -9,14 +10,16 @@
     </tr>
     </thead>
     <tbody>
+
     {% for pg in pakMat %}
         <tr>
-            <td class="text-center"><input class="CBoxInPkgMat" type="checkbox" value="{{ pg.Id }}"/></td>
-            <td class="center"><input class="form-control numeric PkgMatCount" value="" style="width: 50px;"/></td>
-            <td class="text-center">{{ pg.Name }}</td>
-            <td class="text-center">{{ pg.PackSize }}</td>
-            <td class="text-center">{{ pg.Stock }}</td>
+            <td class="text-center"><input class="CBoxInPkgMat" type="checkbox" value="{{ pg.0 }}" {% if pg.4 != 'XXX' %} checked{% endif %}/></td>
+            <td class="center"><input class="form-control numeric PkgMatCount" value="{% if pg.4 != 'XXX' %} {{ pg.4 }}{% else %}0{% endif %}" style="width: 50px;"/></td>
+            <td class="text-center">{{ pg.1 }}</td>
+            <td class="text-center">{{ pg.2 }}</td>
+            <td class="text-center">{{ pg.3 }}</td>
         </tr>
     {% endfor %}
+
     </tbody>
 </table>

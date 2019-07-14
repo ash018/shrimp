@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django import template
 from django.http import HttpResponse, StreamingHttpResponse
 import re
+from array import *
 import csv
 import requests
 import time
@@ -101,12 +102,44 @@ def ModalTableShow(request):
         return render(request, 'shrimpapp/Login.html')
     else:
         prodItem = request.GET.get('ProdItem')
+        pkgMat = request.GET.get('PkgMat')
 
         pItem = ProdItem.objects.filter(pk=int(prodItem)).values('Name').first()
         pakMat = PackagingMaterial.objects.all().values('Id','Name','PackSize','Stock')
+        liPkgMat = re.split('-', str(pkgMat))
+        temp = []
+        #print("++++++"+ str(liPkgMat[:-1]))
+        if len(liPkgMat[:-1])> 0:
+            for ts in list(pakMat):
+                pakItem = []
 
-        #html = render_to_string('shrimpapp/ModalTableShow.html', {'weghtmentList': weghtmentList})
-        context = {'pakMat': pakMat}
+                for sx in list(liPkgMat[:-1]):
+                    cc = ''
+                    if int(re.split('!', str(sx))[0]) == ts['Id']:
+                        #print("--XX-" + str(re.split('!', str(sx))[0]))
+                        cc = str((re.split('!', str(sx))[1]))
+                        break
+                    else:
+                        cc = "XXX"
+                pakItem.append(str(ts['Id']))
+                pakItem.append(ts['Name'])
+                pakItem.append(ts['PackSize'])
+                pakItem.append(ts['Stock'])
+                pakItem.append(cc)
+
+                temp.append(pakItem)
+        else:
+            for ts in list(pakMat):
+                pakItem = []
+                cc='XXX'
+                pakItem.append(str(ts['Id']))
+                pakItem.append(ts['Name'])
+                pakItem.append(ts['PackSize'])
+                pakItem.append(ts['Stock'])
+                pakItem.append(cc)
+                temp.append(pakItem)
+
+        context = {'pakMat': list(temp)}
         template = 'shrimpapp/ModalTableShow.html'
 
         if request.is_ajax():
@@ -116,8 +149,6 @@ def ModalTableShow(request):
                 "status": "ok",
                 "ProdItem":pItem['Name']
             })
-
-
 
 def StartProduction(request):
     if 'uid' not in request.session:

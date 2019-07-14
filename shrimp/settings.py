@@ -55,7 +55,8 @@ ROOT_URLCONF = 'shrimp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+
+        'DIRS': [ BASE_DIR+('/shrimpapp/templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,6 +65,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+        'libraries':{
+               # make your file entry here.
+               'filter_tags': 'shrimpapp.templates.custom_filter',
+            }
         },
     },
 ]
