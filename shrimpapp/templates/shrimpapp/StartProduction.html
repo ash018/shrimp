@@ -4,15 +4,16 @@
 
 {% block main_content %}
     <style>
-    .form-control{
-        padding: 0px 0px !important;
-        height: auto !important;
-    }
-    .btn_s {
-        padding: 0px 0px !important;
-        font-size: 10px;
-    }
-</style>
+        .form-control {
+            padding: 0px 0px !important;
+            height: auto !important;
+        }
+
+        .btn_s {
+            padding: 0px 0px !important;
+            font-size: 10px;
+        }
+    </style>
 
     <div id="page-wrapper" class="gray-bg">
 
@@ -107,28 +108,22 @@
     <script src="{% static "assets/js/table-form-validation.js" %}"></script>
     {% csrf_token %}
     <style>
-    #PkgMaterailAdd {
-          table-layout: fixed;
-          word-wrap: break-word;
+        #PkgMaterailAdd {
+            table-layout: fixed;
+            word-wrap: break-word;
         }
 
-    .modal-dialog{
-        width: 60%;
-        position: absolute;
-        top: 5%;
-        left: 35%
-{#       margin: auto;#}
-    }
-
-{#    #myModal{#}
-{#        width: 80%; /* respsonsive width */#}
-{#        margin-left:-40%; /* width/2) */#}
-{#    }#}
-
+        .modal-dialog {
+            width: 60%;
+            position: absolute;
+            top: 5%;
+            left: 35%
+        }
     </style>
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
+        var global_test = 0;
         var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
         $(document).ready(function () {
             $("#add_prod_tab").on("input", "input.numeric", function (evt) {
@@ -156,8 +151,9 @@
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;
                 var selectedText = $("#ProductionType option:selected").html();
-                divTableProducItemCheck();
+                var baseurl = "{% url 'PrdItemForm' %}";
 
+                console.log(global_test);
                 if ($("#hiderowforappend_" + selectedText).length > 0) {
                     sweetAlert({
                         title: "This Item has already exist in this page.",
@@ -166,6 +162,7 @@
                         showCancelButton: true,
                         confirmButtonText: "DISMISS"
                     });
+                    return false;
                 }
                 else {
                     if (prodType == "0") {
@@ -176,22 +173,35 @@
                             showCancelButton: true,
                             confirmButtonText: "DISMISS"
                         });
+                        return false;
                     }
                     else {
-                        var baseurl = "{% url 'PrdItemForm' %}";
-                        $.ajax({
-                            url: baseurl,
-                            type: "GET",
-                            data: "ProdType=" + prodType + "&csrfmiddlewaretoken=" + csrftoken,
-                            cache: false,
-                            dataType: 'json',
-                            success: function (data) {
-                                var response = $.parseJSON(JSON.stringify(data));
-                                var dep = $.parseJSON(JSON.stringify(response.status));
-                                var html = $.parseJSON(JSON.stringify(response.html));
-                                $('#add_prod_tab').append(html);
-                            }
-                        });
+                        var rVal = divTableProducItemCheck();
+                        if (rVal == 1) {
+                            sweetAlert({
+                                title: "A Table contains Multiple Product Category!!!",
+                                text: "Please find the specific table and select right category. Thank You. ",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "DISMISS"
+                            });
+                        }
+                        else {
+                            var baseurl = "{% url 'PrdItemForm' %}";
+                            $.ajax({
+                                url: baseurl,
+                                type: "GET",
+                                data: "ProdType=" + prodType + "&csrfmiddlewaretoken=" + csrftoken,
+                                cache: false,
+                                dataType: 'json',
+                                success: function (data) {
+                                    var response = $.parseJSON(JSON.stringify(data));
+                                    var dep = $.parseJSON(JSON.stringify(response.status));
+                                    var html = $.parseJSON(JSON.stringify(response.html));
+                                    $('#add_prod_tab').prepend(html);
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -204,6 +214,23 @@
                 $("#AddProdTo_" + prodType).prepend(subProductionRow);
                 return false;
 
+            });
+
+            $("#SaveButtonProduction").on('click', function(){
+                var rVal = divTableProducItemCheck();
+                if (rVal == 1) {
+                            sweetAlert({
+                                title: "A Table contains Multiple Product Category!!!",
+                                text: "Please find the specific table and select right category. Thank You. ",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "DISMISS"
+                            });
+                            return false;
+                        }
+                        else {
+                            return true;
+                        }
             });
 
             $("#add_prod_tab").on("click", "input.RemoveRow", function () {
