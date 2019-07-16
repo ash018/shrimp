@@ -91,7 +91,7 @@ def QCPassOfWeightment(request):
         user = UserManager.objects.filter(pk=int(userId)).first()
         qcWgEntryDate = datetime.datetime.now()
 
-        #Weightment.objects.filter(pk=int(wegId)).update(IsQcPass='Y')
+        Weightment.objects.filter(pk=int(wegId)).update(IsQcPass='Y')
         wgObje = Weightment.objects.filter(pk=int(wegId)).first()
         weghtment = Weightment.objects.filter(pk=int(wegId)).values('FarmerId__Id','SupplierId__Id', 'WgDate').first()
 
