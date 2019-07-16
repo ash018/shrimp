@@ -117,8 +117,8 @@ class LogProductionDetail(models.Model):
     ProdItemUnit = models.CharField(max_length=10, db_column='ProdItemUnit')
     ProdAmount = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdAmount', default=0.0)
 
-    PakMatId = models.ForeignKey(PackagingMaterial, db_column='PakMatId', on_delete=models.CASCADE, default=100)
-    PakMatPcs = models.DecimalField(max_digits=18, decimal_places=2, db_column='PakMatPcs', default=0.0)
+    #PakMatId = models.ForeignKey(PackagingMaterial, db_column='PakMatId', on_delete=models.CASCADE, default=100)
+    #PakMatPcs = models.DecimalField(max_digits=18, decimal_places=2, db_column='PakMatPcs', default=0.0)
 
     class Meta:
         managed = False

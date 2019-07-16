@@ -202,6 +202,8 @@ def EditWeightment(request):
                                                                                     'ShrItemId__ShrimpTypeId__Id', 'MeasurUnit',
                                                                                     'MeasurQnty', 'Rate', 'Remarks')
 
+        print("===BBB==="+str(weightmentDetails))
+
         weightData = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).values('Id', 'FarmerId__Id', 'SupplierId__Id', 'IsQcPass', 'WgDate').first()
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')

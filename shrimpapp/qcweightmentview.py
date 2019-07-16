@@ -71,7 +71,7 @@ def ShowDetailForQC(request):
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
 
-        context = {'PageTitle': 'Weightment Edit', 'shrimpType': shrimpType,
+        context = {'PageTitle': 'Weightment QC', 'shrimpType': shrimpType,
                    'shrimpItem': shrimpItem, 'farmerList': farmerList,
                    'supplierList': supplierList, 'weightData': weightData,
                    'weightmentDetails': weightmentDetails,
@@ -91,7 +91,7 @@ def QCPassOfWeightment(request):
         user = UserManager.objects.filter(pk=int(userId)).first()
         qcWgEntryDate = datetime.datetime.now()
 
-        Weightment.objects.filter(pk=int(wegId)).update(IsQcPass='Y')
+        #Weightment.objects.filter(pk=int(wegId)).update(IsQcPass='Y')
         wgObje = Weightment.objects.filter(pk=int(wegId)).first()
         weghtment = Weightment.objects.filter(pk=int(wegId)).values('FarmerId__Id','SupplierId__Id', 'WgDate').first()
 
@@ -112,6 +112,7 @@ def QCPassOfWeightment(request):
         qcCnty = ''
         qcMQnty = ''
         qcRemark = ''
+        wegDetail = ''
         for i in range(len(srv)):
             j = 0
             serviceTypeId = 0
@@ -129,7 +130,7 @@ def QCPassOfWeightment(request):
                     qcRemark = srv[i][j]
 
 
-            QCWeightmentDetail(WgId=wgObje, GivenCngCount=wegDetail['CngCount'],
+            QCWeightmentDetail(WgId=wgObje, QCWgId=qcWeight, GivenCngCount=wegDetail['CngCount'],
                                QCCngCount=Decimal(qcCnty),
                                ShrItemId=ShrimpItem.objects.filter(pk=int(wegDetail['ShrItemId__Id'])).first(),
                                MeasurUnit=wegDetail['MeasurUnit'], MeasurQnty=wegDetail['MeasurQnty'],

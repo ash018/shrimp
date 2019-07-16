@@ -10,19 +10,6 @@
         <style type="text/css">
         </style>
 
-        <div class="row wrapper border-bottom white-bg page-heading">
-            <div class="col-sm-4">
-                <h2>New Weightment </h2>
-                <ol class="breadcrumb">
-
-                </ol>
-            </div>
-            <div class="col-sm-8">
-
-
-            </div>
-        </div>
-
         {% if Message|length > 0 %}
             <div class="alert alert-info">
                 <strong>{{ Message }}</strong>
@@ -84,7 +71,7 @@
                             <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
                             <td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>
                             <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpItem %}<option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><select name="Weightment" class="form-control" style="width: 100px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>
+                            <td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>
                             <td><input name="Weightment"  class="form-control numeric" required="required" value="0.0"/></td>
                             <td><input name="Weightment"  class="form-control numeric" required="required" value="0.0"/></td>
                             <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>

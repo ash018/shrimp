@@ -221,12 +221,12 @@ def SavPrdDetail(request):
                                             int(entryDate.split('-')[5]), 140)
 
 
-            #QCWeightment.objects.filter(pk=int(qcWegId)).update(IsProductionUsed='Y')
+            QCWeightment.objects.filter(pk=int(qcWegId)).update(IsProductionUsed='Y')
             qcWeg = QCWeightment.objects.filter(pk=int(qcWegId)).first()
             prod = Production(QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
             prod.save()
-            # lgProd = LogProduction(ProdId=prod, QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
-            # lgProd.save()
+            lgProd = LogProduction(ProdId=prod, QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
+            lgProd.save()
 
             proType = ProdType.objects.all().values('Id', 'Name')
             for pt in proType:
@@ -261,24 +261,19 @@ def SavPrdDetail(request):
                                         if m == 3:
                                             pQty = subPr[k][m]
                                         if m == 4:
-                                            if len(re.split('-', str(subPr[k][m]))) == 0:
-                                                pPkMat[0] = str(subPr[k][m])
-                                            else:
-                                                pPkMat = re.split('-', str(subPr[k][m]))
-                                            #pPkMat = PackagingMaterial.objects.filter(pk=int(subPr[k][m])).first()
-                                        # if m == 5:
-                                        #     pPkQty =  subPr[k][m]
+                                            pPkMat = re.split('-', str(subPr[k][m]))
 
                                     prodDetail = ProductionDetail(ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId, PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit, ProdAmount=pQty)
                                     prodDetail.save()
-                                    # for pg in list(pPkMat):
-                                    #     pPgId = PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).first()
-                                    #     pPgQty = re.split('!', str(pg))[1]
-                                    #     ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId, Qnty=int(pPgQty)).save()
+                                    for pg in list(pPkMat):
+                                        if str(pg) != '' and len(re.split('!', str(pg))) > 0:
+                                            pPgId = PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).first()
+                                            pPgQty = re.split('!', str(pg))[1]
+                                            ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId, Qnty=int(pPgQty)).save()
 
-                                    # LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem,
-                                    #                  PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
-                                    #                  ProdAmount=pQty).save()
+                                    LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                     PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
+                                                     ProdAmount=pQty).save()
                     else:
                         proDetail = request.POST.getlist(str(pt['Name']))
 
@@ -293,8 +288,10 @@ def SavPrdDetail(request):
                                     pCount = ''
                                     pMunit = ''
                                     pQty = ''
+                                    pPkMat = []
 
                                     for m in range(len(subPr[k])):
+                                        pPkMat = []
                                         if m == 0:
                                             pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
                                         if m == 1:
@@ -303,17 +300,24 @@ def SavPrdDetail(request):
                                             pMunit = subPr[k][m]
                                         if m == 3:
                                             pQty = subPr[k][m]
-                                        # if m == 4:
-                                        #     pPkMat = PackagingMaterial.objects.filter(pk=int(subPr[k][m])).first()
-                                        # if m == 5:
-                                        #     pPkQty = subPr[k][m]
+                                        if m == 4:
+                                            pPkMat = re.split('-', str(subPr[k][m]))
 
-                                    # ProductionDetail(ProdId=prod, SmpProdId=sPrdItem,
-                                    #                  PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
-                                    #                  ProdAmount=pQty).save()
-                                    # LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem,
-                                    #                     PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
-                                    #                     ProdAmount=pQty).save()
+                                    prodDetail = ProductionDetail(ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                                  PrItmId=pItem, ProdItemPcs=pCount,
+                                                                  ProdItemUnit=pMunit, ProdAmount=pQty)
+                                    prodDetail.save()
+                                    for pg in list(pPkMat):
+                                        if str(pg) != '' and len(re.split('!', str(pg))) > 0:
+                                            pPgId = PackagingMaterial.objects.filter(
+                                                pk=int(re.split('!', str(pg))[0])).first()
+                                            pPgQty = re.split('!', str(pg))[1]
+                                            ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId,
+                                                               Qnty=int(pPgQty)).save()
+
+                                    LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                        PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
+                                                        ProdAmount=pQty).save()
 
             return HttpResponseRedirect('/SearchWgForProduction')
 
