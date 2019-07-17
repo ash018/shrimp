@@ -1,0 +1,21 @@
+<table id="AllPartsAdd" class=" table table-bordered">
+    <thead>
+    <tr>
+        <th>SL</th>
+        <th>ProductionDate</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for pd in productionList %}
+        <tr id="Complain_{{ pd.Id }}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ pd.ProductionDate|date:'Y-m-d' }}</td>
+            <td>
+                <a href="{% url 'EditProduction' %}?ProductionId={{ pd.Id }}"
+                   class="btn btn-info">Edit</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

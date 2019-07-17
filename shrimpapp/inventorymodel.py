@@ -6,7 +6,7 @@ class PackagingMaterial(models.Model):
     Id = models.AutoField(primary_key=True, db_column='Id')
     Name = models.CharField(max_length=100, db_column='Name')
     PackSize = models.CharField(max_length=100, db_column='PackSize')
-    Stock = models.IntegerField(max_length=100, db_column='Stock')
+    Stock = models.IntegerField(db_column='Stock')
 
     def __str__(self):
         return self.Name

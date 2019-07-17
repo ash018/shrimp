@@ -108,7 +108,6 @@ def ModalTableShow(request):
         pakMat = PackagingMaterial.objects.all().exclude(pk=int(1)).values('Id','Name','PackSize','Stock')
         liPkgMat = re.split('-', str(pkgMat))
         temp = []
-        #print("++++++"+ str(liPkgMat[:-1]))
         if len(liPkgMat[:-1])> 0:
             for ts in list(pakMat):
                 pakItem = []
@@ -116,7 +115,6 @@ def ModalTableShow(request):
                 for sx in list(liPkgMat[:-1]):
                     cc = ''
                     if int(re.split('!', str(sx))[0]) == ts['Id']:
-                        #print("--XX-" + str(re.split('!', str(sx))[0]))
                         cc = str((re.split('!', str(sx))[1]))
                         break
                     else:
@@ -157,7 +155,7 @@ def StartProduction(request):
         userId = request.session['uid']
         user = UserManager.objects.filter(pk=int(userId)).first()
         qcWgId = request.GET.get('QcWgId')
-        produType = ProdType.objects.all().values('Id', 'Name');
+        produType = ProdType.objects.all().values('Id', 'Name')
 
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
@@ -188,10 +186,6 @@ def PrdItemForm(request):
 
             packMate = PackagingMaterial.objects.all().values('Id','Name')
 
-            # listIt = []
-            # for i in range(0, len(pItem)):
-            #     listIt.append(i) 'listIt':listIt,
-
             context = {'proType': proType, 'pItem':pItem, 'sItem':sItem, 'packMate':packMate}
             html = render_to_string(template, context)
             return JsonResponse({
@@ -214,12 +208,10 @@ def SavPrdDetail(request):
 
             _datetime = datetime.datetime.now()
             entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
-            #print('----entryDate----->' + str(entryDate))
             serDayTime = prodctDate.split('-')
             prdDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
                                             int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
                                             int(entryDate.split('-')[5]), 140)
-
 
             QCWeightment.objects.filter(pk=int(qcWegId)).update(IsProductionUsed='Y')
             qcWeg = QCWeightment.objects.filter(pk=int(qcWegId)).first()
@@ -237,7 +229,7 @@ def SavPrdDetail(request):
                         srv = np.reshape(proDetail, (-1, 21))
                         for i in range(len(srv)):
                             if i != 0:
-                                print(str(i) + "***" + "----Data Is -----" + str(srv[i][0]))
+                                #print(str(i) + "***" + "----Data Is -----" + str(srv[i][0]))
                                 sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
                                 subPr = np.reshape(srv[i][1:], (-1, 5))
                                 for k in range(len(subPr)):
@@ -254,6 +246,8 @@ def SavPrdDetail(request):
                                         if m == 0:
                                             pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
                                             prTyId = ProdType.objects.filter(pk=int(ProdItem.objects.filter(pk=int(subPr[k][m])).values('PrTyId__Id').first()['PrTyId__Id'])).first()
+                                            print("-----Production type---" + str(prTyId))
+
                                         if m == 1:
                                             pCount = subPr[k][m]
                                         if m == 2:
@@ -269,6 +263,7 @@ def SavPrdDetail(request):
                                         if str(pg) != '' and len(re.split('!', str(pg))) > 0:
                                             pPgId = PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).first()
                                             pPgQty = re.split('!', str(pg))[1]
+                                            PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).update(Stock=F('Stock') - int(pPgQty))
                                             ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId, Qnty=int(pPgQty)).save()
 
                                     LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
@@ -280,7 +275,6 @@ def SavPrdDetail(request):
                         srv = np.reshape(proDetail, (-1, 26))
                         for i in range(len(srv)):
                             if i != 0:
-                                print(str(i) + "***" + "----Data Is -----" + str(srv[i][0]))
                                 sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
                                 subPr = np.reshape(srv[i][1:], (-1, 5))
                                 for k in range(len(subPr)):
@@ -288,12 +282,16 @@ def SavPrdDetail(request):
                                     pCount = ''
                                     pMunit = ''
                                     pQty = ''
+                                    prTyId = ''
                                     pPkMat = []
 
                                     for m in range(len(subPr[k])):
                                         pPkMat = []
                                         if m == 0:
                                             pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
+                                            prTyId = ProdType.objects.filter(pk=int(
+                                                ProdItem.objects.filter(pk=int(subPr[k][m])).values(
+                                                    'PrTyId__Id').first()['PrTyId__Id'])).first()
                                         if m == 1:
                                             pCount = subPr[k][m]
                                         if m == 2:
@@ -312,6 +310,8 @@ def SavPrdDetail(request):
                                             pPgId = PackagingMaterial.objects.filter(
                                                 pk=int(re.split('!', str(pg))[0])).first()
                                             pPgQty = re.split('!', str(pg))[1]
+                                            PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).update(
+                                                Stock=F('Stock') - int(pPgQty))
                                             ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId,
                                                                Qnty=int(pPgQty)).save()
 
@@ -321,4 +321,66 @@ def SavPrdDetail(request):
 
             return HttpResponseRedirect('/SearchWgForProduction')
 
+def ListProduction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        context = {'PageTitle': 'Production List'}
+        return render(request, 'shrimpapp/ListProduction.html', context)
 
+def AllPrdListForEdit(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        fromDate = request.GET.get('FromDate')
+        toDate = request.GET.get('ToDate')
+        serDayTime = fromDate.split('-')
+        serToDayTime = toDate.split('-')
+
+        proFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        proToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                      int(23), int(59),
+                                      int(59), 0)
+
+        productionList = Production.objects.filter(IsFinishGood='N', ProductionDate__range=(proFromDate,proToDate)).values('Id','ProductionDate').order_by('-Id')
+
+        context = {'productionList': productionList}
+        template = 'shrimpapp/AllPrdListForEdit.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })
+
+def EditProduction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        prodId = request.GET.get('ProductionId')
+        proObje = Production.objects.filter(pk=int(prodId)).first()
+
+        prType =  ProdType.objects.all().values('Id','Name')
+        semProdItems = ShrimpProdItem.objects.all().values('Id','Name')
+        proData = Production.objects.filter(pk=int(prodId)).values('Id', 'ProductionDate').first()
+
+        proTypes = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
+        proItems = ProdItem.objects.filter(PrTyId__in=(ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())))).values('Id','PrTyId__Id', 'Name')
+        #proItem = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
+        proDetails = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id', 'PrItmId__Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount')
+
+        pkgDetails = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('ProDtlId__PrTyId__Id','ProDtlId__PrItmId__Id','ProDtlId__Id', 'PkgMatId__Id', 'Qnty')
+        context = {'PageTitle': 'Edit Production',
+                   'prType' : prType,
+                   'proTypes': proTypes,
+                   'proItems': proItems,
+                   'semProdItems': semProdItems,
+                   'proData' : proData,
+                   'proDetails' : proDetails,
+                   'pkgDetails' : pkgDetails
+                   }
+
+        return render(request, 'shrimpapp/EditProduction.html', context)
