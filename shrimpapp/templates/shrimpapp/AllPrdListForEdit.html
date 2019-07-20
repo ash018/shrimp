@@ -3,6 +3,8 @@
     <tr>
         <th>SL</th>
         <th>ProductionDate</th>
+        <th>QC Pass Date</th>
+        <th>Weightment Date</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -11,6 +13,8 @@
         <tr id="Complain_{{ pd.Id }}">
             <td>{{ forloop.counter }}</td>
             <td>{{ pd.ProductionDate|date:'Y-m-d' }}</td>
+            <td>{{ pd.QCWgId__EntryDate|date:'Y-m-d' }}</td>
+            <td>{{ pd.QCWgId__WgId__EntryDate|date:'Y-m-d' }}</td>
             <td>
                 <a href="{% url 'EditProduction' %}?ProductionId={{ pd.Id }}"
                    class="btn btn-info">Edit</a>
