@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^StartProduction', productionview.StartProduction, name='StartProduction'),
     url(r'^PrdItemForm', productionview.PrdItemForm, name='PrdItemForm'),
     url(r'^ModalTableShow', productionview.ModalTableShow, name='ModalTableShow'),
+    url(r'^PkgModalTableUpdate', productionview.PkgModalTableUpdate, name='PkgModalTableUpdate'),
 
     url(r'^SavPrdDetail', productionview.SavPrdDetail, name='SavPrdDetail'),
     url(r'^ListProduction', productionview.ListProduction, name='ListProduction'),

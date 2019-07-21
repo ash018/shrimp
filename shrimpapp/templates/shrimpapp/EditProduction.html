@@ -151,17 +151,42 @@
                                         {% for k2,v2 in value.items %}
 
                                             <tr>
-
                                                 <td><select name="{{ key }}" class="form-control ShrimPItem"
                                                             style="width: 100px">
                                                     {% for cType in sItem %}
-                                                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                                                        <option {% if k2 == cType.Id %} selected {% endif %} value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
                                                 </select></td>
-                                                {% for v3 in v2 %}
+                                                {% for k3,v3 in v2.items %}
+                                                    <td><input type="hidden" name="{{ key }}"
+                                                               class="form-control numeric" required="required"
+                                                               value="{{ v3.ProDtlId__PrItmId__Id }}"/>
+                                                        <input name="{{ key }}" class="form-control numeric"
+                                                               required="required"
+                                                               value="{{ v3.ProDtlId__ProdItemPcs }}"/></td>
 
                                                     <td>
-                                                        <input name="{{ key }}" class="form-control numeric"  required="required" value="{{ v3 }}"/></td>
+                                                        <select name="{{ key }}" class="form-control"
+                                                                style="width: 65px">
+                                                            <option {% if v3.ProDtlId__ProdItemUnit == 'Kg' %}
+                                                                selected {% endif %}
+                                                                value="Kg">Kg
+                                                            </option>
+                                                            <option {% if v3.ProDtlId__ProdItemUnit == 'lb' %}
+                                                                selected {% endif %}
+                                                                value="lb">lb
+                                                            </option>
+                                                        </select></td>
+
+                                                    <td><input name="{{ key }}"
+                                                               class="form-control numeric" required="required"
+                                                               value="{{ v3.ProDtlId__ProdAmount }}"/></td>
+
+
+                                                    <td {% if v3.PkgMatId__Id != 1 %} style="background-color:#DDA0DD;" {% endif %}>
+                                                        <input type="button" data="{{ v3.ProDtlId__Id }}" class="btn btn_s btn-info btn-block PkgMatUpdate" value="Pkg Mat"/>
+                                                        <input name="{{ key }}" class="PkgMatInput" type="hidden" value="1!0"/>
                                                     </td>
+
                                                 {% endfor %}
                                                 <td><input type="button"
                                                            class="btn btn_s btn-danger btn-block RemoveRow"
@@ -201,7 +226,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                                <button id="PkgMatSave" class="btn btn-primary PkgMatSave">Save Package</button>
+                                <button id="ModalPkgMatUpdate" class="btn btn-primary ModalPkgMatUpdate">Save Package</button>
                             </div>
                         </div>
                     </div>
@@ -258,8 +283,14 @@
             });
 
             var modalShowTable = "{% url 'ModalTableShow' %}";
+            var pkgModalUrl = "{% url 'PkgModalTableUpdate' %}";
+
             pkgMatModal(modalShowTable);
+            pkgMatUpdateModal(pkgModalUrl);
+
             writeDataModalToCell();
+
+            writeUpdatedDataModalToCell();
 
             $("#ProductionType").on("change", function () {
                 var prodType = this.value;

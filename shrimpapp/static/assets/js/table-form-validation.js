@@ -2,6 +2,30 @@
  * Created by shakil.ahammad on 7/9/2019.
  */
 
+function writeUpdatedDataModalToCell(){
+    $("#myModal").on("click", "button#ModalPkgMatUpdate", function () {
+        var tableId = $('#myModal input#TableIdForModal').val();
+        var rowIndex = $('#myModal input#TableRowIdxForModal').val();
+        var cellIndex = $('#myModal input#TableCellIdxForModal').val();
+        var pakMatNQnt = '';
+        var userPkgData = '';
+        $('#PakMatCheckTable input[type=checkbox]:checked').each(function () {
+            var row = $(this).closest("tr")[0];
+            var pkgCount = '0';
+            if (row.cells[1].children[0].value != '') {
+                pkgCount = row.cells[1].children[0].value;
+            }
+            userPkgData += $(this).val() + '!' + pkgCount + '-';
+        });
+
+        var pkgHtml = '<input name="' + tableId.split("_")[1] + '" type="hidden" class="PkgMatInput" value="' + userPkgData + '"/>';
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', '#DDA0DD');
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatInput').remove();
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).append(pkgHtml);
+        $('#myModal').modal('hide');
+    });
+}
+
 function writeDataModalToCell() {
     $("#myModal").on("click", "button#PkgMatSave", function () {
         var tableId = $('#myModal input#TableIdForModal').val();
@@ -11,18 +35,11 @@ function writeDataModalToCell() {
         var userPkgData = '';
         $('#PakMatCheckTable input[type=checkbox]:checked').each(function () {
             var row = $(this).closest("tr")[0];
-            //console.log('------'+$(this).val()+'--'+row.cells[1].children[0].value);
             var pkgCount = '0';
             if (row.cells[1].children[0].value != '') {
                 pkgCount = row.cells[1].children[0].value;
             }
             userPkgData += $(this).val() + '!' + pkgCount + '-';
-            //PakMatNQnt =
-
-            // message += row.cells[1].innerHTML;
-            // message += "   " + row.cells[2].innerHTML;
-            // message += "   " + row.cells[3].innerHTML;
-            // message += "\n";
         });
 
         var pkgHtml = '<input name="' + tableId.split("_")[1] + '" type="hidden" class="PkgMatInput" value="' + userPkgData + '"/>';
@@ -30,10 +47,8 @@ function writeDataModalToCell() {
         $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatInput').remove();
         $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).append(pkgHtml);
         $('#myModal').modal('hide');
-
     });
 }
-
 
 function pkgMatModal(baseurl) {
     $("#add_prod_tab").on("click", "input.PkgMaterial", function () {
@@ -44,8 +59,6 @@ function pkgMatModal(baseurl) {
         var cell = $(this).closest("td").index();
 
         var pkgMat = $('#' + tableId + ' tbody tr').eq(row).find('td').eq(cell).find('input.PkgMatInput').val();
-
-        //console.log("--this--" + pkgMat);
 
         $('#TableIdForModal').val(tableId);
         $('#TableRowIdxForModal').val(row);
@@ -70,6 +83,45 @@ function pkgMatModal(baseurl) {
         });
     });
 }
+
+function pkgMatUpdateModal(baseurl) {
+    $("#add_prod_tab").on("click", "input.PkgMatUpdate", function () {
+        var pDetailId = $(this).attr('data');
+
+        var row = $(this).closest("tr").index();
+        var tableId = $(this).closest("table").attr("id");
+        var cell = $(this).closest("td").index();
+
+        var pkgMat = $('#' + tableId + ' tbody tr').eq(row).find('td').eq(cell).find('input.PkgMatInput').val();
+        if(pkgMat === undefined){
+            pkgMat = "XXX";
+        }
+
+        $('#TableIdForModal').val(tableId);
+        $('#TableRowIdxForModal').val(row);
+        $('#TableCellIdxForModal').val(cell);
+
+        $('#myModal').modal('show');
+        $('#myModalLabel').empty();
+        $('#PkgMaterailAdd').empty();
+        $.ajax({
+            url: baseurl,
+            type: "GET",
+            data: "ProdDetailId=" + pDetailId+"&PkgMat="+pkgMat+"&csrfmiddlewaretoken=" + csrftoken,
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                var response = $.parseJSON(JSON.stringify(data));
+                var prodItem = $.parseJSON(JSON.stringify(response.ProdItem));
+                var html = $.parseJSON(JSON.stringify(response.html));
+                $('#myModalLabel').html("Package Material For " + prodItem);
+                $('#PkgMaterailAdd').append(html);
+            }
+        });
+    });
+}
+
+
  //$('#SaveButtonProduction').prop('disabled', true);
 //$('#SaveButtonProduction').prop('disabled', false);
 

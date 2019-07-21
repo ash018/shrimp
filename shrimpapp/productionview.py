@@ -96,6 +96,89 @@ def AllPassWgForProduction(request):
             })
 
 @csrf_exempt
+def PkgModalTableUpdate(request):
+    from django.shortcuts import render
+    from django.template import RequestContext
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        prodDetailId =  request.GET.get('ProdDetailId')
+        pkgMat = request.GET.get('PkgMat')
+
+        pItem = ProductionDetail.objects.filter(pk=int(prodDetailId)).values('PrItmId__Name').first()
+        pdObj = ProductionDetail.objects.filter(pk=int(prodDetailId)).first()
+
+        liPkgMat = ''
+        isPkgDetails = ''
+        if str(pkgMat) == 'XXX':
+            isPkgDetails = True
+            liPkgMat = ProdDtlPkgMaterial.objects.filter(ProDtlId=pdObj).values('Id','PkgMatId__Id','Qnty').exclude(PkgMatId__Id=1)
+        else:
+            isPkgDetails = False
+            liPkgMat = re.split('-', str(pkgMat))
+
+        pakMat = PackagingMaterial.objects.all().exclude(pk=int(1)).values('Id', 'Name', 'PackSize', 'Stock')
+
+        temp = []
+        for ts in list(pakMat):
+            pakItem = []
+            cc = "XXX"
+            if isPkgDetails:
+                if len(liPkgMat) > 0:
+                    for sx in liPkgMat:
+
+                        if sx['PkgMatId__Id'] == ts['Id']:
+                            cc = sx['Qnty']
+                            break
+                        else:
+                            cc = "XXX"
+                pakItem.append(str(ts['Id']))
+                pakItem.append(ts['Name'])
+                pakItem.append(ts['PackSize'])
+                pakItem.append(ts['Stock'])
+                pakItem.append(cc)
+
+                temp.append(pakItem)
+            else:
+                if len(liPkgMat[:-1]) > 0:
+                    pakItem = []
+                    for sx in list(liPkgMat[:-1]):
+                        cc = ''
+                        if int(re.split('!', str(sx))[0]) == ts['Id']:
+                            cc = str((re.split('!', str(sx))[1]))
+                            break
+                        else:
+                            cc = "XXX"
+                    pakItem.append(str(ts['Id']))
+                    pakItem.append(ts['Name'])
+                    pakItem.append(ts['PackSize'])
+                    pakItem.append(ts['Stock'])
+                    pakItem.append(cc)
+
+                    temp.append(pakItem)
+                else:
+                    pakItem = []
+                    cc = 'XXX'
+                    pakItem.append(str(ts['Id']))
+                    pakItem.append(ts['Name'])
+                    pakItem.append(ts['PackSize'])
+                    pakItem.append(ts['Stock'])
+                    pakItem.append(cc)
+                    temp.append(pakItem)
+
+        #print("=======" + str(temp))
+        context = {'pakMat': list(temp)}
+        template = 'shrimpapp/ModalTableShow.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok",
+                "ProdItem": pItem['PrItmId__Name']
+            })
+
+@csrf_exempt
 def ModalTableShow(request):
     from django.shortcuts import render
     from django.template import RequestContext
@@ -106,13 +189,12 @@ def ModalTableShow(request):
         pkgMat = request.GET.get('PkgMat')
 
         pItem = ProdItem.objects.filter(pk=int(prodItem)).values('Name').first()
-        pakMat = PackagingMaterial.objects.all().exclude(pk=int(1)).values('Id','Name','PackSize','Stock')
+        pakMat = PackagingMaterial.objects.all().exclude(pk=int(1)).values('Id', 'Name', 'PackSize', 'Stock')
         liPkgMat = re.split('-', str(pkgMat))
         temp = []
         if len(liPkgMat[:-1])> 0:
             for ts in list(pakMat):
                 pakItem = []
-
                 for sx in list(liPkgMat[:-1]):
                     cc = ''
                     if int(re.split('!', str(sx))[0]) == ts['Id']:
@@ -388,11 +470,15 @@ def EditProduction(request):
             srTyPrItemDisc = {}
             check = 0
             for pT in sRPrList:
-                valList = list()
+                #valList = list()
+                valList = {}
                 for pTT in pTyTiList:
                     if pT['SmpProdId__Id'] == pTT['SmpProdId__Id'] and sd['PrTyId__Id'] == pTT['PrTyId__Id']:
-                        valList.append(pTT['PrItmId__Id'])
-                if len(valList) > 0:
+
+                        #valList[pTT['PrItmId__Id']] = ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).values('Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount').first()
+                        valList[pTT['PrItmId__Id']] = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
+                if valList:
+                    #print("===valList===" + str(valList))
                     srTyPrItemDisc[pT['SmpProdId__Id']] = valList
                     check = 1
             if check == 1:
@@ -401,7 +487,7 @@ def EditProduction(request):
 
         #proItem = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
         proDetails = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount')
-        print("===semProdItems===" + str(prTySrTyPrItDisc))
+        #print("===semProdItems===" + str(prTySrTyPrItDisc))
 
         pkgDetails = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('ProDtlId__PrTyId__Id','ProDtlId__PrItmId__Id','ProDtlId__Id', 'PkgMatId__Id', 'Qnty')
         context = {'PageTitle': 'Edit Production',
