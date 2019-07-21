@@ -147,6 +147,7 @@ function divTableProducItemCheck() {
      var tRowsCPDTO = $('#AddProdTo_CPDTO tbody tr').length;
      var tRowsCPnD = $('#AddProdTo_CPnD tbody tr').length;
      var tRowsPD = $('#AddProdTo_PD tbody tr').length;
+     //console.log("====="+tRowsHOSO);
 
      $('#AddProdTo_HOSO .ShrimPItem').each(function (index, item) {
         selectItemHOSO.push(item.value);
@@ -187,7 +188,7 @@ function divTableProducItemCheck() {
      $('#AddProdTo_PD .ShrimPItem').each(function (index, item) {
         selectItemPD.push(item.value);
      });
-
+    console.log("==============="+selectItemPDTO.allValuesSame()+"==="+selectItemHOSO.allValuesSame());
      if((selectItemHOSO.allValuesSame() && tRowsHOSO > 1)  ||
          (selectItemPDTO.allValuesSame() && tRowsPDTO > 1) ||
          (selectItemPnD.allValuesSame() && tRowsPnD > 1)   ||

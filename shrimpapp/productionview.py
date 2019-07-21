@@ -329,7 +329,6 @@ def SavPrdDetail(request):
                                         if m == 0:
                                             pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
                                             prTyId = ProdType.objects.filter(pk=int(ProdItem.objects.filter(pk=int(subPr[k][m])).values('PrTyId__Id').first()['PrTyId__Id'])).first()
-                                            print("-----Production type---" + str(prTyId))
 
                                         if m == 1:
                                             pCount = subPr[k][m]
@@ -451,10 +450,10 @@ def EditProduction(request):
         sItem = ShrimpProdItem.objects.all().values('Id','Name')
         proData = Production.objects.filter(pk=int(prodId)).values('Id', 'ProductionDate').first()
         semDisItems = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id','PrTyId__Name').distinct()
-        proTypes = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
+        #proTypes = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
 
         proItems = ProdItem.objects.filter(PrTyId__in=(ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())))).values('Id','PrTyId__Id', 'Name', 'PrTyId__Name')
-        pRowItems = ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id', 'PrItmId__Id').distinct()
+        #pRowItems = ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id', 'PrItmId__Id').distinct()
 
         #ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id','PrItmId__Id')
         pTyTiList = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrItmId__Id', 'PrTyId__Id')
@@ -486,22 +485,33 @@ def EditProduction(request):
 
 
         #proItem = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
-        proDetails = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount')
+        #proDetails = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount')
         #print("===semProdItems===" + str(prTySrTyPrItDisc))
 
-        pkgDetails = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('ProDtlId__PrTyId__Id','ProDtlId__PrItmId__Id','ProDtlId__Id', 'PkgMatId__Id', 'Qnty')
+        #pkgDetails = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('ProDtlId__PrTyId__Id','ProDtlId__PrItmId__Id','ProDtlId__Id', 'PkgMatId__Id', 'Qnty')
+        # context = {'PageTitle': 'Edit Production',
+        #            'sItem' : sItem,
+        #            'prType' : prType,
+        #            'proTypes': proTypes,
+        #            'proItems': proItems,
+        #            'semProdItems': semProdItems,
+        #            'proData' : proData,
+        #            'proDetails' : proDetails,
+        #            'pkgDetails' : pkgDetails,
+        #            'semDisItems' : semDisItems,
+        #            'pRowItems' : pRowItems,
+        #            'prTySrTyPrItDisc' : prTySrTyPrItDisc
+        #            }
+
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,
                    'prType' : prType,
-                   'proTypes': proTypes,
                    'proItems': proItems,
                    'semProdItems': semProdItems,
                    'proData' : proData,
-                   'proDetails' : proDetails,
-                   'pkgDetails' : pkgDetails,
                    'semDisItems' : semDisItems,
-                   'pRowItems' : pRowItems,
                    'prTySrTyPrItDisc' : prTySrTyPrItDisc
                    }
+
 
         return render(request, 'shrimpapp/EditProduction.html', context)
