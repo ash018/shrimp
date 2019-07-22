@@ -185,6 +185,7 @@
                                 showCancelButton: true,
                                 confirmButtonText: "DISMISS"
                             });
+                            return false;
                         }
                         else {
                             var baseurl = "{% url 'PrdItemForm' %}";
@@ -201,6 +202,7 @@
                                     $('#add_prod_tab').prepend(html);
                                 }
                             });
+                            return true;
                         }
                     }
                 }
@@ -218,19 +220,20 @@
 
             $("#SaveButtonProduction").on('click', function(){
                 var rVal = divTableProducItemCheck();
+
                 if (rVal == 1) {
-                            sweetAlert({
-                                title: "A Table contains Multiple Product Category!!!",
-                                text: "Please find the specific table and select right category. Thank You. ",
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonText: "DISMISS"
-                            });
-                            return false;
-                        }
-                        else {
-                            return true;
-                        }
+                    sweetAlert({
+                        title: "A Table contains Multiple Product Category!!!",
+                        text: "Please find the specific table and select right category. Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                    return false;
+                }
+                else {
+                    return true;
+                }
             });
 
             $("#add_prod_tab").on("click", "input.RemoveRow", function () {

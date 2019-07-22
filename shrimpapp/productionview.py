@@ -300,6 +300,7 @@ def SavPrdDetail(request):
             qcWeg = QCWeightment.objects.filter(pk=int(qcWegId)).first()
             prod = Production(QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
             prod.save()
+
             lgProd = LogProduction(ProdId=prod, QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
             lgProd.save()
 
@@ -312,7 +313,6 @@ def SavPrdDetail(request):
                         srv = np.reshape(proDetail, (-1, 21))
                         for i in range(len(srv)):
                             if i != 0:
-                                #print(str(i) + "***" + "----Data Is -----" + str(srv[i][0]))
                                 sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
                                 subPr = np.reshape(srv[i][1:], (-1, 5))
                                 for k in range(len(subPr)):
@@ -450,20 +450,14 @@ def EditProduction(request):
         sItem = ShrimpProdItem.objects.all().values('Id','Name')
         proData = Production.objects.filter(pk=int(prodId)).values('Id', 'ProductionDate').first()
         semDisItems = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id','PrTyId__Name').distinct()
-        #proTypes = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
 
         proItems = ProdItem.objects.filter(PrTyId__in=(ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())))).values('Id','PrTyId__Id', 'Name', 'PrTyId__Name')
-        #pRowItems = ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id', 'PrItmId__Id').distinct()
 
-        #ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id','PrItmId__Id')
         pTyTiList = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrItmId__Id', 'PrTyId__Id')
         sRPrList = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id').distinct()
 
-        pTySrItList = ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id','SmpProdId__Id')
+        #pTySrItList = ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id','SmpProdId__Id')
 
-        #print("***=====***" + str(semDisItems))
-        #print("******" + str(sRPrList))
-        #srTyPrItemDisc = {}#{}dict((x['PrItmId__Id'], x) for x in ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id', 'PrItmId__Id'))
         prTySrTyPrItDisc = {}
         for sd in semDisItems:
             srTyPrItemDisc = {}
@@ -473,35 +467,22 @@ def EditProduction(request):
                 valList = {}
                 for pTT in pTyTiList:
                     if pT['SmpProdId__Id'] == pTT['SmpProdId__Id'] and sd['PrTyId__Id'] == pTT['PrTyId__Id']:
+                        pkjMatDtl = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id']).first()).values('PkgMatId__Id', 'Qnty')
+                        sPkjMat = ''
+                        for pj in pkjMatDtl:
+                            sPkjMat = sPkjMat + str(pj['PkgMatId__Id'])+'!'+str(pj['Qnty'])+'-'
 
-                        #valList[pTT['PrItmId__Id']] = ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).values('Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount').first()
-                        valList[pTT['PrItmId__Id']] = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
+                        pkgDtlMatLi = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
+                        pkgDtlMatLi['PkgMatId__Id'] = sPkjMat
+                        valList[pTT['PrItmId__Id']] = pkgDtlMatLi
+                        #valList[pTT['PrItmId__Id']] = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
                 if valList:
-                    #print("===valList===" + str(valList))
                     srTyPrItemDisc[pT['SmpProdId__Id']] = valList
                     check = 1
             if check == 1:
                 prTySrTyPrItDisc[sd['PrTyId__Name']] = srTyPrItemDisc
 
-
-        #proItem = ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())).values('Id','Name')
-        #proDetails = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrTyId__Id', 'PrItmId__Id', 'ProdItemPcs', 'ProdItemUnit', 'ProdAmount')
-        #print("===semProdItems===" + str(prTySrTyPrItDisc))
-
-        #pkgDetails = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('ProDtlId__PrTyId__Id','ProDtlId__PrItmId__Id','ProDtlId__Id', 'PkgMatId__Id', 'Qnty')
-        # context = {'PageTitle': 'Edit Production',
-        #            'sItem' : sItem,
-        #            'prType' : prType,
-        #            'proTypes': proTypes,
-        #            'proItems': proItems,
-        #            'semProdItems': semProdItems,
-        #            'proData' : proData,
-        #            'proDetails' : proDetails,
-        #            'pkgDetails' : pkgDetails,
-        #            'semDisItems' : semDisItems,
-        #            'pRowItems' : pRowItems,
-        #            'prTySrTyPrItDisc' : prTySrTyPrItDisc
-        #            }
+        print("====="+str(prTySrTyPrItDisc))
 
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,
@@ -515,3 +496,148 @@ def EditProduction(request):
 
 
         return render(request, 'shrimpapp/EditProduction.html', context)
+
+
+def UpdateProduction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        prodId = request.POST.get('ProdId')
+        prodctDate = request.POST.get('ProdctDate')
+
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        proDate = datetime.datetime.now()
+
+        _datetime = datetime.datetime.now()
+        entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
+        serDayTime = prodctDate.split('-')
+        prdDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                    int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
+                                    int(entryDate.split('-')[5]), 140)
+
+        prod = Production.objects.filter(pk=int(prodId)).first()
+        Production.objects.filter(pk=int(prodId)).update(ProductionDate=prdDate, EditDate=_datetime)
+
+        pkgMatUpdate = ProdDtlPkgMaterial.objects.filter(ProdId=prod).values('PkgMatId__Id','Qnty').exclude(PkgMatId__Id=1)
+
+        for uPkMat in pkgMatUpdate:
+            PackagingMaterial.objects.filter(pk=int(uPkMat['PkgMatId__Id'])).update(Stock = F('Stock') + int(uPkMat['Qnty']))
+
+        ProdDtlPkgMaterial.objects.filter(ProdId=prod).delete()
+        ProductionDetail.objects.filter(ProdId=prod).delete()
+        qwId = Production.objects.filter(pk=int(prodId)).values('QCWgId__Id').first()
+        qCWgId = QCWeightment.objects.filter(pk=int(qwId['QCWgId__Id'])).first()
+        lgProd = LogProduction(ProdId=prod, QCWgId=qCWgId, IsFinishGood='N', ProductionDate=prdDate,
+                               ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
+        lgProd.save()
+
+
+        #################  Update Action Execute For Production Details and PkgMaterial #########
+
+        proType = ProdType.objects.all().values('Id', 'Name')
+        for pt in proType:
+            if pt['Name'] in request.POST:
+                if pt['Id'] == 1:
+                    proDetail = request.POST.getlist(str(pt['Name']))
+
+                    srv = np.reshape(proDetail, (-1, 21))
+                    for i in range(len(srv)):
+                        if i != 0:
+                            sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
+                            subPr = np.reshape(srv[i][1:], (-1, 5))
+                            for k in range(len(subPr)):
+                                pItem = ''
+                                pCount = ''
+                                pMunit = ''
+                                pQty = ''
+                                pPkMat = []
+                                pPkQty = ''
+                                prTyId = ''
+
+                                for m in range(len(subPr[k])):
+                                    pPkMat = []
+                                    if m == 0:
+                                        pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
+                                        prTyId = ProdType.objects.filter(pk=int(
+                                            ProdItem.objects.filter(pk=int(subPr[k][m])).values('PrTyId__Id').first()[
+                                                'PrTyId__Id'])).first()
+
+                                    if m == 1:
+                                        pCount = subPr[k][m]
+                                    if m == 2:
+                                        pMunit = subPr[k][m]
+                                    if m == 3:
+                                        pQty = subPr[k][m]
+                                    if m == 4:
+                                        pPkMat = re.split('-', str(subPr[k][m]))
+
+                                prodDetail = ProductionDetail(ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                              PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
+                                                              ProdAmount=pQty)
+                                prodDetail.save()
+                                for pg in list(pPkMat):
+                                    if str(pg) != '' and len(re.split('!', str(pg))) > 0:
+                                        pPgId = PackagingMaterial.objects.filter(
+                                            pk=int(re.split('!', str(pg))[0])).first()
+                                        pPgQty = re.split('!', str(pg))[1]
+                                        PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).update(
+                                            Stock=F('Stock') - int(pPgQty))
+                                        ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId,
+                                                           Qnty=int(pPgQty)).save()
+
+                                LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                    PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
+                                                    ProdAmount=pQty).save()
+                else:
+                    proDetail = request.POST.getlist(str(pt['Name']))
+
+                    srv = np.reshape(proDetail, (-1, 26))
+                    for i in range(len(srv)):
+                        if i != 0:
+                            sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
+                            subPr = np.reshape(srv[i][1:], (-1, 5))
+                            for k in range(len(subPr)):
+                                pItem = ''
+                                pCount = ''
+                                pMunit = ''
+                                pQty = ''
+                                prTyId = ''
+                                pPkMat = []
+
+                                for m in range(len(subPr[k])):
+                                    pPkMat = []
+                                    if m == 0:
+                                        pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
+                                        prTyId = ProdType.objects.filter(pk=int(
+                                            ProdItem.objects.filter(pk=int(subPr[k][m])).values(
+                                                'PrTyId__Id').first()['PrTyId__Id'])).first()
+                                    if m == 1:
+                                        pCount = subPr[k][m]
+                                    if m == 2:
+                                        pMunit = subPr[k][m]
+                                    if m == 3:
+                                        pQty = subPr[k][m]
+                                    if m == 4:
+                                        pPkMat = re.split('-', str(subPr[k][m]))
+
+                                prodDetail = ProductionDetail(ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                              PrItmId=pItem, ProdItemPcs=pCount,
+                                                              ProdItemUnit=pMunit, ProdAmount=pQty)
+                                prodDetail.save()
+                                for pg in list(pPkMat):
+                                    if str(pg) != '' and len(re.split('!', str(pg))) > 0:
+                                        pPgId = PackagingMaterial.objects.filter(
+                                            pk=int(re.split('!', str(pg))[0])).first()
+                                        pPgQty = re.split('!', str(pg))[1]
+                                        PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).update(
+                                            Stock=F('Stock') - int(pPgQty))
+                                        ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId,
+                                                           Qnty=int(pPgQty)).save()
+
+                                LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                    PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
+                                                    ProdAmount=pQty).save()
+
+
+        return HttpResponseRedirect('/ListProduction')

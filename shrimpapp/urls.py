@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^ListProduction', productionview.ListProduction, name='ListProduction'),
     url(r'^AllPrdListForEdit', productionview.AllPrdListForEdit, name='AllPrdListForEdit'),
     url(r'^EditProduction', productionview.EditProduction, name='EditProduction'),
+    url(r'^UpdateProduction', productionview.UpdateProduction, name='UpdateProduction'),
 
     url(r'^Logout', views.Logout, name='Logout'),
 ]

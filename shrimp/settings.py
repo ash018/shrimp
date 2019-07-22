@@ -67,7 +67,7 @@ TEMPLATES = [
             ],
         'libraries':{
                # make your file entry here.
-               'filter_tags': 'shrimpapp.templates.custom_filter',
+               'colorCheck': 'shrimpapp.templates.custom_filter',
             }
         },
     },

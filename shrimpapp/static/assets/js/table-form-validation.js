@@ -121,9 +121,96 @@ function pkgMatUpdateModal(baseurl) {
     });
 }
 
+function updateDivTblItCheck(){
+     var upSelectItemHOSO = new Array();
+     var upSelectItemPDTO = new Array();
+     var upSelectItemPnD = new Array();
+     var upSelectItemHLSO = new Array();
+     var upSelectItemHLSO_non_treated = new Array();
+     var upSelectItemEZP = new Array();
+     var upSelectItemDeep_Cut = new Array();
+     var upSelectItemCPDTO = new Array();
+     var upSelectItemCPnD = new Array();
+     var upSelectItemPD = new Array();
 
- //$('#SaveButtonProduction').prop('disabled', true);
-//$('#SaveButtonProduction').prop('disabled', false);
+     var upTRowsHOSO = $('#AddProdTo_HOSO tbody tr').length;
+     var upTRowsPDTO = $('#AddProdTo_PDTO tbody tr').length;
+     var upTRowsPnD = $('#AddProdTo_PnD tbody tr').length;
+     var upTRowsHLSO = $('#AddProdTo_HLSO tbody tr').length;
+     var upTRowsHLSO_non_treated = $('#AddProdTo_HLSO-non-treated tbody tr').length;
+     var upTRowsEZP = $('#AddProdTo_EZP tbody tr').length;
+     var upTRowsDeep_Cut = $('#AddProdTo_Deep-Cut tbody tr').length;
+     var upTRowsCPDTO = $('#AddProdTo_CPDTO tbody tr').length;
+     var upTRowsCPnD = $('#AddProdTo_CPnD tbody tr').length;
+     var upTRowsPD = $('#AddProdTo_PD tbody tr').length;
+
+     $('#AddProdTo_HOSO .ShrimPItem').each(function (index, item) {
+        upSelectItemHOSO.push(item.value);
+     });
+
+     $('#AddProdTo_PDTO .ShrimPItem').each(function (index, item) {
+            upSelectItemPDTO.push(item.value);
+     });
+
+      $('#AddProdTo_PnD .ShrimPItem').each(function (index, item) {
+            upSelectItemPnD.push(item.value);
+     });
+
+     $('#AddProdTo_HLSO .ShrimPItem').each(function (index, item) {
+            upSelectItemHLSO.push(item.value);
+     });
+
+      $('#AddProdTo_HLSO-non-treated .ShrimPItem').each(function (index, item) {
+            upSelectItemHLSO_non_treated.push(item.value);
+     });
+
+     $('#AddProdTo_EZP .ShrimPItem').each(function (index, item) {
+            upSelectItemEZP.push(item.value);
+     });
+
+     $('#AddProdTo_Deep-Cut .ShrimPItem').each(function (index, item) {
+            upSelectItemDeep_Cut.push(item.value);
+     });
+
+     $('#AddProdTo_CPDTO .ShrimPItem').each(function (index, item) {
+            upSelectItemCPDTO.push(item.value);
+     });
+
+     $('#AddProdTo_CPnD .ShrimPItem').each(function (index, item) {
+            upSelectItemCPnD.push(item.value);
+     });
+
+     $('#AddProdTo_PD .ShrimPItem').each(function (index, item) {
+            upSelectItemPD.push(item.value);
+     });
+
+     if( (upSelectItemHOSO.checkArrayItem() && upTRowsHOSO > 1) ||
+         (upSelectItemPDTO.checkArrayItem() && upTRowsPDTO > 1) ||
+         (upSelectItemPnD.checkArrayItem() && upTRowsPnD > 1)   ||
+         (upSelectItemHLSO.checkArrayItem() && upTRowsHLSO > 1) ||
+         (upSelectItemHLSO_non_treated.checkArrayItem() && upTRowsHLSO_non_treated > 1) ||
+         (upSelectItemEZP.checkArrayItem() && upTRowsEZP > 1) ||
+         (upSelectItemDeep_Cut.checkArrayItem() && upTRowsDeep_Cut > 1) ||
+         (upSelectItemCPDTO.checkArrayItem() && upTRowsCPDTO > 1) ||
+         (upSelectItemCPnD.checkArrayItem() && upTRowsCPnD > 1) ||
+         (upSelectItemPD.checkArrayItem() && upTRowsPD > 1)){
+         return 1;
+     }
+     else{
+         return 0;
+     }
+}
+
+Array.prototype.checkArrayItem = function () {
+    for (var i = 0; i < this.length; i++) {
+        for(var j = 0; j< this.length; j++){
+            if (this[i] == this[j] && i != j){
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 function divTableProducItemCheck() {
      var selectItemHOSO = new Array();
@@ -147,7 +234,6 @@ function divTableProducItemCheck() {
      var tRowsCPDTO = $('#AddProdTo_CPDTO tbody tr').length;
      var tRowsCPnD = $('#AddProdTo_CPnD tbody tr').length;
      var tRowsPD = $('#AddProdTo_PD tbody tr').length;
-     //console.log("====="+tRowsHOSO);
 
      $('#AddProdTo_HOSO .ShrimPItem').each(function (index, item) {
         selectItemHOSO.push(item.value);
@@ -188,8 +274,7 @@ function divTableProducItemCheck() {
      $('#AddProdTo_PD .ShrimPItem').each(function (index, item) {
         selectItemPD.push(item.value);
      });
-    console.log("==============="+selectItemPDTO.allValuesSame()+"==="+selectItemHOSO.allValuesSame());
-     if((selectItemHOSO.allValuesSame() && tRowsHOSO > 1)  ||
+     if((selectItemHOSO.allValuesSame() && tRowsHOSO > 1) ||
          (selectItemPDTO.allValuesSame() && tRowsPDTO > 1) ||
          (selectItemPnD.allValuesSame() && tRowsPnD > 1)   ||
          (selectItemHLSO.allValuesSame() && tRowsHLSO > 1) ||
@@ -209,10 +294,13 @@ function divTableProducItemCheck() {
 Array.prototype.allValuesSame = function () {
     for (var i = 1; i < this.length; i++) {
         if (this[i] !== this[0])
+        //if (this.includes(this[i]))
             return false;
     }
     return true;
 }
+
+
 
 function SaveButtonProduction() {
     $('#SaveButtonProduction').click(function () {

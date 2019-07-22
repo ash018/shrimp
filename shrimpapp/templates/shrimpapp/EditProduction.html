@@ -1,6 +1,6 @@
 {% extends "./public/dashboardBase.html" %}
 {% load static %}
-
+{% load colorCheck %}
 
 {% block main_content %}
     <style>
@@ -47,7 +47,7 @@
                 </div>
 
                 <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                      action="{% url 'SavPrdDetail' %}">
+                      action="{% url 'UpdateProduction' %}">
                     {% csrf_token %}
                     <div class="row col-lg-6 col-md-6 col-sm-6">
                         <div class="row col-lg-10 col-md-10 col-sm-10">
@@ -154,7 +154,7 @@
                                                 <td><select name="{{ key }}" class="form-control ShrimPItem"
                                                             style="width: 100px">
                                                     {% for cType in sItem %}
-                                                        <option {% if k2 == cType.Id %} selected {% endif %}
+                                                        <option {% if k2 == cType.Id %} selected="selected" {% endif %}
                                                                                         value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
                                                 </select></td>
                                                 {% for k3,v3 in v2.items %}
@@ -183,13 +183,12 @@
                                                                value="{{ v3.ProDtlId__ProdAmount }}"/></td>
 
 
-                                                    <td {% if v3.PkgMatId__Id != 1 %}
-                                                        style="background-color:#DDA0DD;" {% endif %}>
+                                                    <td  style="background-color:{{ v3.PkgMatId__Id|colorCheck }};" >
                                                         <input type="button" data="{{ v3.ProDtlId__Id }}"
                                                                class="btn btn_s btn-info btn-block PkgMatUpdate"
                                                                value="Pkg Mat"/>
                                                         <input name="{{ key }}" class="PkgMatInput" type="hidden"
-                                                               value="1!0"/>
+                                                               value="{{ v3.PkgMatId__Id }}"/>
                                                     </td>
 
                                                 {% endfor %}
@@ -236,8 +235,6 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
 
         </div>
@@ -325,7 +322,8 @@
                         return false;
                     }
                     else {
-                        var rVal = divTableProducItemCheck();
+                        var rVal = updateDivTblItCheck();
+                        console.log("+++" + rVal);
                         if (rVal == 1) {
                             sweetAlert({
                                 title: "A Table contains Multiple Product Category!!!",
@@ -334,6 +332,7 @@
                                 showCancelButton: true,
                                 confirmButtonText: "DISMISS"
                             });
+                            return false;
                         }
                         else {
                             var baseurl = "{% url 'PrdItemForm' %}";
@@ -350,6 +349,7 @@
                                     $('#add_prod_tab').prepend(html);
                                 }
                             });
+                            return true;
                         }
                     }
                 }
@@ -366,24 +366,24 @@
             });
 
             $("#SaveButtonProduction").on('click', function () {
-                var rVal = divTableProducItemCheck();
+                var rVal = updateDivTblItCheck();
 
                 console.log("+++" + rVal);
 
-                {#                if (rVal == 1) {#}
-                {#                    sweetAlert({#}
-                {#                        title: "A Table contains Multiple Product Category!!!",#}
-                {#                        text: "Please find the specific table and select right category. Thank You. ",#}
-                {#                        type: "warning",#}
-                {#                        showCancelButton: true,#}
-                {#                        confirmButtonText: "DISMISS"#}
-                {#                    });#}
-                {#                    return false;#}
-                {#                }#}
-                {#                else {#}
-                {#                    return true;#}
-                {#                }#}
-                return false;
+                if (rVal == 1) {
+                    sweetAlert({
+                        title: "A Table contains Multiple Product Category!!!",
+                        text: "Please find the specific table and select right category. Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                    return false;
+                }
+                else {
+                    return true;
+                }
+
             });
 
             $("#add_prod_tab").on("click", "input.RemoveRow", function () {
