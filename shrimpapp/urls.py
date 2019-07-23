@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^EditWeightment', views.EditWeightment, name='EditWeightment'),
     url(r'^UpdateWeightment', views.UpdateWeightment, name='UpdateWeightment'),
     url(r'^SaveWeightment', views.SaveWeightment, name='SaveWeightment'),
+    url(r'^SupplyerListByFarmer', views.SupplyerListByFarmer, name='SupplyerListByFarmer'),
 
     url(r'^ListSearchWeightment', views.ListSearchWeightment, name='ListSearchWeightment'),
 

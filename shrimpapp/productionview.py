@@ -482,8 +482,6 @@ def EditProduction(request):
             if check == 1:
                 prTySrTyPrItDisc[sd['PrTyId__Name']] = srTyPrItemDisc
 
-        print("====="+str(prTySrTyPrItDisc))
-
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,
                    'prType' : prType,
@@ -494,9 +492,7 @@ def EditProduction(request):
                    'prTySrTyPrItDisc' : prTySrTyPrItDisc
                    }
 
-
         return render(request, 'shrimpapp/EditProduction.html', context)
-
 
 def UpdateProduction(request):
     if 'uid' not in request.session:

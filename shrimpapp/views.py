@@ -29,6 +29,8 @@ from rest_framework.response import Response
 import numpy as np
 import datetime
 from decimal import Decimal
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 from collections import defaultdict
 SESSION_ID = "ABC"
 
@@ -334,6 +336,25 @@ def ListSearchWeightment(request):
                    'wegFromDate':wegFromDate, 'wegToDate':wegToDate }
         return render(request, 'shrimpapp/WeightmentList.html', context)
 
+#@csrf_exempt
+def SupplyerListByFarmer(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmer = request.GET.get('Farmer')
+
+        frObj = Farmer.objects.filter(pk=int(farmer)).first()
+        supplierList = Supplier.objects.filter(FarmerId=frObj).values('Id', 'SupplierName', 'SupplierCode')
+
+        context = {'supplierList': supplierList}
+        template = 'shrimpapp/Suppliers.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })
 
 
 def Logout(self):

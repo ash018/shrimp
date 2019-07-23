@@ -66,11 +66,6 @@ class UserManager(models.Model):
     DepartmentId = models.ForeignKey(Department, db_column='DepartmentId', on_delete=models.CASCADE)
     DesignationId = models.ForeignKey(Designation, db_column='DesignatioId', on_delete=models.CASCADE)
 
-    # objects = MyUserManager()
-    #
-    # USERNAME_FIELD = "UserId"
-    # REQUIRED_FIELDS = ['Status']
-
     def __str__(self):
         return self.UserId
 

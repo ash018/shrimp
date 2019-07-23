@@ -182,8 +182,8 @@
                                                                class="form-control numeric" required="required"
                                                                value="{{ v3.ProDtlId__ProdAmount }}"/></td>
 
-
-                                                    <td  style="background-color:{{ v3.PkgMatId__Id|colorCheck }};" >
+                                                    <!-- style="background-color:;" -->
+                                                    <td style="background-color:{{ v3.PkgMatId__Id|colorCheck }};">
                                                         <input type="button" data="{{ v3.ProDtlId__Id }}"
                                                                class="btn btn_s btn-info btn-block PkgMatUpdate"
                                                                value="Pkg Mat"/>
@@ -299,7 +299,6 @@
                 var selectedText = $("#ProductionType option:selected").html();
                 var baseurl = "{% url 'PrdItemForm' %}";
 
-                //console.log(global_test);
                 if ($("#hiderowforappend_" + selectedText).length > 0) {
                     sweetAlert({
                         title: "This Item has already exist in this page.",
@@ -323,7 +322,6 @@
                     }
                     else {
                         var rVal = updateDivTblItCheck();
-                        console.log("+++" + rVal);
                         if (rVal == 1) {
                             sweetAlert({
                                 title: "A Table contains Multiple Product Category!!!",
@@ -362,14 +360,10 @@
                 var subProductionRow = "<tr>" + $("#hiderowforappend_" + prodType + " tr:first").html() + "</tr>";
                 $("#AddProdTo_" + prodType).prepend(subProductionRow);
                 return false;
-
             });
 
             $("#SaveButtonProduction").on('click', function () {
                 var rVal = updateDivTblItCheck();
-
-                console.log("+++" + rVal);
-
                 if (rVal == 1) {
                     sweetAlert({
                         title: "A Table contains Multiple Product Category!!!",
@@ -383,7 +377,6 @@
                 else {
                     return true;
                 }
-
             });
 
             $("#add_prod_tab").on("click", "input.RemoveRow", function () {
