@@ -128,7 +128,7 @@ def SaveWeightment(request):
             dt = str(datetime.datetime.now())
             _datetime = datetime.datetime.now()
             entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
-            print('----entryDate----->' + str(entryDate))
+            #print('----entryDate----->' + str(entryDate))
             serDayTime = wgDate.split('-')
             wegmentDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]), int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
                                             int(entryDate.split('-')[5]), 140)
