@@ -357,7 +357,7 @@ def SupplyerListByFarmer(request):
         frObj = Farmer.objects.filter(pk=int(farmer)).first()
         supplierList = Supplier.objects.filter(FarmerId=frObj).values('Id', 'SupplierName', 'SupplierCode')
 
-        context = {'supplierList': supplierList}
+        context = {'supplierList': supplierList,'param':'Supplier'}
         template = 'shrimpapp/Suppliers.html'
 
         if request.is_ajax():
@@ -367,6 +367,25 @@ def SupplyerListByFarmer(request):
                 "status": "ok"
             })
 
+def SItemBySType(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        sType = request.GET.get('STypeId')
+
+        #frObj = Farmer.objects.filter(pk=int(farmer)).first()
+        sItemList = ShrimpItem.objects.filter(ShrimpTypeId__Id=int(sType)).values('Id','Name')
+        #supplierList = Supplier.objects.filter(FarmerId=frObj).values('Id', 'SupplierName', 'SupplierCode')
+
+        context = {'sItemList': sItemList, 'param':'Sitem'}
+        template = 'shrimpapp/Suppliers.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })
 
 def Logout(self):
     if 'UserId' not in self.session:

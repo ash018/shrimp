@@ -2,32 +2,13 @@
 {% load static %}
 
 {% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
 
     <div id="page-wrapper" class="gray-bg">
-
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
-
-        <style type="text/css">
-        </style>
-
-{#        <div class="row wrapper border-bottom white-bg page-heading">#}
-{#            <div class="col-sm-4">#}
-{#                <h2>{% if weightData.IsQcPass == 'N' %}Edit{% endif %} {% if weightData.IsQcPass == 'Y' %}View{% endif %} Weightment </h2>#}
-{#                <ol class="breadcrumb">#}
-{##}
-{#                </ol>#}
-{#            </div>#}
-{#            <div class="col-sm-8">#}
-{##}
-{#            </div>#}
-{#        </div>#}
-
-{#        {% if Message|length > 0 %}#}
-{#            <div class="alert alert-info">#}
-{#                <strong>{{ Message }}</strong>#}
-{#            </div>#}
-{#        {% endif %}#}
-
         <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
 
             <div class="row">
@@ -36,140 +17,159 @@
 
             <div class="wrapper wrapper-content animated fadeInRight ">
 
-            <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">{% for sType in shrimpType %}
-                                <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}</select></div>
-            <div style="display:none"><select id="ShrimpItem" name="ShrimpItem" class="form-control">{% for sItem in shrimpItem %}
-                                <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
+                <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">
+                    {% for sType in shrimpType %}
+                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}</select></div>
+                <div style="display:none"><select id="ShrimpItem" name="ShrimpItem" class="form-control">
+                    {% for sItem in shrimpItem %}
+                        <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
 
                 <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
                       action="{% url 'UpdateWeightment' %}">
                     {% csrf_token %}
                     <div class="row col-lg-4 col-md-4 col-sm-4">
-                    <div class="form-group ">
-                        <label for="Machine">Choose Farmer</label>
-                        <select name="Farmer" class="form-control">{% for sType in farmerList %}<option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %} selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}</select>
-                    </div>
-
-                    <div class="form-group ">
-                        <label for="Machine">Choose Supplier</label>
-                        <select name="Supplier" class="form-control">{% for sType in supplierList %}<option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %} selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}</select>
-                    </div>
-
-                    <div class="form-group ">
-                        <label for="SparepartsDate">Collection Date</label>
-                        <input type="text" name="WgDate" class="form-control" id="SparepartsDate" value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
-                        <input type="hidden" name="WgId" class="form-control" id="WgId" value="{{ weightData.Id }}"/>
-                    </div>
-                </div>
-
-                <div class="col-lg-12 col-md-12 col-sm-12">
-                    <label for="Machine">Weightment Details</label>
-                    <table id="AllPartsAdd" class=" table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Choose Type</th>
-                            <th>Change Count</th>
-                            <th>Item</th>
-                            <th>Unit(Kg/lb)</th>
-                             <th>Measure Qnty</th>
-                            <th>Rate(TK)</th>
-                            <th>Remarks</th>
-                            {% if weightData.IsQcPass == 'N' %}
-                            <th>
-                                <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
-                            </th>
-                            {% endif %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for wd in weightmentDetails %}
-                        <tr>
-                            <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpType %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id  %} selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><input name="Weightment" class="form-control numeric" required="required" value="{{ wd.CngCount }}"/></td>
-                            <td><select name="Weightment" class="form-control" style="width: 100px">{% for cType in shrimpItem %}<option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id  %} selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}</select></td>
-                            <td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg" {% if wb.MeasurUnit == 'Kg' %} selected="selected" {% endif %}>Kg</option><option value="lb" {% if wb.MeasurUnit == 'lb' %} selected="selected" {% endif %}>lb</option></select></td>
-                            <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.MeasurQnty }}"/></td>
-                            <td><input name="Weightment"  class="form-control numeric" required="required" value="{{ wd.Rate }}"/></td>
-                            <td><input name="Weightment" class="form-control" required="required" value="{{ wd.Remarks }}"/></td>
-                            {% if weightData.IsQcPass == 'N' %}
-                                <td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>
-                            {% endif %}
-                        </tr>
-                       {% endfor %}
-
-                        </tbody>
-                    </table>
-                    </div>
-                {% if weightData.IsQcPass == 'N' %}
-                    <div class="row center col-lg-4 col-md-4 col-sm-4">
-                    <div class="form-group ">
-                        <button type="submit" class="btn btn-primary block full-width m-b ">Update</button>
-                    </div>
+                        <div class="form-group ">
+                            <label for="Machine">Choose Farmer</label>
+                            <select name="Farmer" class="form-control">{% for sType in farmerList %}
+                                <option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %}
+                                        selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
+                            </select>
                         </div>
-                {% endif %}
+
+                        <div class="form-group ">
+                            <label for="Machine">Choose Supplier</label>
+                            <select name="Supplier" class="form-control">{% for sType in supplierList %}
+                                <option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %}
+                                        selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="SparepartsDate">Collection Date</label>
+                            <input type="text" name="WgDate" class="form-control" id="SparepartsDate"
+                                   value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
+                            <input type="hidden" name="WgId" class="form-control" id="WgId"
+                                   value="{{ weightData.Id }}"/>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="Machine">Weightment Details</label>
+                        <table id="AllPartsAdd" class=" table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Choose Type</th>
+                                <th>Change Count</th>
+                                <th>Item</th>
+                                <th>Unit(Kg/lb)</th>
+                                <th>Measure Qnty</th>
+                                <th>Rate(TK)</th>
+                                <th>Remarks</th>
+                                {% if weightData.IsQcPass == 'N' %}
+                                    <th>
+                                        <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
+                                    </th>
+                                {% endif %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for wd in weightmentDetails %}
+                                <tr>
+                                    <td><select name="Weightment" class="form-control ShrimpType" style="width: 100px" required="required">
+                                        {% for cType in shrimpType %}
+                                            <option value="{{ cType.Id }}"
+                                                    {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id %}
+                                                    selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}
+                                    </select></td>
+                                    <td><input name="Weightment" class="form-control numeric" required="required"
+                                               value="{{ wd.CngCount }}"/></td>
+                                    <td><select name="Weightment" class="form-control ShrimpItem" style="width: 100px" required="required">
+                                        {% for cType in shrimpItem %}
+                                            <option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id %}
+                                                    selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}
+                                    </select></td>
+                                    <td><select name="Weightment" class="form-control" style="width: 80px">
+                                        <option value="Kg" {% if wb.MeasurUnit == 'Kg' %}
+                                                selected="selected" {% endif %}>Kg
+                                        </option>
+                                        <option value="lb" {% if wb.MeasurUnit == 'lb' %}
+                                                selected="selected" {% endif %}>lb
+                                        </option>
+                                    </select></td>
+                                    <td><input name="Weightment" class="form-control numeric" required="required"
+                                               value="{{ wd.MeasurQnty }}"/></td>
+                                    <td><input name="Weightment" class="form-control numeric" required="required"
+                                               value="{{ wd.Rate }}"/></td>
+                                    <td><input name="Weightment" class="form-control" required="required"
+                                               value="{{ wd.Remarks }}"/></td>
+                                    {% if weightData.IsQcPass == 'N' %}
+                                        <td><input type="button" class="btn btn-danger btn-block RemoveRow"
+                                                   value="Remove"></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if weightData.IsQcPass == 'N' %}
+                        <div class="row center col-lg-4 col-md-4 col-sm-4">
+                            <div class="form-group ">
+                                <button type="submit" class="btn btn-primary block full-width m-b ">Update</button>
+                            </div>
+                        </div>
+                    {% endif %}
                 </form>
 
             </div>
 
         </div>
     </div>
-    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
-    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
-    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
-    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
 
         $(document).ready(function () {
-{#             $(".numeric").on("input", function(evt) {#}
-{#                var self = $(this);#}
-{#                   self.val(self.val().replace(/[^0-9\.]/g, ''));#}
-{#                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))#}
-{#                   {#}
-{#                     evt.preventDefault();#}
-{#                   }#}
-{#             });#}
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+            $("table").on("input", "input.numeric", function (evt) {
 
-             $("table").on("input","input.numeric",function(evt){
-
-                 console.log("This is Input");
-                 var self = $(this);
-                   self.val(self.val().replace(/[^0-9\.]/g, ''));
-                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))
-                   {
-                     evt.preventDefault();
-                   }
-                });
+                console.log("This is Input");
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
 
 
-            $("table").on("click","input.RemoveRow",function(){
+            $("table").on("click", "input.RemoveRow", function () {
                 $(this).parent().parent().remove();
             });
 
-            $("#AddNewRow").click(function(){
+            $("#AddNewRow").click(function () {
                 var ShrimpType = '';
-                $("#ShrimpType option").each(function(){
-                    ShrimpType = ShrimpType + '<option value="'+$(this).val()+'">'+$(this).html()+'</option>'
+                $("#ShrimpType option").each(function () {
+                    ShrimpType = ShrimpType + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
                 });
 
                 var ShrimpItem = '';
-                $("#ShrimpItem option").each(function(){
-                    ShrimpItem = ShrimpItem + '<option value="'+$(this).val()+'">'+$(this).html()+'</option>'
+                $("#ShrimpItem option").each(function () {
+                    ShrimpItem = ShrimpItem + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
                 });
 
-                var tableRow = '<tr>'+
-                                    '<td><select name="Weightment" class="form-control" style="width: 100px">' +ShrimpType+
-                                    '</select></td>'+
-                                    '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>'+
-                                    '<td><select name="Weightment" class="form-control" style="width: 100px">' +ShrimpItem+
-                                    '</select></td>'+
-                                    '<td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>'+
-                                    '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>'+
-                                    '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>'+
-                                    '<td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>'+
-                                    '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>'+
-                                '</tr>';
+                var tableRow = '<tr>' +
+                    '<td><select name="Weightment" class="form-control ShrimpType" style="width: 100px">' + ShrimpType +
+                    '</select></td>' +
+                    '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>' +
+                    '<td><select name="Weightment" class="form-control" style="width: 100px">' + ShrimpItem +
+                    '</select></td>' +
+                    '<td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>' +
+                    '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
+                    '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
+                    '<td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>' +
+                    '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>' +
+                    '</tr>';
 
                 $("#AllPartsAdd").prepend(tableRow);
                 return false;
@@ -199,6 +199,48 @@
                 todayHighlight: true,
                 toggleActive: true
             });
+
+
+            $(document).on('change', '#AllPartsAdd tbody td select.ShrimpType', function (e) {
+                var sTypeId = this.value;
+                var baseurl = "{% url 'SItemBySType' %}";
+                var row = $(this).closest("tr").index();
+                $('table#AllPartsAdd tbody tr').eq(row).find('td').eq(2).find('select.ShrimpItem').html('');
+
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "STypeId=" + sTypeId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#AllPartsAdd tbody tr').eq(row).find('td').eq(2).find('select.ShrimpItem').html(html);
+                    }
+                });
+            });
+
+            $("#Farmer").on("change", function () {
+                var farmerId = this.value;
+                var baseurl = "{% url 'SupplyerListByFarmer' %}";
+                $('#Supplier').html('');
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "Farmer=" + farmerId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#Supplier').html(html);
+                    }
+                });
+
+            });
+
+
         });
     </script>
 

@@ -264,7 +264,7 @@
         }
     </style>
 
-    <script>
+    <script type="text/javascript">
         window.CSRF_TOKEN = "{{ csrf_token }}";
         var global_test = 0;
         var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
@@ -394,6 +394,11 @@
                 todayHighlight: true,
                 toggleActive: true
             });
+
+
+
+
+
         });
     </script>
 {% endblock %}

@@ -1,1 +1,10 @@
-{% for sType in supplierList %} <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+{% if param == 'Supplier' %}
+    {% for sType in supplierList %}
+        <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>
+    {% endfor %}
+{% endif %}
+{% if param == 'Sitem' %}
+    {% for sType in sItemList %}
+        <option value="{{ sType.Id }}">{{ sType.Name }}</option>
+    {% endfor %}
+{% endif %}
