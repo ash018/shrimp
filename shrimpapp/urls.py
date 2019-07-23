@@ -7,6 +7,7 @@ from . import productionview
 urlpatterns = [
     url(r'^$', views.Login, name='Login'),
     url(r'^Home', views.Home, name='Home'),
+    url(r'^ProductionReport', views.ProductionReport, name='ProductionReport'),
     url(r'^Weightment', views.WeightmentView, name='WeightmentView'),
     url(r'^ListWeightment', views.ListWeightment, name='ListWeightment'),
     url(r'^EditWeightment', views.EditWeightment, name='EditWeightment'),

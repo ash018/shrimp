@@ -1,0 +1,318 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+{% block main_content %}
+
+<script src="{% static "assets/js/powerbi.min.js" %}"></script>
+
+    <style type="text/css">
+        @media screen and (max-width: 1400px) and (min-width: 800px) {
+            #reportContainer {
+                width: 100%;
+                height: 650px;
+            }
+            #report_page_list {
+                visibility: hidden;
+            }
+        }
+
+        @media screen and (max-width: 2000px) and (min-width: 1401px) {
+            #reportContainer {
+                width: 100%;
+                height: 890px;
+            }
+            #report_page_list {
+                visibility: hidden;
+            }
+        }
+
+        @media (min-width: 1920px) and (max-width: 2560px)  {
+            #reportContainer {
+                width: 100%;
+                height: 950px;
+            }
+            #report_page_list {
+                visibility: hidden;
+            }
+        }
+
+        @media only screen and (max-width: 600px) {
+            #reportContainer {
+                width: 100%;
+                height: 1000px;
+            }
+            h2{
+                font-size: 14px;
+            }
+            #report_print, .breadcrumb{
+                display: none;
+            }
+            #report_page_name{
+                font-size: 12px;
+            }
+        }
+
+        iframe{
+            border: 0;
+        }
+    </style>
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+
+        <div class="col-sm-6 col-xs-6">
+            <h2>Production Report</h2>
+            <ol class="breadcrumb">
+                Production Report
+            </ol>
+        </div>
+        <div class="col-sm-4 col-xs-5">
+                <button id="report_page_list" aria-expanded="true" role="button" href="#" class="pull-right btn-white dropdown-toggle" data-toggle="dropdown" style="margin: 0; position: absolute;transform: translateY(60%);"><i class="fa fa-bar-chart fa-1x"></i>  Pages <span class="caret"></span></button>
+                <ul role="menu" class="dropdown-menu" id="dropdownPageList">
+                </ul>
+        </div>
+        <div class="col-sm-2 col-xs-1">
+
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content  animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="m-b-lg">
+
+                            <div class="m-t-md">
+
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-sm btn-white" id="report_full_screen"> <i class="fa fa-window-maximize"></i> <span class="hidden-xs">Full Screen </span></button>
+                                    <button type="button" class="btn btn-sm btn-white" id="report_refresh"> <i class="fa fa-refresh"></i> <span class="hidden-xs">Refresh </span></button>
+                                    <button type="button" class="btn btn-sm btn-white" id="report_reload"> <i class="fa fa-spinner"></i> <span class="hidden-xs">Reload </span></button>
+                                    <button type="button" class="btn btn-sm btn-white" id="report_print"> <i class="fa fa-print"></i> Print</button>
+                                </div>
+                                <h2 id="report_page_name"></h2>
+                            </div>
+                        </div>
+
+                        <div class="m-b-lg">
+
+                            <div class="m-t-md">
+                                <div id="reportContainer"></div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+
+
+<br>
+<br>
+
+<script>
+var report;
+var activePage;
+$(document).ready(function()
+{
+    // Get models. models contains enums that can be used.
+    var deviceType = 1;  //1 means PC, 2 means mobile, 3 means tablet
+    var reportType = 1;
+    var valid = "{{ pbiEmbeddedToken.EmbedUrl }}";
+    console.log(valid);
+
+    var reportCategory;
+    if(reportType === 1)
+        reportCategory = 'report';
+    else if(reportType === 2)
+        reportCategory = 'dashboard';
+    else if(reportType === 3)
+        reportCategory = 'tile';
+
+    var reportPageList = [];
+    if(valid == "")
+    {
+        $('#reportContainer').append('<br><div class="alert alert-danger">Error in getting the report. Possible reason can be report id changed or developer token finished. Please contact MIS.</div>');
+    }
+    else if (typeof valid !== "" && (reportType === 1 || reportType === 2 || reportType === 3))
+    {
+        var accessToken = "{{ pbiEmbeddedToken.EmbedToken }}";
+        var embedUrl = "{{ pbiEmbeddedToken.EmbedUrl }}";
+        var embedReportId = "{{ pbiEmbeddedToken.Id }}";
+        var models = window['powerbi-client'].models;
+        if (deviceType === 2 || deviceType === 3)
+        {
+            var config = {
+                type: reportCategory,
+                tokenType: models.TokenType.Embed,
+                accessToken: accessToken,
+                embedUrl: embedUrl,
+                id: embedReportId,
+                permissions: models.Permissions.All,
+                settings: {
+                        filterPaneEnabled: false,
+                        navContentPaneEnabled: true,
+                        //background: models.BackgroundType.Transparent,
+                        layoutType: models.LayoutType.MobilePortrait
+                    }
+                };
+        }
+        else {
+            var config = {
+            type: reportCategory,
+            tokenType: models.TokenType.Embed,
+            accessToken: accessToken,
+            embedUrl: embedUrl,
+            id: embedReportId,
+            permissions: models.Permissions.All,
+            settings: {
+                    filterPaneEnabled: false,
+                    navContentPaneEnabled: true,
+                    //background: models.BackgroundType.Transparent
+                }
+            };
+        }
+
+        var reportContainer = $('#reportContainer')[0];
+        report = powerbi.embed(reportContainer, config);
+
+        //When the report is loaded, Get all pages of that report and populate the dropdown at top with report page names
+        report.off("loaded");
+        report.on('loaded', function ()
+        {
+            console.log("Report has been loaded");
+            try {
+                report.getPages().then(function (pages) {
+                    reportPageList = pages;
+                    $("#dropdownPageList").empty();
+                    $.each(pages, function (index, value) {
+                        var item = '<li><a href="#"><i class="status text-green icon-checkbox-marked-circle"></i>' + value.displayName + '</a></li>';
+                        $("#dropdownPageList").append(item);
+                    });
+
+                    $('#dropdownPageList a').click(function (e) {
+                        console.log($(this).text());
+                        for (var k = 0; k < reportPageList.length; k++) {
+                            if (reportPageList[k].displayName === $(this).text()) {
+                                reportPageList[k].setActive();
+                                break;
+                            }
+
+                        }
+                    });
+
+                    activePage = pages.filter(function (page) {
+                        return page.isActive
+                    })[0];
+                    $("#report_page_name").html(activePage.displayName);
+                });
+            }
+            catch (err)
+            {
+                console.log('Cannot generate page for this report. May be its a dashboard.');
+            }
+        });
+
+        try {
+            report.off("pageChanged");
+            report.on("pageChanged", function(event)
+            {
+                console.log("Event - pageChanged:");
+                var page = event.detail.newPage;
+                activePage = page;
+                $("#report_page_name").html(activePage.displayName);
+            });
+        }
+        catch (err)
+        {
+            console.log('Cannot generate page for this report. May be its a dashboard.');
+        }
+
+
+
+        setInterval(function()
+        {
+            if(reportCategory != 'dashboard')
+            {
+                report.refresh();
+                console.log('Refresh occured from power BI report after 10 minutes');
+            }
+        }, 1000 * 60 * 10); // after every 10 mins, refresh the report
+
+
+        $("#report_full_screen").click(function ()
+        {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.fullscreen();
+        });
+
+        $("#report_refresh").click(function () {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.refresh()
+                .then(function (result) {
+                    console.log("Refreshed");
+                })
+                .catch(function (errors) {
+                    console.log(errors);
+                });
+        });
+
+        $("#report_reload").click(function () {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.reload()
+                .then(function (result) {
+                    Log.logText("Reloaded");
+                })
+                .catch(function (errors) {
+                    Log.log(errors);
+                });
+        });
+
+        $("#report_print").click(function () {
+            var embedContainer = $('#reportContainer')[0];
+            report = powerbi.get(embedContainer);
+            report.print()
+                .then(function (result) {
+                    console.log(result);
+                })
+                .catch(function (errors) {
+                    console.log(errors);
+                });
+
+        });
+
+        //Refresh the report after every 10 minutes
+
+
+
+    }
+
+    function FullPageLoad()
+    {
+        if(reportCategory != 'dashboard')
+        {
+            window.location.reload(true);
+        }
+    }
+    setTimeout(FullPageLoad, 1000 * 60 * 60);   // after every 60 mins, reload the full page
+
+});
+
+</script>
+
+{% endblock %}

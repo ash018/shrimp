@@ -41,6 +41,8 @@ SESSION_ID = "ABC"
 # git add .
 # git commit -m "fixed untracked files"
 
+ProductionReportGroupId = '1ee91fe3-9d1f-404e-874b-082168e30ae0'
+ProductionReportId = '8926e6a3-6dc6-4524-a3a4-0677069cce85'
 
 def Login(request):
     if request.method == 'GET':
@@ -85,6 +87,15 @@ def Home(request):
     else:
         context = {'PageTitle': 'Home'}
         return render(request, 'shrimpapp/Home.html',context)
+
+def ProductionReport(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        pbiembeddedtoken = GetPBIEmbeddedReportToken(ProductionReportGroupId, ProductionReportId)
+        print(pbiembeddedtoken)
+        context = {'PageTitle': 'Home', 'pbiEmbeddedToken': pbiembeddedtoken}
+        return render(request, 'shrimpapp/ProductionReport.html',context)
 
 def WeightmentView(request):
     if 'uid' not in request.session:
@@ -365,3 +376,16 @@ def Logout(self):
         self.session.clear()
         del self.session
         return HttpResponseRedirect('/')
+
+
+def GetPBIEmbeddedReportToken(groupId, reportId):
+    pbitoken = {}
+    try:
+        with urllib.request.urlopen("http://192.168.100.61:90/pbiembeddedapi/Home/EmbedReport/" + groupId + "/" + reportId) as url:
+            data = json.loads(url.read().decode())
+            pbitoken['EmbedToken'] = data['EmbedToken']['Token']
+            pbitoken['EmbedUrl'] = data['EmbedUrl']
+            pbitoken['Id'] = data['Id']
+        return pbitoken
+    except:
+        return None
