@@ -481,7 +481,7 @@ def EditProduction(request):
                     check = 1
             if check == 1:
                 prTySrTyPrItDisc[sd['PrTyId__Name']] = srTyPrItemDisc
-
+        #style="background-color:{{ v3.PkgMatId__Id|colorCheck }};
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,
                    'prType' : prType,

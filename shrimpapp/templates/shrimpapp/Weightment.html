@@ -171,8 +171,6 @@
                 var sTypeId = this.value;
                 var baseurl = "{% url 'SItemBySType' %}";
                 var row = $(this).closest("tr").index();
-                //console.log("----Row------" + row);
-
                 $('table#AllPartsAdd tbody tr').eq(row).find('td').eq(2).find('select.ShrimpItem').html('');
 
                 $.ajax({

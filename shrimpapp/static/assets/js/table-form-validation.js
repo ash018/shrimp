@@ -19,7 +19,9 @@ function writeUpdatedDataModalToCell(){
         });
 
         var pkgHtml = '<input name="' + tableId.split("_")[1] + '" type="hidden" class="PkgMatInput" value="' + userPkgData + '"/>';
-        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', '#DDA0DD');
+        //$('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', '#DDA0DD');
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatUpdate').removeClass('btn-info');
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatUpdate').addClass('add-pkg-item');
         $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatInput').remove();
         $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).append(pkgHtml);
         $('#myModal').modal('hide');
@@ -43,7 +45,9 @@ function writeDataModalToCell() {
         });
 
         var pkgHtml = '<input name="' + tableId.split("_")[1] + '" type="hidden" class="PkgMatInput" value="' + userPkgData + '"/>';
-        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', '#DDA0DD');
+        //$('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).css('background-color', '#DDA0DD');
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMaterial').removeClass('btn-info');
+        $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMaterial').addClass('add-pkg-item');
         $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).find('input.PkgMatInput').remove();
         $('#' + tableId + ' tbody tr').eq(rowIndex).find('td').eq(cellIndex).append(pkgHtml);
         $('#myModal').modal('hide');

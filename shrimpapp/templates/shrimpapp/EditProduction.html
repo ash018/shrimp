@@ -3,6 +3,11 @@
 {% load colorCheck %}
 
 {% block main_content %}
+    <style type="text/css">
+    .add-pkg-item{
+            background:#E07076;
+        }
+    </style>
 
     <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
     <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
@@ -191,10 +196,10 @@
                                                                class="form-control numeric" required="required"
                                                                value="{{ v3.ProDtlId__ProdAmount }}"/></td>
 
-                                                    <!-- style="background-color:;" -->
-                                                    <td style="background-color:{{ v3.PkgMatId__Id|colorCheck }};">
+                                                    <!-- style="background-color:;" " -->
+                                                    <td>
                                                         <input type="button" data="{{ v3.ProDtlId__Id }}"
-                                                               class="btn btn_s btn-info btn-block PkgMatUpdate"
+                                                               class="btn btn_s {{ v3.PkgMatId__Id|colorCheck }} btn-block PkgMatUpdate"
                                                                value="Pkg Mat"/>
                                                         <input name="{{ key }}" class="PkgMatInput" type="hidden"
                                                                value="{{ v3.PkgMatId__Id }}"/>

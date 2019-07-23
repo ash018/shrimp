@@ -30,7 +30,7 @@
                     <div class="row col-lg-4 col-md-4 col-sm-4">
                         <div class="form-group ">
                             <label for="Machine">Choose Farmer</label>
-                            <select name="Farmer" class="form-control">{% for sType in farmerList %}
+                            <select id="Farmer" name="Farmer" class="form-control">{% for sType in farmerList %}
                                 <option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %}
                                         selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
                             </select>
@@ -38,7 +38,7 @@
 
                         <div class="form-group ">
                             <label for="Machine">Choose Supplier</label>
-                            <select name="Supplier" class="form-control">{% for sType in supplierList %}
+                            <select id="Supplier" name="Supplier" class="form-control">{% for sType in supplierList %}
                                 <option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %}
                                         selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
                             </select>

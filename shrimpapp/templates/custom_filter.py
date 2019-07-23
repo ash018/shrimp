@@ -5,16 +5,16 @@ register = template.Library()
 
 @register.filter(name='colorCheck')
 def colorCheck(value):
-    col = ''
+    col = 'btn-info'
     pkgMat = re.split('-',str(value))
     for i in pkgMat:
         col = ''
         k = re.split('!',str(i))
         if k[0] != '1':
-            col = '#DDA0DD'
+            col = 'add-pkg-item'
             break
         else:
-            col = ''
+            col = 'btn-info'
             break
 
     return str(col)
