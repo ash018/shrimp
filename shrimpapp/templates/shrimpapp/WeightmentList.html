@@ -2,6 +2,10 @@
 {% load static %}
 
 {% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
 
     <div id="page-wrapper" class="gray-bg">
 
@@ -103,24 +107,11 @@
 
             </div>
         </div>
-        <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
-        <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
-        <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
-        <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
 
         <script>
             window.CSRF_TOKEN = "{{ csrf_token }}";
-
             $(document).ready(function () {
-                {#             $(".numeric").on("input", function(evt) {#}
-                {#                var self = $(this);#}
-                {#                   self.val(self.val().replace(/[^0-9\.]/g, ''));#}
-                {#                   if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57))#}
-                {#                   {#}
-                {#                     evt.preventDefault();#}
-                {#                   }#}
-                {#             });#}
-
                 $("table").on("input", "input.numeric", function (evt) {
 
                     console.log("This is Input");

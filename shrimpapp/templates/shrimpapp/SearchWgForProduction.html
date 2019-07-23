@@ -2,6 +2,12 @@
 {% load static %}
 
 {% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
 
     <div id="page-wrapper" class="gray-bg">
 
@@ -53,12 +59,7 @@
 
             </div>
         </div>
-        <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
-        <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
-        <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
-        <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
-        <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
-        <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+
         {% csrf_token %}
         <script>
             window.CSRF_TOKEN = "{{ csrf_token }}";

@@ -3,6 +3,15 @@
 {% load colorCheck %}
 
 {% block main_content %}
+
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+    <script src="{% static "assets/js/table-form-validation.js" %}"></script>
+
     <style>
         .form-control {
             padding: 0px 0px !important;
@@ -239,13 +248,7 @@
 
         </div>
     </div>
-    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
-    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
-    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
-    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
-    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
-    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
-    <script src="{% static "assets/js/table-form-validation.js" %}"></script>
+
     {% csrf_token %}
     <style>
         #PkgMaterailAdd {
@@ -267,7 +270,6 @@
         var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
         $(document).ready(function () {
             $("#add_prod_tab").on("input", "input.numeric", function (evt) {
-                //console.log("This is Input");
                 var self = $(this);
                 self.val(self.val().replace(/[^0-9\.]/g, ''));
                 if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
@@ -276,7 +278,6 @@
             });
 
             $("#myModal").on("input", "input.numeric", function (evt) {
-                //console.log("This is Input");
                 var self = $(this);
                 self.val(self.val().replace(/[^0-9\.]/g, ''));
                 if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {

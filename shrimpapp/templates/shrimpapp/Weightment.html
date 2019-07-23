@@ -2,6 +2,10 @@
 {% load static %}
 
 {% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
 
     <div id="page-wrapper" class="gray-bg">
 
@@ -45,7 +49,8 @@
                         <div class="form-group ">
                             <label for="Machine">Choose Supplier</label>
                             <select id="Supplier" name="Supplier" class="form-control">
-                                {% for sType in supplierList %} <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+                                {% for sType in supplierList %}
+                                    <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
                             </select>
                         </div>
 
@@ -111,10 +116,7 @@
 
         </div>
     </div>
-    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
-    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
-    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
-    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";

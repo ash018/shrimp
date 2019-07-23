@@ -3,6 +3,11 @@
 
 {% block main_content %}
 
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
     <div id="page-wrapper" class="gray-bg">
 
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
@@ -99,10 +104,7 @@
             </div>
         </div>
     </div>
-    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
-    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
-    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
-    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+
 
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
