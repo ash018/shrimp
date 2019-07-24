@@ -453,10 +453,13 @@ def EditProduction(request):
 
         proItems = ProdItem.objects.filter(PrTyId__in=(ProdType.objects.filter(pk__in=(ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id').distinct())))).values('Id','PrTyId__Id', 'Name', 'PrTyId__Name')
 
-        pTyTiList = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrItmId__Id', 'PrTyId__Id')
+        pTyTiList = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id', 'PrItmId__Id', 'PrTyId__Id','Id')
         sRPrList = ProductionDetail.objects.filter(ProdId=proObje).values('SmpProdId__Id').distinct()
 
         #pTySrItList = ProductionDetail.objects.filter(ProdId=proObje).values('PrTyId__Id','SmpProdId__Id')
+
+        pkjMatDtl = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('PkgMatId__Id', 'Qnty', 'ProDtlId__Id')
+        pkgDtlMatLi = ProdDtlPkgMaterial.objects.filter(ProdId=proObje).values('PkgMatId__Id','ProDtlId__Id','ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit', 'ProDtlId__ProdAmount', 'ProDtlId__PrTyId__Id', 'ProDtlId__PrItmId__Id','ProDtlId__SmpProdId__Id')
 
         prTySrTyPrItDisc = {}
         for sd in semDisItems:
@@ -467,14 +470,25 @@ def EditProduction(request):
                 valList = {}
                 for pTT in pTyTiList:
                     if pT['SmpProdId__Id'] == pTT['SmpProdId__Id'] and sd['PrTyId__Id'] == pTT['PrTyId__Id']:
-                        pkjMatDtl = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id']).first()).values('PkgMatId__Id', 'Qnty')
+                        #pkjMatDtl = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id']).first()).values('PkgMatId__Id', 'Qnty')
                         sPkjMat = ''
                         for pj in pkjMatDtl:
-                            sPkjMat = sPkjMat + str(pj['PkgMatId__Id'])+'!'+str(pj['Qnty'])+'-'
+                            if pj['ProDtlId__Id'] == pTT['Id']:
+                                sPkjMat = sPkjMat + str(pj['PkgMatId__Id'])+'!'+str(pj['Qnty'])+'-'
 
-                        pkgDtlMatLi = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
-                        pkgDtlMatLi['PkgMatId__Id'] = sPkjMat
-                        valList[pTT['PrItmId__Id']] = pkgDtlMatLi
+                        #pkgDtlMatLi = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
+                        pKgTemp = []
+                        for pKg in pkgDtlMatLi:
+                            if pKg['ProDtlId__PrTyId__Id']==pTT['PrTyId__Id'] and pKg['ProDtlId__PrItmId__Id']==pTT['PrItmId__Id'] and pKg['ProDtlId__SmpProdId__Id']==pT['SmpProdId__Id']:
+                                pKgTemp = pKg
+                                break
+                        #pkgDtlMatLi['PkgMatId__Id'] = sPkjMat
+                        #valList[pTT['PrItmId__Id']] = pkgDtlMatLi
+
+
+                        pKgTemp['PkgMatId__Id'] = sPkjMat
+                        valList[pTT['PrItmId__Id']] = pKgTemp
+
                         #valList[pTT['PrItmId__Id']] = ProdDtlPkgMaterial.objects.filter(ProDtlId=ProductionDetail.objects.filter(ProdId=proObje, PrTyId__Id=pTT['PrTyId__Id'], PrItmId__Id=pTT['PrItmId__Id'], SmpProdId__Id=pT['SmpProdId__Id'] ).first()).values('PkgMatId__Id', 'ProDtlId__Id', 'ProDtlId__ProdItemPcs', 'ProDtlId__ProdItemUnit','ProDtlId__ProdAmount', 'ProDtlId__PrItmId__Id').first()
                 if valList:
                     srTyPrItemDisc[pT['SmpProdId__Id']] = valList
@@ -482,6 +496,9 @@ def EditProduction(request):
             if check == 1:
                 prTySrTyPrItDisc[sd['PrTyId__Name']] = srTyPrItemDisc
         #style="background-color:{{ v3.PkgMatId__Id|colorCheck }};
+
+        print("========"+str(prTySrTyPrItDisc))
+
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,
                    'prType' : prType,
