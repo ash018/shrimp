@@ -497,7 +497,7 @@ def EditProduction(request):
                 prTySrTyPrItDisc[sd['PrTyId__Name']] = srTyPrItemDisc
         #style="background-color:{{ v3.PkgMatId__Id|colorCheck }};
 
-        print("========"+str(prTySrTyPrItDisc))
+        #print("========"+str(prTySrTyPrItDisc))
 
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,

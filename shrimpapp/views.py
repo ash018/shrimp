@@ -41,6 +41,15 @@ SESSION_ID = "ABC"
 # git add .
 # git commit -m "fixed untracked files"
 
+# select P.ProdId, P.ProductionDate, PD.ProDtlId,
+# 	PT.Name, PD.ProdAmount, PD.ProdItemUnit, PD.ProdItemPcs
+# 	from Production P
+# 	inner join ProductionDetail PD
+# 	on P.ProdId = PD.ProdId
+# 	inner join ProdItem PT
+# 	on PT.PrItmId = PD.PrItmId
+# 	where P.ProductionDate between '2019-07-20 00:00:00.000' and '2019-07-24 00:00:00' GROUP BY
+
 ProductionReportGroupId = '1ee91fe3-9d1f-404e-874b-082168e30ae0'
 ProductionReportId = '8926e6a3-6dc6-4524-a3a4-0677069cce85'
 
