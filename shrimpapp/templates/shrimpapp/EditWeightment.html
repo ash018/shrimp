@@ -9,139 +9,277 @@
 
     <div id="page-wrapper" class="gray-bg">
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
-        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
+        <div class="wrapper wrapper-content animated fadeInRight ">
+
+            <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">
+                {% for sType in shrimpType %}
+                    <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}</select></div>
+            <div style="display:none"><select id="ShrimpItem" name="ShrimpItem" class="form-control">
+                {% for sItem in shrimpItem %}
+                    <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
+
 
             <div class="row">
-                <div class="col-sm-2"></div>
+                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post"
+                              enctype="multipart/form-data" action="{% url 'UpdateWeightment' %}">
+                            {% csrf_token %}
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+
+                                            <label for="Machine">Choose Farmer</label>
+                                            <select id="Farmer" name="Farmer" class="form-control">
+                                                {% for sType in farmerList %}
+                                                    <option value="{{ sType.Id }}"
+                                                            {% if sType.Id == weightData.FarmerId__Id %}
+                                                            selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
+                                            </select>
+
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <label for="Machine">Choose Supplier</label>
+                                            <select id="Supplier" name="Supplier" class="form-control">
+                                                {% for sType in supplierList %}
+                                                    <option value="{{ sType.Id }}"
+                                                            {% if sType.Id == weightData.SupplierId__Id %}
+                                                            selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <label for="SparepartsDate">Collection Date</label>
+                                            <input type="text" name="WgDate" class="form-control" id="SparepartsDate"
+                                                   value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
+                                            <input type="hidden" name="WgId" class="form-control" id="WgId"
+                                                   value="{{ weightData.Id }}"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <label for="Machine">Weightment Details</label>
+                                        <table id="AllPartsAdd" class=" table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Choose Type</th>
+                                                <th>Change Count</th>
+                                                <th>Item</th>
+                                                <th>Unit(Kg/lb)</th>
+                                                <th>Measure Qnty</th>
+                                                <th>Rate(TK)</th>
+                                                <th>Remarks</th>
+                                                {% if weightData.IsQcPass == 'N' %}
+                                                    <th>
+                                                        <button id="AddNewRow" class=" btn btn-success btn-block"> ADD
+                                                        </button>
+                                                    </th>
+                                                {% endif %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for wd in weightmentDetails %}
+                                                <tr>
+                                                    <td><select name="Weightment" class="form-control ShrimpType"
+                                                                style="width: 100px"
+                                                                required="required">
+                                                        {% for cType in shrimpType %}
+                                                            <option value="{{ cType.Id }}"
+                                                                    {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id %}
+                                                                    selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}
+                                                    </select></td>
+                                                    <td><input name="Weightment" class="form-control numeric"
+                                                               required="required"
+                                                               value="{{ wd.CngCount }}"/></td>
+                                                    <td><select name="Weightment" class="form-control ShrimpItem"
+                                                                style="width: 100px"
+                                                                required="required">
+                                                        {% for cType in shrimpItem %}
+                                                            <option value="{{ cType.Id }}"
+                                                                    {% if cType.Id == wd.ShrItemId__Id %}
+                                                                    selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}
+                                                    </select></td>
+                                                    <td><select name="Weightment" class="form-control"
+                                                                style="width: 80px">
+                                                        <option value="Kg" {% if wb.MeasurUnit == 'Kg' %}
+                                                                selected="selected" {% endif %}>Kg
+                                                        </option>
+                                                        <option value="lb" {% if wb.MeasurUnit == 'lb' %}
+                                                                selected="selected" {% endif %}>lb
+                                                        </option>
+                                                    </select></td>
+                                                    <td><input name="Weightment" class="form-control numeric"
+                                                               required="required"
+                                                               value="{{ wd.MeasurQnty }}"/></td>
+                                                    <td><input name="Weightment" class="form-control numeric"
+                                                               required="required"
+                                                               value="{{ wd.Rate }}"/></td>
+                                                    <td><input name="Weightment" class="form-control"
+                                                               required="required"
+                                                               value="{{ wd.Remarks }}"/></td>
+                                                    {% if weightData.IsQcPass == 'N' %}
+                                                        <td><input type="button"
+                                                                   class="btn btn-danger btn-block RemoveRow"
+                                                                   value="Remove"></td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                                <div class="form-group ">
+                                                    {% if weightData.IsQcPass == 'N' %}
+                                                        <button type="submit" class="btn btn-primary full-width m-b ">
+                                                            Update
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
             </div>
 
-            <div class="wrapper wrapper-content animated fadeInRight ">
 
-                <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">
-                    {% for sType in shrimpType %}
-                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}</select></div>
-                <div style="display:none"><select id="ShrimpItem" name="ShrimpItem" class="form-control">
-                    {% for sItem in shrimpItem %}
-                        <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
-
-                <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                      action="{% url 'UpdateWeightment' %}">
-                    {% csrf_token %}
-                    <div class="row col-lg-4 col-md-4 col-sm-4">
-                        <div class="form-group ">
-                            <label for="Machine">Choose Farmer</label>
-                            <select id="Farmer" name="Farmer" class="form-control">{% for sType in farmerList %}
-                                <option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %}
-                                        selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="form-group ">
-                            <label for="Machine">Choose Supplier</label>
-                            <select id="Supplier" name="Supplier" class="form-control">{% for sType in supplierList %}
-                                <option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %}
-                                        selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="form-group ">
-                            <label for="SparepartsDate">Collection Date</label>
-                            <input type="text" name="WgDate" class="form-control" id="SparepartsDate"
-                                   value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
-                            <input type="hidden" name="WgId" class="form-control" id="WgId"
-                                   value="{{ weightData.Id }}"/>
-                        </div>
+            {% comment %}<form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
+                  action="{% url 'UpdateWeightment' %}">
+                {% csrf_token %}
+                <div class="row col-lg-4 col-md-4 col-sm-4">
+                    <div class="form-group ">
+                        <label for="Machine">Choose Farmer</label>
+                        <select id="Farmer" name="Farmer" class="form-control">{% for sType in farmerList %}
+                            <option value="{{ sType.Id }}" {% if sType.Id == weightData.FarmerId__Id %}
+                                    selected="selected"{% endif %}>{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
+                        </select>
                     </div>
 
-                    <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="Machine">Weightment Details</label>
-                        <table id="AllPartsAdd" class=" table table-bordered">
-                            <thead>
+                    <div class="form-group ">
+                        <label for="Machine">Choose Supplier</label>
+                        <select id="Supplier" name="Supplier" class="form-control">{% for sType in supplierList %}
+                            <option value="{{ sType.Id }}" {% if sType.Id == weightData.SupplierId__Id %}
+                                    selected="selected"{% endif %}> {{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group ">
+                        <label for="SparepartsDate">Collection Date</label>
+                        <input type="text" name="WgDate" class="form-control" id="SparepartsDate"
+                               value="{{ weightData.WgDate|date:"Y-m-d" }}"/>
+                        <input type="hidden" name="WgId" class="form-control" id="WgId"
+                               value="{{ weightData.Id }}"/>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="Machine">Weightment Details</label>
+                    <table id="AllPartsAdd" class=" table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Choose Type</th>
+                            <th>Change Count</th>
+                            <th>Item</th>
+                            <th>Unit(Kg/lb)</th>
+                            <th>Measure Qnty</th>
+                            <th>Rate(TK)</th>
+                            <th>Remarks</th>
+                            {% if weightData.IsQcPass == 'N' %}
+                                <th>
+                                    <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
+                                </th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for wd in weightmentDetails %}
                             <tr>
-                                <th>Choose Type</th>
-                                <th>Change Count</th>
-                                <th>Item</th>
-                                <th>Unit(Kg/lb)</th>
-                                <th>Measure Qnty</th>
-                                <th>Rate(TK)</th>
-                                <th>Remarks</th>
+                                <td><select name="Weightment" class="form-control ShrimpType" style="width: 100px"
+                                            required="required">
+                                    {% for cType in shrimpType %}
+                                        <option value="{{ cType.Id }}"
+                                                {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id %}
+                                                selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}
+                                </select></td>
+                                <td><input name="Weightment" class="form-control numeric" required="required"
+                                           value="{{ wd.CngCount }}"/></td>
+                                <td><select name="Weightment" class="form-control ShrimpItem" style="width: 100px"
+                                            required="required">
+                                    {% for cType in shrimpItem %}
+                                        <option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id %}
+                                                selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}
+                                </select></td>
+                                <td><select name="Weightment" class="form-control" style="width: 80px">
+                                    <option value="Kg" {% if wb.MeasurUnit == 'Kg' %}
+                                            selected="selected" {% endif %}>Kg
+                                    </option>
+                                    <option value="lb" {% if wb.MeasurUnit == 'lb' %}
+                                            selected="selected" {% endif %}>lb
+                                    </option>
+                                </select></td>
+                                <td><input name="Weightment" class="form-control numeric" required="required"
+                                           value="{{ wd.MeasurQnty }}"/></td>
+                                <td><input name="Weightment" class="form-control numeric" required="required"
+                                           value="{{ wd.Rate }}"/></td>
+                                <td><input name="Weightment" class="form-control" required="required"
+                                           value="{{ wd.Remarks }}"/></td>
                                 {% if weightData.IsQcPass == 'N' %}
-                                    <th>
-                                        <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
-                                    </th>
+                                    <td><input type="button" class="btn btn-danger btn-block RemoveRow"
+                                               value="Remove"></td>
                                 {% endif %}
                             </tr>
-                            </thead>
-                            <tbody>
-                            {% for wd in weightmentDetails %}
-                                <tr>
-                                    <td><select name="Weightment" class="form-control ShrimpType" style="width: 100px" required="required">
-                                        {% for cType in shrimpType %}
-                                            <option value="{{ cType.Id }}"
-                                                    {% if cType.Id == wd.ShrItemId__ShrimpTypeId__Id %}
-                                                    selected="selected"{% endif %}>{{ cType.Name }}</option>{% endfor %}
-                                    </select></td>
-                                    <td><input name="Weightment" class="form-control numeric" required="required"
-                                               value="{{ wd.CngCount }}"/></td>
-                                    <td><select name="Weightment" class="form-control ShrimpItem" style="width: 100px" required="required">
-                                        {% for cType in shrimpItem %}
-                                            <option value="{{ cType.Id }}" {% if cType.Id == wd.ShrItemId__Id %}
-                                                    selected="selected"{% endif %} >{{ cType.Name }}</option>{% endfor %}
-                                    </select></td>
-                                    <td><select name="Weightment" class="form-control" style="width: 80px">
-                                        <option value="Kg" {% if wb.MeasurUnit == 'Kg' %}
-                                                selected="selected" {% endif %}>Kg
-                                        </option>
-                                        <option value="lb" {% if wb.MeasurUnit == 'lb' %}
-                                                selected="selected" {% endif %}>lb
-                                        </option>
-                                    </select></td>
-                                    <td><input name="Weightment" class="form-control numeric" required="required"
-                                               value="{{ wd.MeasurQnty }}"/></td>
-                                    <td><input name="Weightment" class="form-control numeric" required="required"
-                                               value="{{ wd.Rate }}"/></td>
-                                    <td><input name="Weightment" class="form-control" required="required"
-                                               value="{{ wd.Remarks }}"/></td>
-                                    {% if weightData.IsQcPass == 'N' %}
-                                        <td><input type="button" class="btn btn-danger btn-block RemoveRow"
-                                                   value="Remove"></td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
+                        {% endfor %}
 
-                            </tbody>
-                        </table>
-                    </div>
-                    {% if weightData.IsQcPass == 'N' %}
-                        <div class="row center col-lg-4 col-md-4 col-sm-4">
-                            <div class="form-group ">
-                                <button type="submit" class="btn btn-primary block full-width m-b ">Update</button>
-                            </div>
+                        </tbody>
+                    </table>
+                </div>
+                {% if weightData.IsQcPass == 'N' %}
+                    <div class="row center col-lg-4 col-md-4 col-sm-4">
+                        <div class="form-group ">
+                            <button type="submit" class="btn btn-primary block full-width m-b ">Update</button>
                         </div>
-                    {% endif %}
-                </form>
-
-            </div>
+                    </div>
+                {% endif %}
+            </form>{% endcomment %}
 
         </div>
     </div>
 
 
-    <script>
+    <script type="text/javascript">
         window.CSRF_TOKEN = "{{ csrf_token }}";
 
         $(document).ready(function () {
             var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
             $("table").on("input", "input.numeric", function (evt) {
-
-                console.log("This is Input");
                 var self = $(this);
                 self.val(self.val().replace(/[^0-9\.]/g, ''));
                 if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
                     evt.preventDefault();
                 }
             });
-
 
             $("table").on("click", "input.RemoveRow", function () {
                 $(this).parent().parent().remove();
@@ -162,7 +300,7 @@
                     '<td><select name="Weightment" class="form-control ShrimpType" style="width: 100px">' + ShrimpType +
                     '</select></td>' +
                     '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>' +
-                    '<td><select name="Weightment" class="form-control" style="width: 100px">' + ShrimpItem +
+                    '<td><select name="Weightment" class="form-control ShrimpItem" style="width: 100px">' + ShrimpItem +
                     '</select></td>' +
                     '<td><select name="Weightment" class="form-control" style="width: 80px"><option value="Kg">Kg</option><option value="lb">lb</option></select></td>' +
                     '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
@@ -239,8 +377,6 @@
                 });
 
             });
-
-
         });
     </script>
 
