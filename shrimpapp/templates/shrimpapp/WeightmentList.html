@@ -8,198 +8,193 @@
     <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
 
     <div id="page-wrapper" class="gray-bg">
-
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
-
-        <style type="text/css">
-        </style>
-
-        {% if Message|length > 0 %}
-            <div class="alert alert-info">
-                <strong>{{ Message }}</strong>
-            </div>
-        {% endif %}
-
-        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
+        <div class="wrapper wrapper-content animated fadeInRight ">
 
             <div class="row">
-                <div class="col-sm-2"></div>
-            </div>
+                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                    <div class="ibox float-e-margins">
 
-            <div class="wrapper wrapper-content animated fadeInRight ">
+                        <div class="ibox-content">
 
-                <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                      action="{% url 'ListSearchWeightment' %}">
-                    {% csrf_token %}
+                            <div class="row">
+                                <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post"
+                                      enctype="multipart/form-data" action="{% url 'ListSearchWeightment' %}">
+                                    {% csrf_token %}
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="form-group  col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                            <label for="Machine">Choose Farmer</label>
+                                            <select id="Farmer" name="Farmer" class="form-control">{% for sType in farmerList %}
+                                                <option value="{{ sType.Id }}">{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+
+                                        <div class="form-group  col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                            <label for="Machine">Choose Supplier</label>
+                                            <select id="Supplier" name="Supplier" class="form-control">{% for sType in supplierList %}
+                                                <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
 
 
-                    <div class="row col-lg-6 col-md-6 col-sm-6">
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
-                            <label for="Machine">Choose Farmer</label>
-                            <select name="Farmer" class="form-control">{% for sType in farmerList %}
-                                <option value="{{ sType.Id }}">{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
-                            </select>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-sx-5">
+                                                <label for="SparepartsDate">From Date</label>
+                                                <input type="text" name="FromDate" class="form-control" id="FromDate" required value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+                                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-sx-5">
+                                                <label for="SparepartsDate">To Date</label>
+                                                <input type="text" name="ToDate" class="form-control" id="ToDate"
+                                                       required
+                                                       value="{% if wegToDate %} {{ wegToDate|date:"Y-m-d" }}{% endif %}"/>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                                            <div class="form-group col-lg-4 col-md-4 col-sm-4 col-sx-4"><button type="submit" class="btn btn-primary">Search</button></div>
+                                            <div class="col-lg-4 col-md-4 col-sm-4 col-sx-4">
+
+                                            </div>
+                                            <div class="form-group col-lg-4 col-md-4 col-sm-4 col-sx-4"></div>
+
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+
                         </div>
-                        <div class="mt-2 col-md-12">
-                        </div>
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
-                            <label for="SparepartsDate">From Date</label>
-                            <input type="text" name="FromDate" class="form-control" id="FromDate" required
-                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                        </div>
+
                     </div>
-
-
-                    <div class="row col-lg-6 col-md-6 col-sm-6">
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
-                            <label for="Machine">Choose Supplier</label>
-                            <select name="Supplier" class="form-control">{% for sType in supplierList %}
-                                <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
-                            </select>
-                        </div>
-                        <div class="mt-2 col-md-12">
-                        </div>
-
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10 ">
-                            <label for="SparepartsDate">To Date</label>
-                            <input type="text" name="ToDate" class="form-control" id="ToDate" required
-                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Search</button>
-
-                </form>
-
-                <div class="col-lg-12 col-md-12 col-sm-12">
-                    <label for="Machine">Weightment List</label>
-                    <table id="AllPartsAdd" class=" table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>SL</th>
-                            <th>Date</th>
-                            <th>Farmer</th>
-                            <th>Supplier</th>
-                            <th>Is Qc Pass</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for us in weghtmentList %}
-                            <tr id="Complain_{{ us.ComplainId }}">
-                                <td>{{ forloop.counter }}</td>
-                                <td> {{us.WgDate|date:'Y-m-d' }}</td>
-                                <td> {{ us.FarmerId__FarmerCode }}</td>
-                                <td> {{ us.SupplierId__SupplierCode }}</td>
-                                <td> {% if us.IsQcPass == 'Y' %}Yes{% else %}No{% endif %} </td>
-                                <td>
-                                    <a href="{% url 'EditWeightment' %}?WeightmentId={{ us.Id }} "
-                                       class="btn {% if us.IsQcPass == 'N' %}btn-info{% endif %}{% if us.IsQcPass == 'Y' %}btn-success{% endif %} btn-block">
-                                        {% if us.IsQcPass == 'N' %}Edit{% endif %}{% if us.IsQcPass == 'Y' %}
-                                        View{% endif %}</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-
                 </div>
-
             </div>
+
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                                    <table id="AllPartsAdd" class=" table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>SL</th>
+                                            <th>Date</th>
+                                            <th>Farmer</th>
+                                            <th>Supplier</th>
+                                            <th>Is Qc Pass</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for us in weghtmentList %}
+                                            <tr id="Complain_{{ us.ComplainId }}">
+                                                <td>{{ forloop.counter }}</td>
+                                                <td> {{ us.WgDate|date:'Y-m-d' }}</td>
+                                                <td> {{ us.FarmerId__FarmerCode }}</td>
+                                                <td> {{ us.SupplierId__SupplierCode }}</td>
+                                                <td> {% if us.IsQcPass == 'Y' %}Yes{% else %}No{% endif %} </td>
+                                                <td>
+                                                    <a href="{% url 'EditWeightment' %}?WeightmentId={{ us.Id }} "
+                                                       class="btn {% if us.IsQcPass == 'N' %}btn-info{% endif %}{% if us.IsQcPass == 'Y' %}btn-success{% endif %} btn-block">
+                                                        {% if us.IsQcPass == 'N' %}Edit{% endif %}
+                                                        {% if us.IsQcPass == 'Y' %}
+                                                            View{% endif %}</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
+    </div>
 
-
-        <script>
-            window.CSRF_TOKEN = "{{ csrf_token }}";
-            $(document).ready(function () {
-                $("table").on("input", "input.numeric", function (evt) {
-
-                    console.log("This is Input");
-                    var self = $(this);
-                    self.val(self.val().replace(/[^0-9\.]/g, ''));
-                    if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
-                        evt.preventDefault();
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+            $("#Farmer").on("change", function () {
+                var farmerId = this.value;
+                var baseurl = "{% url 'SupplyerListByFarmer' %}";
+                $('#Supplier').html('');
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "Farmer=" + farmerId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#Supplier').html(html);
                     }
                 });
 
-
-                $("table").on("click", "input.RemoveRow", function () {
-                    $(this).parent().parent().remove();
-                });
-
-                $("#AddNewRow").click(function () {
-                    var ShrimpType = '';
-                    $("#ShrimpType option").each(function () {
-                        ShrimpType = ShrimpType + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
-                    });
-
-                    var ShrimpItem = '';
-                    $("#ShrimpItem option").each(function () {
-                        ShrimpItem = ShrimpItem + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
-                    });
-
-                    var tableRow = '<tr>' +
-                        '<td><select name="Weightment" class="form-control ">' + ShrimpType +
-                        '</select></td>' +
-                        '<td><input name="Weightment" class="form-control numeric" required="required" value=""/></td>' +
-                        '<td><select name="Weightment" class="form-control ">' + ShrimpItem +
-                        '</select></td>' +
-                        '<td><select name="Weightment" class="form-control "><option value="Kg">Kg</option><option value="lb">lb</option></select></td>' +
-                        '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
-                        '<td><input name="Weightment"  class="form-control numeric" required="required" value=""/></td>' +
-                        '<td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>' +
-                        '<td><input type="button" class="btn btn-danger btn-block RemoveRow"  value="Remove"></td>' +
-                        '</tr>';
-
-                    $("#AllPartsAdd").prepend(tableRow);
-                    return false;
-                });
-
-                $('.i-checks').iCheck({
-                    checkboxClass: 'icheckbox_square-green',
-                    radioClass: 'iradio_square-green',
-                });
-
-                $('.document_updatedate').datepicker({
-                    autoclose: true,
-                    format: "yyyy-mm-dd",
-                    todayBtn: true,
-                    calendarWeeks: true,
-                    autoclose: true,
-                    todayHighlight: true,
-                    toggleActive: true
-                });
-
-                $('#SparepartsDate').datepicker({
-                    autoclose: true,
-                    format: "yyyy-mm-dd",
-                    todayBtn: true,
-                    calendarWeeks: true,
-                    autoclose: true,
-                    todayHighlight: true,
-                    toggleActive: true
-                });
-                $('#FromDate').datepicker({
-                    autoclose: true,
-                    format: "yyyy-mm-dd",
-                    todayBtn: true,
-                    calendarWeeks: true,
-                    autoclose: true,
-                    todayHighlight: true,
-                    toggleActive: true
-                });
-
-                $('#ToDate').datepicker({
-                    autoclose: true,
-                    format: "yyyy-mm-dd",
-                    todayBtn: true,
-                    calendarWeeks: true,
-                    autoclose: true,
-                    todayHighlight: true,
-                    toggleActive: true
-                });
-
             });
-        </script>
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.document_updatedate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+            $('#SparepartsDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+            $('#FromDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+            $('#ToDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+        });
+    </script>
 
 {% endblock %}

@@ -12,55 +12,72 @@
     <div id="page-wrapper" class="gray-bg">
 
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
-        <style type="text/css">
-        </style>
+        <div class="wrapper wrapper-content animated fadeInRight ">
 
-        {% if Message|length > 0 %}
-            <div class="alert alert-info">
-                <strong>{{ Message }}</strong>
-            </div>
-        {% endif %}
-
-        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
 
             <div class="row">
-                <div class="col-sm-2"></div>
-            </div>
+                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                    <div class="ibox float-e-margins">
+                        {#                            <div class="ibox-title">#}
+                        {#                                <h5>Orders</h5>#}
+                        {#                            </div>#}
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="col-lg-5 col-md-5 col-sm-5">
+                                        <label for="SparepartsDate">From Date</label>
+                                        <input type="text" name="FromDate" class="form-control" id="FromDate" required
+                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                                    </div>
 
-            <div class="wrapper wrapper-content animated fadeInRight ">
+                                    <div class="form-group  col-lg-5 col-md-5 col-sm-5">
+                                        <label for="SparepartsDate">To Date</label>
+                                        <input type="text" name="ToDate" class="form-control" id="ToDate" required
+                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                                    </div>
 
-                <div class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                     action="{% url 'ListSearchWeightment' %}">
-                    {% csrf_token %}
-                    <div class="row col-lg-6 col-md-6 col-sm-6">
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
-                            <label for="SparepartsDate">From Date</label>
-                            <input type="text" name="FromDate" class="form-control" id="FromDate" required
-                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                        </div>
-                        <div class="mt-2 col-md-12">
-                        </div>
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10 ">
-                            <label for="SparepartsDate">To Date</label>
-                            <input type="text" name="ToDate" class="form-control" id="ToDate" required
-                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                        </div>
-                    </div>
 
-                    <div class="row col-lg-10 col-md-10 col-sm-10">
-                        <button style="margin:5px;" type="submit" id="searchbtn" class="btn btn-primary block">Search</button>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label for=""></label>
+                                        <button style="margin:5px;" type="submit" id="searchbtn"
+                                                class="btn btn-primary block">Search
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
-                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
-
-                </div>
-
             </div>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+
+                        <div id="ibox-content" class="">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
         </div>
 
+
         {% csrf_token %}
-        <script>
+        <script type="text/javascript">
             window.CSRF_TOKEN = "{{ csrf_token }}";
             $(document).ready(function () {
                 var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
@@ -68,26 +85,27 @@
                     var fromDate = $("#FromDate").val();
                     var toDate = $("#ToDate").val();
                     var baseurl = "{% url 'AllPrdListForEdit' %}";
-                    if(fromDate == '' || toDate == ''){
+                    if (fromDate == '' || toDate == '') {
                         sweetAlert({
-                                title: "Please Select Two Date.",
-                                text: "Thank You ",
-                                type: "warning",
-                                showCancelButton: true,
-                                confirmButtonText: "DISMISS"
-                            });
+                            title: "Please Select Two Date.",
+                            text: "Thank You ",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "DISMISS"
+                        });
                     }
-                    else{
+                    else {
                         $.ajax({
                             url: baseurl,
                             type: "GET",
-                            data: "FromDate=" + fromDate +"&ToDate=" +toDate +"&csrfmiddlewaretoken=" + csrftoken,
+                            data: "FromDate=" + fromDate + "&ToDate=" + toDate + "&csrfmiddlewaretoken=" + csrftoken,
                             cache: false,
                             dataType: 'json',
                             success: function (data) {
                                 var response = $.parseJSON(JSON.stringify(data));
                                 var dep = $.parseJSON(JSON.stringify(response.status));
                                 var html = $.parseJSON(JSON.stringify(response.html));
+                                $('#ibox-content').addClass('ibox-content');
                                 $('#search-data').html(html);
                             }
                         });

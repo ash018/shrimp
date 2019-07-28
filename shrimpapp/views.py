@@ -200,9 +200,10 @@ def ListWeightment(request):
         weghtmentList = Weightment.objects.filter(EntryBy=user).values('Id','WgDate','FarmerId__FarmerCode', 'SupplierId__SupplierCode', 'IsQcPass').order_by('-Id')
 
 
-        context = {'PageTitle': 'Weightment List', 'farmerList':farmerList,
-                   'supplierList' : supplierList, 'weghtmentList':weghtmentList
-                   }
+        context = {'PageTitle': 'Weightment List',
+                   'farmerList':farmerList,
+                   'supplierList' : supplierList,
+                   'weghtmentList':weghtmentList}
         return render(request, 'shrimpapp/WeightmentList.html',context)
 
 

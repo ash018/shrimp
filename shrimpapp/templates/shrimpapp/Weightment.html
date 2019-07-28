@@ -8,115 +8,145 @@
     <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
 
     <div id="page-wrapper" class="gray-bg">
-
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
 
-        <style type="text/css">
-        </style>
+        <div class="wrapper wrapper-content animated fadeInRight ">
 
-        {% if Message|length > 0 %}
-            <div class="alert alert-info">
-                <strong>{{ Message }}</strong>
+            <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">
+                {% for sType in shrimpType %}
+                    <option value="{{ sType.Id }}">{{ sType.Name }}</option>
+                {% endfor %}
+            </select>
             </div>
-        {% endif %}
-
-        <div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
+            <div style="display:none">
+                <select id="ShrimpItem" name="ShrimpItem" class="form-control">
+                    {% for sItem in shrimpItem %}
+                        <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}
+                </select></div>
 
             <div class="row">
-                <div class="col-sm-2"></div>
-            </div>
+                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post"
+                              enctype="multipart/form-data"
+                              action="{% url 'SaveWeightment' %}">
+                            {% csrf_token %}
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <label for="Machine">Choose Farmer</label>
+                                            <select id="Farmer" name="Farmer" class="form-control">
+                                                {% for sType in farmerList %}
+                                                    <option value="{{ sType.Id }}">{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
 
-            <div class="wrapper wrapper-content animated fadeInRight ">
+                                        <div class="form-group  col-lg-3 col-md-3 col-sm-3">
+                                            <label for="SparepartsDate">To Date</label>
+                                            <select id="Supplier" name="Supplier" class="form-control">
+                                                {% for sType in supplierList %}
+                                                    <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
 
-                <div style="display:none"><select id="ShrimpType" name="ShrimpType" class="form-control">
-                    {% for sType in shrimpType %}
-                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}</select></div>
-                <div style="display:none"><select id="ShrimpItem" name="ShrimpItem" class="form-control">
-                    {% for sItem in shrimpItem %}
-                        <option value="{{ sItem.Id }}">{{ sItem.Name }}</option>{% endfor %}</select></div>
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <label for="SparepartsDate">Collection Date</label>
+                                            <input type="text" name="WgDate" class="form-control" id="SparepartsDate"/>
+                                        </div>
+                                    </div>
+                                </div>
 
-                <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post" enctype="multipart/form-data"
-                      action="{% url 'SaveWeightment' %}">
-                    {% csrf_token %}
-                    <div class="row col-lg-4 col-md-4 col-sm-4">
-                        <div class="form-group ">
-                            <label for="Machine">Choose Farmer</label>
-                            <select id="Farmer" name="Farmer" class="form-control">{% for sType in farmerList %}
-                                <option value="{{ sType.Id }}">{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
-                            </select>
-                        </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <label for="Machine">Weightment Details</label>
+                                        <table id="AllPartsAdd" class=" table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Choose Type</th>
+                                                <th>Change Count</th>
+                                                <th>Item</th>
+                                                <th>Unit(Kg/lb)</th>
+                                                <th>Measure Qnty</th>
+                                                <th>Rate(TK)</th>
+                                                <th>Remarks</th>
+                                                <th>
+                                                    <button id="AddNewRow" class=" btn btn-success btn-block"> ADD
+                                                    </button>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td><select name="Weightment" class="form-control ShrimpType"
+                                                            style="width: 100px">
+                                                    {% for cType in shrimpType %}
+                                                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                                                </select>
+                                                </td>
+                                                <td><input name="Weightment" class="form-control numeric"
+                                                           required="required" value=""/>
+                                                </td>
+                                                <td><select name="Weightment" class="form-control ShrimpItem"
+                                                            style="width: 100px">
+                                                    {% for cType in shrimpItem %}
+                                                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                                                </select>
+                                                </td>
+                                                <td><select name="Weightment" class="form-control" style="width: 80px">
+                                                    <option value="Kg">Kg</option>
+                                                    <option value="lb">lb</option>
+                                                </select></td>
+                                                <td><input name="Weightment" class="form-control numeric"
+                                                           required="required"
+                                                           value="0.0"/></td>
+                                                <td><input name="Weightment" class="form-control numeric"
+                                                           required="required"
+                                                           value="0.0"/></td>
+                                                <td><input name="Weightment" class="form-control" required="required"
+                                                           value="N/A"/></td>
+                                                <td><input type="button" class="btn btn-danger btn-block RemoveRow"
+                                                           value="Remove"></td>
 
-                        <div class="form-group ">
-                            <label for="Machine">Choose Supplier</label>
-                            <select id="Supplier" name="Supplier" class="form-control">
-                                {% for sType in supplierList %}
-                                    <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
-                            </select>
-                        </div>
+                                            </tr>
 
-                        <div class="form-group ">
-                            <label for="SparepartsDate">Collection Date</label>
-                            <input type="text" name="WgDate" class="form-control" id="SparepartsDate"/>
-                        </div>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                                <div class="form-group ">
+                                                    <button type="submit" class="btn btn-primary  full-width m-b">
+                                                        Save
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </form>
+
                     </div>
-
-                    <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="Machine">Weightment Details</label>
-                        <table id="AllPartsAdd" class=" table table-bordered">
-                            <thead>
-                            <tr>
-                                <th>Choose Type</th>
-                                <th>Change Count</th>
-                                <th>Item</th>
-                                <th>Unit(Kg/lb)</th>
-                                <th>Measure Qnty</th>
-                                <th>Rate(TK)</th>
-                                <th>Remarks</th>
-                                <th>
-                                    <button id="AddNewRow" class=" btn btn-success btn-block"> ADD</button>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td><select name="Weightment" class="form-control ShrimpType" style="width: 100px">
-                                    {% for cType in shrimpType %}
-                                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select>
-                                </td>
-                                <td><input name="Weightment" class="form-control numeric" required="required" value=""/>
-                                </td>
-                                <td><select name="Weightment" class="form-control ShrimpItem" style="width: 100px">
-                                    {% for cType in shrimpItem %}
-                                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select>
-                                </td>
-                                <td><select name="Weightment" class="form-control" style="width: 80px">
-                                    <option value="Kg">Kg</option>
-                                    <option value="lb">lb</option>
-                                </select></td>
-                                <td><input name="Weightment" class="form-control numeric" required="required"
-                                           value="0.0"/></td>
-                                <td><input name="Weightment" class="form-control numeric" required="required"
-                                           value="0.0"/></td>
-                                <td><input name="Weightment" class="form-control" required="required" value="N/A"/></td>
-                                <td><input type="button" class="btn btn-danger btn-block RemoveRow" value="Remove"></td>
-
-                            </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="row center col-lg-4 col-md-4 col-sm-4">
-                        <div class="form-group ">
-                            <button type="submit" class="btn btn-primary block full-width m-b ">Save</button>
-                        </div>
-                    </div>
-                </form>
-
+                </div>
             </div>
 
         </div>
     </div>
-
 
     <script type="text/javascript">
         window.CSRF_TOKEN = "{{ csrf_token }}";
@@ -167,7 +197,7 @@
                 radioClass: 'iradio_square-green',
             });
 
-            $(document).on('change', '#AllPartsAdd tbody td select.ShrimpType', function(e) {
+            $(document).on('change', '#AllPartsAdd tbody td select.ShrimpType', function (e) {
                 var sTypeId = this.value;
                 var baseurl = "{% url 'SItemBySType' %}";
                 var row = $(this).closest("tr").index();
