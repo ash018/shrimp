@@ -14,7 +14,6 @@
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
         <div class="wrapper wrapper-content animated fadeInRight ">
 
-
             <div class="row">
                 <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
                     <div class="ibox float-e-margins">
@@ -53,7 +52,7 @@
 
 
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="ibox float-e-margins">
 
                         <div id="ibox-content" class="">
@@ -72,10 +71,8 @@
                 </div>
             </div>
 
-
         </div>
-
-
+    </div>
         {% csrf_token %}
         <script type="text/javascript">
             window.CSRF_TOKEN = "{{ csrf_token }}";

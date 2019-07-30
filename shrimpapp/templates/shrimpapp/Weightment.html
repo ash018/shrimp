@@ -27,9 +27,7 @@
             <div class="row">
                 <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
                     <div class="ibox float-e-margins">
-                        <form class="form-horizontal col-lg-12 col-md-12 col-sm-12" method="post"
-                              enctype="multipart/form-data"
-                              action="{% url 'SaveWeightment' %}">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'SaveWeightment' %}">
                             {% csrf_token %}
                             <div class="ibox-content">
                                 <div class="row">

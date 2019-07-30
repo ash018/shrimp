@@ -71,7 +71,7 @@ def ShowDetailForQC(request):
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
 
-        context = {'PageTitle': 'Weightment QC', 'shrimpType': shrimpType,
+        context = {'PageTitle': 'QC', 'shrimpType': shrimpType,
                    'shrimpItem': shrimpItem, 'farmerList': farmerList,
                    'supplierList': supplierList, 'weightData': weightData,
                    'weightmentDetails': weightmentDetails,
