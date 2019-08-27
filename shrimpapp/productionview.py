@@ -653,6 +653,58 @@ def UpdateProduction(request):
                                 LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
                                                     PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
                                                     ProdAmount=pQty).save()
+                elif pt['Id'] == 4:
+                    proDetail = request.POST.getlist(str(pt['Name']))
+                    # print("=========="+str(proDetail))
+                    srv = np.reshape(proDetail, (-1, 31))
+                    for i in range(len(srv)):
+                        if i != 0:
+                            sPrdItem = ShrimpProdItem.objects.filter(pk=int(srv[i][0])).first()
+                            subPr = np.reshape(srv[i][1:], (-1, 5))
+                            for k in range(len(subPr)):
+                                pItem = ''
+                                pCount = ''
+                                pMunit = ''
+                                pQty = ''
+                                prTyId = ''
+                                pPkMat = []
+
+                                for m in range(len(subPr[k])):
+                                    pPkMat = []
+                                    if m == 0:
+                                        pItem = ProdItem.objects.filter(pk=int(subPr[k][m])).first()
+                                        prTyId = ProdType.objects.filter(pk=int(
+                                            ProdItem.objects.filter(pk=int(subPr[k][m])).values(
+                                                'PrTyId__Id').first()['PrTyId__Id'])).first()
+                                    if m == 1:
+                                        pCount = subPr[k][m]
+                                    if m == 2:
+                                        pMunit = subPr[k][m]
+                                    if m == 3:
+                                        pQty = subPr[k][m]
+                                    if m == 4:
+                                        pPkMat = re.split('-', str(subPr[k][m]))
+
+                                prodDetail = ProductionDetail(ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                              PrItmId=pItem, ProdItemPcs=pCount,
+                                                              ProdItemUnit=pMunit, ProdAmount=pQty)
+                                prodDetail.save()
+                                for pg in list(pPkMat):
+                                    if str(pg) != '' and len(re.split('!', str(pg))) > 0:
+                                        pPgId = PackagingMaterial.objects.filter(
+                                            pk=int(re.split('!', str(pg))[0])).first()
+                                        pPgQty = re.split('!', str(pg))[1]
+                                        PackagingMaterial.objects.filter(pk=int(re.split('!', str(pg))[0])).update(
+                                            Stock=F('Stock') - int(pPgQty))
+                                        ProdDtlPkgMaterial(ProdId=prod, ProDtlId=prodDetail, PkgMatId=pPgId,
+                                                           Qnty=int(pPgQty)).save()
+
+                                LogProductionDetail(LogProdId=lgProd, ProdId=prod, SmpProdId=sPrdItem, PrTyId=prTyId,
+                                                    PrItmId=pItem, ProdItemPcs=pCount, ProdItemUnit=pMunit,
+                                                    ProdAmount=pQty).save()
+
+
+
                 else:
                     proDetail = request.POST.getlist(str(pt['Name']))
 
