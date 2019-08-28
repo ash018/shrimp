@@ -88,11 +88,12 @@ def FmWeightMentForm(request):
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
         farmerData = Farmer.objects.filter(pk=int(farmer)).values('Id','FarmerName','FarmerCode','FarmerMobile','Address').first()
+        sItemList = ShrimpItem.objects.filter(ShrimpTypeId__Id=int(1)).values('Id', 'Name')
 
         gradingtype = GradingType.objects.all().values('Id','Name')
-#id="FarmerMainBlock_{{ farmerData.Id }}"
+
         context = {'farmerData': farmerData, 'gradingtype':gradingtype,
-                   'shrimpItem':shrimpItem, 'shrimpType':shrimpType}
+                   'shrimpItem':shrimpItem, 'shrimpType':shrimpType,'sItemList':sItemList}
         template = 'shrimpapp/FarmerWiseWeightment.html'
 
         if request.is_ajax():
