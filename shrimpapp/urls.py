@@ -3,6 +3,8 @@ from .views import *
 from . import views
 from . import qcweightmentview
 from . import productionview
+from . import ajaxresponseview
+
 
 urlpatterns = [
     url(r'^$', views.Login, name='Login'),
@@ -35,6 +37,13 @@ urlpatterns = [
     url(r'^AllPrdListForEdit', productionview.AllPrdListForEdit, name='AllPrdListForEdit'),
     url(r'^EditProduction', productionview.EditProduction, name='EditProduction'),
     url(r'^UpdateProduction', productionview.UpdateProduction, name='UpdateProduction'),
+    url(r'^RCresponse', ajaxresponseview.RCresponse, name='RCresponse'),
+    url(r'^FarmerListBySupplier', ajaxresponseview.FarmerListBySupplier, name='FarmerListBySupplier'),
+    url(r'^FmWeightMentForm', ajaxresponseview.FmWeightMentForm, name='FmWeightMentForm'),
 
     url(r'^Logout', views.Logout, name='Logout'),
+
+
+
+
 ]

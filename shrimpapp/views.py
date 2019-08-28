@@ -113,12 +113,21 @@ def WeightmentView(request):
         shrimpType = ShrimpType.objects.all().values('Id','Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
         farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+
+        dt = str(datetime.datetime.now())
+        _datetime = datetime.datetime.now()
+        entryDate = _datetime.strftime("%Y-%m-%d")
+
+
         supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        gradTypeList = GradingType.objects.all().values('Id', 'Name')
+        receiveTypeList = ReceiveType.objects.all().values('Id', 'Name')
 
         context = {'PageTitle': 'Weightment', 'shrimpType':shrimpType,
                    'shrimpItem':shrimpItem, 'farmerList':farmerList,
-                   'supplierList' : supplierList
-                   }
+                   'supplierList' : supplierList, 'gradTypeList' : gradTypeList,
+                   'receiveTypeList' : receiveTypeList, 'Today':entryDate}
         return render(request, 'shrimpapp/Weightment.html',context)
 
 def SaveWeightment(request):

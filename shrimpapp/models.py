@@ -146,6 +146,7 @@ class ShrimpItem(models.Model):
     Name = models.CharField(max_length=100, db_column='Name')
     ItemCount = models.IntegerField(db_column='ItemCount', default=0)
     MeasurUnit = models.CharField(max_length=100, db_column='MeasurUnit')
+    Price = models.DecimalField(max_digits=18, decimal_places=2, db_column='Price', default=0.0)
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     ShrimpTypeId = models.ForeignKey(ShrimpType, db_column='ShrimpTypeId', on_delete=models.CASCADE, default=100)
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
@@ -157,12 +158,59 @@ class ShrimpItem(models.Model):
         managed = False
         db_table = 'ShrimpItem'
 
+class GradingType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='GrdTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'GradingType'
+
+class ReceiveType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='RcvTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'ReceiveType'
+
+class Abstraction(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='WgId')
+    RcvTypeId = models.ForeignKey(ReceiveType, db_column='RcvTypeId', on_delete=models.CASCADE, default=100)
+
+    AbsCreateDate = models.DateTimeField(auto_now_add=True, db_column='AbsCreateDate')
+    TotalKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalKg', default=0.0)
+    TotalLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalLb', default=0.0)
+    IsQcPass = models.CharField(max_length=100, db_column='IsQcPass', default='N')
+    IsProductionUsed = models.CharField(max_length=100, db_column='IsProductionUsed', default='N')
+
+    LocDate = models.CharField(max_length=100, db_column='LocDate', default='2019-08-30')
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'Abstraction'
+
 class Weightment(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WgId')
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
     FarmerId = models.ForeignKey(Farmer, db_column='FarmerId', on_delete=models.CASCADE, default=100)
     SupplierId = models.ForeignKey(Supplier, db_column='SupplierId', on_delete=models.CASCADE, default=100)
+    GrdTypeId = models.ForeignKey(GradingType, db_column='GrdTypeId', on_delete=models.CASCADE, default=100)
+
     WgDate = models.DateTimeField(auto_now_add=True, db_column='WgDate')
-    IsQcPass = models.CharField(max_length=100, db_column='IsQcPass')
+    IsQcPass = models.CharField(max_length=100, db_column='IsQcPass', default='N')
+    Total = models.DecimalField(max_digits=18, decimal_places=2, db_column='Total', default=0.0)
+    MeasurUnit =  models.CharField(max_length=100, db_column='MeasurUnit', default='N')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
@@ -173,9 +221,12 @@ class Weightment(models.Model):
 
 class WeightmentDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WgDtlId')
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
-    CngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='CngCount', default=0.0)
     ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)
+
+    CngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='CngCount', default=0.0)
+    SmpQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='SmpQnty', default=0.0)
     MeasurUnit = models.CharField(max_length=10, db_column='MeasurUnit')
     MeasurQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='MeasurQnty', default=0.0)
     Rate = models.DecimalField(max_digits=18, decimal_places=2, db_column='Rate', default=0.0)
@@ -185,13 +236,39 @@ class WeightmentDetail(models.Model):
         managed = False
         db_table = 'WeightmentDetail'
 
+class LogAbstraction(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='LogAbsId')
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
+    RcvTypeId = models.ForeignKey(ReceiveType, db_column='RcvTypeId', on_delete=models.CASCADE, default=100)
+
+    AbsCreateDate = models.DateTimeField(auto_now_add=True, db_column='AbsCreateDate')
+    TotalKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalKg', default=0.0)
+    TotalLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalLb', default=0.0)
+    IsQcPass = models.CharField(max_length=100, db_column='IsQcPass', default='N')
+    IsProductionUsed = models.CharField(max_length=100, db_column='IsProductionUsed', default='N')
+
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'LogAbstraction'
+
+
 class LogWeightment(models.Model):
     Id = models.AutoField(primary_key=True, db_column='LgWgId')
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
     FarmerId = models.ForeignKey(Farmer, db_column='FarmerId', on_delete=models.CASCADE, default=100)
     SupplierId = models.ForeignKey(Supplier, db_column='SupplierId', on_delete=models.CASCADE, default=100)
+    GrdTypeId = models.ForeignKey(GradingType, db_column='GrdTypeId', on_delete=models.CASCADE, default=100)
+
     WgDate = models.DateTimeField(auto_now_add=True, db_column='WgDate')
-    IsQcPass = models.CharField(max_length=100, db_column='IsQcPass')
+    IsQcPass = models.CharField(max_length=100, db_column='IsQcPass', default='N')
+    Total = models.DecimalField(max_digits=18, decimal_places=2, db_column='Total', default=0.0)
+    MeasurUnit = models.CharField(max_length=100, db_column='MeasurUnit', default='N')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
@@ -203,9 +280,12 @@ class LogWeightment(models.Model):
 class LogWeightmentDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='LogWgDtlId')
     LgWgId = models.ForeignKey(LogWeightment, db_column='LgWgId', on_delete=models.CASCADE, default=100)
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
-    CngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='CngCount', default=0.0)
     ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)
+
+    CngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='CngCount', default=0.0)
+    SmpQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='SmpQnty', default=0.0)
     MeasurUnit = models.CharField(max_length=10, db_column='MeasurUnit')
     MeasurQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='MeasurQnty', default=0.0)
     Rate = models.DecimalField(max_digits=18, decimal_places=2, db_column='Rate', default=0.0)
@@ -218,15 +298,20 @@ class LogWeightmentDetail(models.Model):
 
 class QCWeightment(models.Model):
     Id = models.AutoField(primary_key=True, db_column='QCWgId')
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
+    WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
     FarmerId = models.ForeignKey(Farmer, db_column='FarmerId', on_delete=models.CASCADE, default=100)
     SupplierId = models.ForeignKey(Supplier, db_column='SupplierId', on_delete=models.CASCADE, default=100)
+
     WgDate = models.DateTimeField(auto_now_add=True, db_column='WgDate')
+    Total = models.DecimalField(max_digits=18, decimal_places=2, db_column='Total', default=0.0)
+    QCTotal = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCTotal', default=0.0)
     IsQcPass = models.CharField(max_length=10, db_column='IsQcPass')
     IsProductionUsed = models.CharField(max_length=10, db_column='IsProductionUsed')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
-    WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
 
     class Meta:
         managed = False
@@ -234,13 +319,20 @@ class QCWeightment(models.Model):
 
 class QCWeightmentDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WgDtlId')
-    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
+    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+    ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)
+
     GivenCngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='GivenCngCount', default=0.0)
     QCCngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCCngCount', default=0.0)
-    ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)
+
+    SmpQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='SmpQnty', default=0.0)
+    QCSmpQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCSmpQnty', default=0.0)
+
     MeasurUnit = models.CharField(max_length=10, db_column='MeasurUnit')
     MeasurQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='MeasurQnty', default=0.0)
+
     QCMeasurQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCMeasurQnty', default=0.0)
     Rate = models.DecimalField(max_digits=18, decimal_places=2, db_column='Rate', default=0.0)
     Remarks = models.CharField(max_length=100, db_column='Remarks',default='N/A')
@@ -252,16 +344,21 @@ class QCWeightmentDetail(models.Model):
 
 class LogQCWeightment(models.Model):
     Id = models.AutoField(primary_key=True, db_column='LogQcId')
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
+    WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
+    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
     FarmerId = models.ForeignKey(Farmer, db_column='FarmerId', on_delete=models.CASCADE, default=100)
     SupplierId = models.ForeignKey(Supplier, db_column='SupplierId', on_delete=models.CASCADE, default=100)
+
     WgDate = models.DateTimeField(auto_now_add=True, db_column='WgDate')
+    Total = models.DecimalField(max_digits=18, decimal_places=2, db_column='Total', default=0.0)
+    QCTotal = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCTotal', default=0.0)
     IsQcPass = models.CharField(max_length=100, db_column='IsQcPass')
     IsProductionUsed = models.CharField(max_length=10, db_column='IsProductionUsed')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
-    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
-    WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
 
     class Meta:
         managed = False
@@ -270,14 +367,21 @@ class LogQCWeightment(models.Model):
 class LogQCWeightmentDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='LogQcDId')
     LogQcId = models.ForeignKey(LogQCWeightment, db_column='LogQcId', on_delete=models.CASCADE, default=100)
-    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+    AbsId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE, default=100)
     WgId = models.ForeignKey(Weightment, db_column='WgId', on_delete=models.CASCADE, default=100)
+    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+    ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)
+
     GivenCngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='GivenCngCount', default=0.0)
     QCCngCount = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCCngCount', default=0.0)
-    ShrItemId = models.ForeignKey(ShrimpItem, db_column='ShrItemId', on_delete=models.CASCADE, default=100)
+
+    SmpQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='SmpQnty', default=0.0)
+    QCSmpQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCSmpQnty', default=0.0)
+
     MeasurUnit = models.CharField(max_length=10, db_column='MeasurUnit')
     MeasurQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='MeasurQnty', default=0.0)
     QCMeasurQnty = models.DecimalField(max_digits=18, decimal_places=2, db_column='QCMeasurQnty', default=0.0)
+
     Rate = models.DecimalField(max_digits=18, decimal_places=2, db_column='Rate', default=0.0)
     Remarks = models.CharField(max_length=100, db_column='Remarks', default='N/A')
     QCRemarks = models.CharField(max_length=100, db_column='QCRemarks', default='N/A')

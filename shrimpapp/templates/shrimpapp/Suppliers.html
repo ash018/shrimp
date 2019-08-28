@@ -8,3 +8,39 @@
         <option value="{{ sType.Id }}">{{ sType.Name }}</option>
     {% endfor %}
 {% endif %}
+
+{% if param == 'CascadingSupplier' %}
+    {% if rcType == 1 %}
+        <label for="Machine">Choose Supplier</label>
+        <select id="Supplier" name="Supplier" class="form-control">
+            <option value="0">Select Supplier</option>
+            {% for sType in supplierList %}
+                <option value="{{ sType.Id }}">{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+    {% if rcType == 2 %}
+        <label for="Machine">Choose Farmer</label>
+        <select id="Farmer" name="Farmer" class="form-control">
+            <option value="0">Select Farmer</option>
+            {% for sType in supplierList %}
+                <option value="{{ sType.Id }}">{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+{% endif %}
+
+
+{% if param == 'CascadingFarmer' %}
+    <label for="Machine">Choose Farmer</label>
+    <select id="Farmer" name="Farmer" class="form-control">
+        <option value="0">Select Farmer</option>
+        {% for sType in farmerList %}
+            <option value="{{ sType.FarmerId__Id }}">{{ sType.FarmerId__FarmerName }}--{{ sType.FarmerId__FarmerCode }}</option>
+        {% endfor %}
+    </select>
+{% endif %}
+
+

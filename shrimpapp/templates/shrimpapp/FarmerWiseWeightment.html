@@ -1,0 +1,92 @@
+<div class="ibox-content">
+        <div class="row">
+            <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
+
+                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                    <p><h3>{{ farmerData.FarmerName }}</h3></p>
+                    <p>{{ farmerData.FarmerMobile }}, {{ farmerData.Address }}</p>
+                    <input type="hidden" name="FarmerId_{{ farmerData.Id }}" value="{{ farmerData.Id }}" class="form-control" required="required"/>
+                </div>
+
+                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                    <label for="Machine">Choose Grading Type</label>
+                    <select name="FarmerGradingType_{{ farmerData.Id }}" class="form-control ShrimpType">
+                        {% for cType in gradingtype %}
+                            <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                    </select>
+                </div>
+                {% comment %}<div class="col-lg-1 col-md-1 col-sm-1"></div>{% endcomment %}
+                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                    <label for="Machine">Choose Shrimp Type</label>
+                    <select name="FarmerShrimpType_{{ farmerData.Id }}" class="form-control ShrimpType">
+                        {% for cType in shrimpType %}
+                            <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                    <label for="SparepartsDate">Unit (Kg/Lb)</label>
+                    <select name="FaremerUnitTyoe_{{ farmerData.Id }}" class="form-control">
+                        <option value="Kg">Kg</option>
+                        <option value="lb">lb</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                    <label for="SparepartsDate">Total</label>
+                    <input name="FarmerTotalKg_{{ farmerData.Id }}" class="form-control numeric" required/>
+                </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <label for="SparepartsDate">Remove Farmer</label>
+                <input type="button" class="btn btn-warning btn-block RemoveThisFarmer" value="Remove"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <label for="Machine">Weightment Details</label>
+                <div class="table-responsive">
+                    <table id="AllPartsAdd_{{ farmerData.Id }}" class=" table table-bordered number_input_check">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Change Count</th>
+                            <th>Measure Qnty</th>
+                            <th>Remarks</th>
+                            <th>
+                                <input value="ADD" type="button" id="AddNewRow_{{ farmerData.Id }}" class=" btn btn-success btn-block add_child_row"/>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><select name="Weightment_{{ farmerData.Id}}" class="form-control ShrimpItem"
+                                        style="width: 100px">
+                                {% for cType in shrimpItem %}
+                                    <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                            </select>
+                            </td>
+
+                            <td><input name="Weightment_{{ farmerData.Id }}" class="form-control numeric"
+                                       required="required" value=""/>
+                            </td>
+
+                            <td><input name="Weightment_{{ farmerData.Id }}" class="form-control numeric"
+                                       required="required"
+                                       value="0.0"/></td>
+                            <td><input name="Weightment_{{ farmerData.Id }}" class="form-control"
+                                       required="required"
+                                       value="N/A"/></td>
+                            <td><input type="button"
+                                       class="btn btn-danger btn-block RemoveRow"
+                                       value="Remove"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>

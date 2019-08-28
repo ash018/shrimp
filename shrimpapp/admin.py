@@ -9,8 +9,8 @@ admin.site.site_header = 'Shrimp Administration'
 admin.site.site_title = "Shrimp Admin"
 admin.site.index_title = "Shrimp Admin Portal"
 
-admin.site.register(Department)
-admin.site.register(Designation)
+#admin.site.register(Department)
+#admin.site.register(Designation)
 
 #https://www.dev2qa.com/how-to-manage-models-in-django-admin-site/
 #https://books.agiliq.com/projects/django-admin-cookbook/en/latest/filter_fk_dropdown.html
@@ -41,7 +41,6 @@ class FarmerAdmin(admin.ModelAdmin):
     list_filter = ['FarmerCode', 'FarmerMobile']
     list_per_page = 20
 
-
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('SupplierName', 'SupplierCode', 'SupplierMobile', 'Address', 'IsActive')
     filter_horizontal = ['FarmerId']
@@ -49,14 +48,13 @@ class SupplierAdmin(admin.ModelAdmin):
     list_filter = ['SupplierCode', 'SupplierMobile']
     list_per_page = 20
 
-
 admin.site.register(UserManager, UserManagerAdmin)
 admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(ShrimpType)
 admin.site.register(ShrimpItem)
-admin.site.register(ShrimpProdItem)
-admin.site.register(PackagingMaterial)
+#admin.site.register(ShrimpProdItem)
+#admin.site.register(PackagingMaterial)
 
 
 admin.site.unregister(Group)
