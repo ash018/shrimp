@@ -25,7 +25,7 @@
                                     <option value="{{ cType.Id }}">{{ cType.Name }}</option>
                                 {% endfor %}
                             </select>
-                            <input type="hidden" name="FarmerId_{{ farmerData.Id }}" value="{{ farmerData.Id }}"
+                            <input type="hidden" name="AllFarmers" value="{{ farmerData.Id }}"
                                    class="form-control AllFarmerCheck" required="required"/>
                         </td>
                         <td>
@@ -41,7 +41,7 @@
                                     {% endfor %}
                                 </select></div>
                         </td>
-                        <td><select name="FaremerUnitTyoe_{{ farmerData.Id }}" class="form-control">
+                        <td><select name="FarmerUnitType_{{ farmerData.Id }}" class="form-control">
                             <option value="Kg">Kg</option>
                             <option value="lb">lb</option>
                         </select>
@@ -55,9 +55,7 @@
                                        value="0.0"/></div>
                         </td>
                         <td>
-
                             <input type="button" class="btn btn-warning btn-block  RemoveThisFarmer" value="Remove">
-
                         </td>
                     </tr>
                     </tbody>

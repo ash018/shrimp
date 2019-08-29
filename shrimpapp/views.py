@@ -135,64 +135,133 @@ def SaveWeightment(request):
         return render(request, 'shrimpapp/Login.html')
     else:
         if request.method == 'POST':
+            wgDate = request.POST.get('WgDate')
+            totalKg = request.POST.get('TotalKg')
+            rcType = request.POST.get('RcType')
 
             farmer = request.POST.get('Farmer')
             supplier = request.POST.get('Supplier')
-            wgDate = request.POST.get('WgDate')
+
 
             userId = request.session['uid']
             user = UserManager.objects.filter(pk=int(userId)).first()
+            receiveType = ReceiveType.objects.filter(pk=int(rcType)).first()
 
             dt = str(datetime.datetime.now())
             _datetime = datetime.datetime.now()
             entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
             #print('----entryDate----->' + str(entryDate))
             serDayTime = wgDate.split('-')
-            wegmentDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]), int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
+            wgEntryDate = datetime.datetime.now()
+
+            abstractionDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]), int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
                                             int(entryDate.split('-')[5]), 140)
 
-            wgEntryDate = datetime.datetime.now()
-            weightmentDetail = request.POST.getlist('Weightment')
-            srv = np.reshape(weightmentDetail, (-1, 7))
+            EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+            EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+
+            abstraction = Abstraction(RcvTypeId=receiveType, AbsCreateDate=abstractionDate,
+                                      TotalKg=Decimal(totalKg), IsQcPass='N',
+                                      IsProductionUsed='N', LocDate=str(wgDate),
+                                      EntryDate=wgEntryDate, EditDate=wgEntryDate,
+                                      EntryBy=user)
+
+            abstraction.save();
+            #weightmentDetail = request.POST.getlist('Weightment')
+
+            #srv = np.reshape(weightmentDetail, (-1, 7))
+
             farmerId = Farmer.objects.filter(pk=int(farmer)).first()
             supplierId = Supplier.objects.filter(pk=int(supplier)).first()
 
-            weightment = Weightment(FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
-            weightment.save()
+            #RC Type Supplier
+            if int(rcType) == 1:
+                print("=R/C=" + str(rcType))
+                allFarmers = request.POST.getlist('AllFarmers')
+                for i in range(len(allFarmers)):
+                    print("=R/C=" + str(allFarmers[i]))
+                    gradingTypeName = "GradingType_" + str(allFarmers[i])
+                    gradingTypeDate = request.POST.get(gradingTypeName)
 
-            logWeightment = LogWeightment(WgId=weightment, FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
-            logWeightment.save()
+                    farmerUnitTypeName = "FarmerUnitType_" + str(allFarmers[i])
+                    farmerUnitTypeData = request.POST.get(farmerUnitTypeName)
 
-            sType = ''
-            changeCount = ''
-            sItem = ''
-            mUnit = ''
-            mQnty = ''
-            rate = ''
-            remark = ''
-            for i in range(len(srv)):
-                j = 0
-                serviceTypeId = 0
-                for j in range(len(srv[i])):
-                    if j == 0:
-                        sType = srv[i][j]
-                        #serviceTypeId = ServiceType.objects.filter(pk=int(sty)).first()
-                    if j == 1:
-                        changeCount = srv[i][j]
-                    if j == 2:
-                        sItem = srv[i][j]
-                    if j == 3:
-                        mUnit = srv[i][j]
-                    if j == 4:
-                        mQnty = srv[i][j]
-                    if j == 5:
-                        rate = srv[i][j]
-                    if j == 6:
-                        remark = srv[i][j]
-                ShrItemId = ShrimpItem.objects.filter(pk=int(sItem)).first()
-                WeightmentDetail(WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
-                LogWeightmentDetail(LgWgId=logWeightment, WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
-                print("sty-" + str(sType)+ "-com-"+ str(changeCount)+"-sch-"+ str(sItem)+"-mUnit-"+ str(mUnit)+"-mQnty-"+mQnty+"-rate-" + str(rate)+"-remark-"+str(remark))
+                    farmerTotalKgName = "FarmerTotalKg_" + str(allFarmers[i])
+                    farmerTotalKgData = request.POST.get(farmerTotalKgName)
+
+                    farmerShamplingKgName = "FarmerShamplingKg_" + str(allFarmers[i])
+                    farmerShamplingKgDate = request.POST.get(farmerShamplingKgName)
+
+                    weightmentName = "Weightment_" + str(allFarmers[i])
+                    weightmentDetail = request.POST.getlist(str(weightmentName))
+                    srv = np.reshape(weightmentDetail, (-1, 4))
+
+
+                    for m in range(len(srv)):
+                        j = 0
+                        serviceTypeId = 0
+                        for j in range(len(srv[m])):
+                            if j == 0:
+                                sType = srv[j][m]
+                                shrimpItem = ShrimpItem.objects.filter(pk=int(sType)).first()
+                            if j == 1:
+                                changeCount = srv[j][m]
+                            if j == 2:
+                                sMQnty = srv[j][m]
+                            if j == 3:
+                                mUnit = srv[j][m]
+
+
+
+
+
+            # RC Type Farmer
+            elif int(rcType) == 2:
+                print("=R/C=" + str(rcType))
+            # RC Type Supplier
+            else:
+                print("=R/C="+str(rcType))
+
+
+
+
+            # weightment = Weightment(FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
+            # weightment.save()
+            #
+            # logWeightment = LogWeightment(WgId=weightment, FarmerId=farmerId, SupplierId=supplierId, WgDate=wegmentDate, IsQcPass='N', EntryDate=wgEntryDate, EditDate=wgEntryDate, EntryBy=user)
+            # logWeightment.save()
+            #
+            # sType = ''
+            # changeCount = ''
+            # sItem = ''
+            # mUnit = ''
+            # mQnty = ''
+            # rate = ''
+            # remark = ''
+            # for i in range(len(srv)):
+            #     j = 0
+            #     serviceTypeId = 0
+            #     for j in range(len(srv[i])):
+            #         if j == 0:
+            #             sType = srv[i][j]
+            #             #serviceTypeId = ServiceType.objects.filter(pk=int(sty)).first()
+            #         if j == 1:
+            #             changeCount = srv[i][j]
+            #         if j == 2:
+            #             sItem = srv[i][j]
+            #         if j == 3:
+            #             mUnit = srv[i][j]
+            #         if j == 4:
+            #             mQnty = srv[i][j]
+            #         if j == 5:
+            #             rate = srv[i][j]
+            #         if j == 6:
+            #             remark = srv[i][j]
+            #     ShrItemId = ShrimpItem.objects.filter(pk=int(sItem)).first()
+            #     WeightmentDetail(WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
+            #     LogWeightmentDetail(LgWgId=logWeightment, WgId=weightment, CngCount=Decimal(changeCount),ShrItemId=ShrItemId, MeasurUnit=str(mUnit), MeasurQnty=Decimal(mQnty), Rate=Decimal(rate), Remarks=str(remark)).save()
+            #     print("sty-" + str(sType)+ "-com-"+ str(changeCount)+"-sch-"+ str(sItem)+"-mUnit-"+ str(mUnit)+"-mQnty-"+mQnty+"-rate-" + str(rate)+"-remark-"+str(remark))
+
             return HttpResponseRedirect('/Weightment')
 
 
