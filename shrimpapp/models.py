@@ -191,6 +191,7 @@ class Abstraction(models.Model):
     IsProductionUsed = models.CharField(max_length=100, db_column='IsProductionUsed', default='N')
 
     LocDate = models.CharField(max_length=100, db_column='LocDate', default='2019-08-30')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
