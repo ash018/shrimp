@@ -2,105 +2,113 @@
 
     <div class="row">
         <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
-
-            <div class="form-group col-lg-2 col-md-2 col-sm-2">
-                <p>
-                <h5>{{ farmerData.FarmerName }}</h5></p>
-                <p>{{ farmerData.FarmerMobile }}, {{ farmerData.Address }}</p>
-                <input type="hidden" name="FarmerId_{{ farmerData.Id }}" value="{{ farmerData.Id }}"
-                       class="form-control AllFarmerCheck" required="required"/>
-            </div>
-
-            <div class="form-group col-lg-2 col-md-2 col-sm-2">
-                <label for="Machine">Grading Type</label>
-                <select name="FarmerGradingType_{{ farmerData.Id }}" class="form-control GradingType"
-                        id="GradingType_{{ farmerData.Id }}">
-                    {% for cType in gradingtype %}
-                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
-                </select>
-            </div>
-            {% comment %}<div class="col-lg-1 col-md-1 col-sm-1"></div>{% endcomment %}
-            <div class="form-group col-lg-2 col-md-2 col-sm-2">
-                <label for="Machine">Shrimp Type</label>
-                <select name="FarmerShrimpType_{{ farmerData.Id }}" class="form-control ShrimpType"
-                        id="ShrimpType_{{ farmerData.Id }}">
-                    {% for cType in shrimpType %}
-                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
-                </select>
-                <div id="ShrimpItemDiv_{{ farmerData.Id }}" style="display: none;">
-                <select id="ShrimpItemSelect_{{ farmerData.Id }}" name="ShrimpType" class="form-control">
-                    {% for sType in sItemList %}
-                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>
-                    {% endfor %}
-                </select>
-                </div>
-            </div>
-
-
-            <div class="form-group col-lg-2 col-md-2 col-sm-2">
-                <label for="SparepartsDate">Unit (Kg/Lb)</label>
-                <select name="FaremerUnitTyoe_{{ farmerData.Id }}" class="form-control">
-                    <option value="Kg">Kg</option>
-                    <option value="lb">lb</option>
-                </select>
-
-            </div>
-
-            <div class="form-group col-lg-2 col-md-2 col-sm-2">
-                <label for="SparepartsDate">Total</label>
-                <input name="FarmerTotalKg_{{ farmerData.Id }}" class="form-control numeric" required/>
-            </div>
-
-            <div class="col-lg-2 col-md-2 col-sm-2">
-                <label for="SparepartsDate">Remove Farmer</label>
-                <input type="button" class="btn btn-warning btn-block RemoveThisFarmer" value="Remove"></div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <label for="Machine">Weightment Details</label>
+            <label for="Machine">{{ farmerData.FarmerName }}-{{ farmerData.FarmerMobile }}</label>
             <div class="table-responsive">
-                <table id="AllPartsAdd_{{ farmerData.Id }}" class=" table table-bordered number_input_check">
+                <table class="table table-bordered number_input_check">
                     <thead>
                     <tr>
-                        <th>Item</th>
-                        <th>Change Count</th>
-                        <th>Measure Qnty</th>
-                        <th>Remarks</th>
-                        <th>
-                            <input value="ADD" type="button" id="AddNewRow_{{ farmerData.Id }}"
-                                   class=" btn btn-success btn-block add_child_row"/>
-                        </th>
+                        <th>Grading Type</th>
+                        <th>Shrimp Type</th>
+                        <th>Unit (Kg/Lb)</th>
+                        <th>Total</th>
+                        <th>SmpQty</th>
+                        <th style="width: 100px;">Remove Farmer</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td><select name="Weightment_{{ farmerData.Id }}" class="form-control ShrimpItem">
-                            {% for sType in sItemList %}
-                                <option value="{{ sType.Id }}">{{ sType.Name }}
-                                </option>
-                            {% endfor %}
+                        <td>
+                            <select name="FarmerGradingType_{{ farmerData.Id }}" class="form-control GradingType"
+                                    id="GradingType_{{ farmerData.Id }}">
+                                <option value="0">Select</option>
+                                {% for cType in gradingtype %}
+                                    <option value="{{ cType.Id }}">{{ cType.Name }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" name="FarmerId_{{ farmerData.Id }}" value="{{ farmerData.Id }}"
+                                   class="form-control AllFarmerCheck" required="required"/>
+                        </td>
+                        <td>
+                            <select name="FarmerShrimpType_{{ farmerData.Id }}" class="form-control ShrimpType" id="ShrimpType_{{ farmerData.Id }}">
+                            {% for cType in shrimpType %}
+                                <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                            </select>
+                        <div id="ShrimpItemDiv_{{ farmerData.Id }}" style="display: none;">
+                                <select id="ShrimpItemSelect_{{ farmerData.Id }}" name="ShrimpType"
+                                        class="form-control">
+                                    {% for sType in sItemList %}
+                                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>
+                                    {% endfor %}
+                                </select></div>
+                        </td>
+                        <td><select name="FaremerUnitTyoe_{{ farmerData.Id }}" class="form-control">
+                            <option value="Kg">Kg</option>
+                            <option value="lb">lb</option>
                         </select>
+
                         </td>
 
-                        <td><input name="Weightment_{{ farmerData.Id }}" class="form-control numeric"
-                                   required="required" value=""/>
+                        <td><input name="FarmerTotalKg_{{ farmerData.Id }}" class="form-control numeric" required/></td>
+                        <td>
+                            <div id="ShamplingQntyShow_{{ farmerData.Id }}" style="display: none;">
+                                <input name="FarmerShamplingKg_{{ farmerData.Id }}" class="form-control numeric" required
+                                       value="0.0"/></div>
                         </td>
+                        <td>
 
-                        <td><input name="Weightment_{{ farmerData.Id }}" class="form-control numeric"
-                                   required="required"
-                                   value="0.0"/></td>
-                        <td><input name="Weightment_{{ farmerData.Id }}" class="form-control"
-                                   required="required"
-                                   value="N/A"/></td>
-                        <td><input type="button"
-                                   class="btn btn-danger btn-block remove_child_row"
-                                   value="Remove"></td>
+                            <input type="button" class="btn btn-warning btn-block  RemoveThisFarmer" value="Remove">
+
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <label for="Machine">Weightment Details</label>
+                <div class="table-responsive">
+                    <table id="AllPartsAdd_{{ farmerData.Id }}" class=" table table-bordered number_input_check">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Change Count</th>
+                            <th>Measure Qnty</th>
+                            <th>Remarks</th>
+                            <th style="width: 100px;">
+                                <input value="ADD" type="button" id="AddNewRow_{{ farmerData.Id }}"
+                                       class=" btn btn-success btn-block add_child_row"/>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><select name="Weightment_{{ farmerData.Id }}" class="form-control ShrimpItem">
+                                {% for sType in sItemList %}
+                                    <option value="{{ sType.Id }}">{{ sType.Name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            </td>
+
+                            <td><input name="Weightment_{{ farmerData.Id }}" class="form-control numeric"
+                                       required="required" value=""/>
+                            </td>
+
+                            <td><input name="Weightment_{{ farmerData.Id }}" class="form-control numeric"
+                                       required="required"
+                                       value="0.0"/></td>
+                            <td><input name="Weightment_{{ farmerData.Id }}" class="form-control"
+                                       required="required"
+                                       value="N/A"/></td>
+                            <td><input type="button" class="btn btn-danger btn-block remove_child_row" value="Remove">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>

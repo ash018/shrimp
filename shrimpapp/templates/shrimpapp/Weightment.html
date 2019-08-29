@@ -321,9 +321,20 @@
                         });
                     }
                 }
-
             });
 
+            $("#FarmerWiseWeightmentDetail").on("change", "select.GradingType", function (evt) {
+                    var id = $(this).attr('id');
+                    var gradingTypeval = $(this).val();
+                    var gradingTypeId = id.split('_')[1];
+                    var shamplingQnty= 'ShamplingQntyShow_'+gradingTypeId;
+                    if(gradingTypeval == 1){
+                        $("#"+shamplingQnty).attr("style", "display:block");
+                    }
+                    else{
+                       $("#"+shamplingQnty).attr("style", "display:none");
+                    }
+            });
 
             $("#FarmerWiseWeightmentDetail").on("input", "input.numeric", function (evt) {
                 var self = $(this);
