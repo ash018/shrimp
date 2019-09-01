@@ -166,7 +166,7 @@ def SaveWeightment(request):
                                       EntryDate=wgEntryDate, EditDate=wgEntryDate,
                                       EntryBy=user)
 
-            abstraction.save();
+            abstraction.save()
             #weightmentDetail = request.POST.getlist('Weightment')
 
             #srv = np.reshape(weightmentDetail, (-1, 7))
