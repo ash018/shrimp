@@ -1,0 +1,510 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+    <style type="text/css">
+        .tbl_view_space {
+            width: 100%;
+            overflow: scroll;
+        }
+
+    </style>
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/form-validation.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+
+    <div id="page-wrapper" class="gray-bg">
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+
+        <div class="wrapper wrapper-content animated fadeInRight ">
+
+            <div class="row">
+                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'SaveWeightment' %}">
+                            {% csrf_token %}
+
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <label for="SparepartsDate">Collection Date</label>
+                                            <input type="text" name="WgDate" value="{{ Today }}" class="form-control" id="SparepartsDate" required/>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                        <div class="form-group  col-lg-3 col-md-3 col-sm-3">
+                                            <label for="SparepartsDate">Approximate Total Kg</label>
+                                            <input name="TotalKg" class="form-control numeric" id="TotalKg" required/>
+                                        </div>
+
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <label for="Machine">Choose R/C Type</label>
+                                            <select id="RcType" name="RcType" class="form-control">
+                                                <option value="0">Select Type</option>
+                                                {% for sType in receiveTypeList %}
+                                                    <option value="{{ sType.Id }}">{{ sType.Name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <div id="RcTypeHold">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                            <div id="FarmerHolder">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+
+                           <div id="FarmerWiseWeightmentDetail">
+                            {% for k1,v1 in wegNwegDetail.items %}
+                                <div class="ibox-content">
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            {% for mk in weightMent %}
+                                                {% if k1 == mk.Id %}
+                                                    <label for="Machine">{{ mk.FarmerId__FarmerName }}--{{ mk.FarmerId__FarmerMobile }}</label>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered number_input_check">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Grading Type</th>
+                                                        <th>Shrimp Type</th>
+                                                        <th>Unit (Kg/Lb)</th>
+                                                        <th>Total</th>
+                                                        <th>SmpQty</th>
+                                                        <th style="width: 100px;">Remove Farmer</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    {% for mk in weightMent %}
+                                                        {% if k1 == mk.Id %}
+                                                            <tr>
+                                                                <td>{{ mk.GrdTypeId__Name }}</td>
+                                                                <td>Bagda/Galda</td>
+                                                                <td>{{ mk.MeasurUnit }}</td>
+
+                                                                <td>{{ mk.Total }}</td>
+                                                                <td>{{ mk.TotalSmpQnty }}</td>
+                                                                <td>
+                                                                    <input type="button" data="{{ mk.Id }}"
+                                                                           class="btn btn-success btn-block  RemoveThisFarmer Print"
+                                                                           value="Print">
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <label for="Machine">Weightment Details</label>
+                                            <div class="table-responsive">
+                                                <table id="AllPartsAdd_{{ farmerData.Id }}"
+                                                       class=" table table-bordered number_input_check">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Change Count</th>
+                                                        <th>Measure Qnty</th>
+                                                        <th>Remarks</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for k2,v2 in v1.items %}
+                                                        <tr>
+                                                            <td>{{ v2.ShrItemId__Name }}</td>
+                                                            <td>{{ v2.CngCount }}</td>
+                                                            <td>{{ v2.MeasurQnty }}</td>
+                                                            <td>{{ v2.Remarks }}</td>
+
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+                        </div>
+
+
+                            <br/>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                                <div class="form-group ">
+                                                    <button type="submit" class="btn btn-primary  full-width m-b">
+                                                        Save
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+
+            $(".numeric").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("table").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("table").on("click", "input.RemoveRow", function () {
+                $(this).parent().parent().remove();
+            });
+
+
+            $("#FarmerWiseWeightmentDetail").on("click", "input.RemoveThisFarmer", function () {
+                $(this).closest(".ibox-content").remove();
+            });
+
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $(document).on('change', '#AllPartsAdd tbody td select.ShrimpType', function (e) {
+                var sTypeId = this.value;
+                var baseurl = "{% url 'SItemBySType' %}";
+                var row = $(this).closest("tr").index();
+                $('table#AllPartsAdd tbody tr').eq(row).find('td').eq(2).find('select.ShrimpItem').html('');
+
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "STypeId=" + sTypeId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#AllPartsAdd tbody tr').eq(row).find('td').eq(2).find('select.ShrimpItem').html(html);
+                    }
+                });
+            });
+
+            $("#RcType").on("change", function () {
+                var rcId = this.value;
+                var baseurl = "{% url 'RCresponse' %}";
+                $('#RcTypeHold').html('');
+                $('#FarmerHolder').html('');
+
+                $('#FarmerWiseWeightmentDetail').html('');
+
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "RcType=" + rcId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#RcTypeHold').html(html);
+                    }
+                });
+            });
+
+            $("#RcTypeHold").on("change", '#Supplier', function () {
+                var supplierId = this.value;
+                var baseurl = "{% url 'FarmerListBySupplier' %}";
+                $('#FarmerHolder').html('');
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "Supplier=" + supplierId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#FarmerHolder').html(html);
+                    }
+                });
+            });
+
+            $("#RcTypeHold").on("change", '#Farmer', function () {
+                var farmerId = this.value;
+                var baseurl = "{% url 'FmWeightMentForm' %}";
+                console.log("==" + farmerId);
+                var idArray = [];
+
+                $('#FarmerWiseWeightmentDetail .AllFarmerCheck').each(function () {
+                    idArray.push(this.value);
+                });
+
+                if (idArray.length == 0) {
+                    pas = 1;
+                } else {
+                    pas = 0;
+                }
+
+                if (pas == 0) {
+                    sweetAlert({
+                        title: "Please Farmer Already Added",
+                        text: "Please First Entry This Farmer Data. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                    return false;
+                }
+                else {
+                    if (farmerId != 0 && pas == 1) {
+                        $.ajax({
+                            url: baseurl,
+                            type: "GET",
+                            data: "Farmer=" + farmerId + "&csrfmiddlewaretoken=" + csrftoken,
+                            cache: false,
+                            dataType: 'json',
+                            success: function (data) {
+                                var response = $.parseJSON(JSON.stringify(data));
+                                var html = $.parseJSON(JSON.stringify(response.html));
+                                $('#FarmerWiseWeightmentDetail').append(html);
+                                $('#FarmerWiseWeightmentDetail').append('<br/>');
+                            }
+                        });
+                    }
+                }
+            });
+
+            $("#FarmerHolder").on("change", '#Farmer', function () {
+                var farmerId = this.value;
+                var baseurl = "{% url 'FmWeightMentForm' %}";
+                console.log("==" + farmerId);
+                var idArray = [];
+                var splitArray = [];
+                var pas = 0;
+
+                $('#FarmerWiseWeightmentDetail .AllFarmerCheck').each(function () {
+                    idArray.push(this.value);
+                });
+
+                if (idArray.length == 0) {
+                    pas = 1;
+                } else {
+                    for (var k = 0; k < idArray.length; k++) {
+                        if (idArray[k] == farmerId) {
+                            pas = 0;
+                            break;
+                        }
+                        else {
+                            pas = 1;
+                        }
+                    }
+                }
+
+
+                if (pas == 0) {
+                    sweetAlert({
+                        title: "This Farmer Already Added",
+                        text: "Please find the specific table, Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                    return false;
+                }
+                else {
+                    if (farmerId != 0 && pas == 1) {
+                        $.ajax({
+                            url: baseurl,
+                            type: "GET",
+                            data: "Farmer=" + farmerId + "&csrfmiddlewaretoken=" + csrftoken,
+                            cache: false,
+                            dataType: 'json',
+                            success: function (data) {
+                                var response = $.parseJSON(JSON.stringify(data));
+                                var html = $.parseJSON(JSON.stringify(response.html));
+
+                                $('#FarmerWiseWeightmentDetail').append(html);
+                                $('#FarmerWiseWeightmentDetail').append('<br/>');
+                            }
+                        });
+                    }
+                }
+            });
+
+            $("#FarmerWiseWeightmentDetail").on("change", "select.GradingType", function (evt) {
+                    var id = $(this).attr('id');
+                    var gradingTypeval = $(this).val();
+                    var gradingTypeId = id.split('_')[1];
+                    var shamplingQnty= 'ShamplingQntyShow_'+gradingTypeId;
+                    if(gradingTypeval == 1){
+                        $("#"+shamplingQnty).attr("style", "display:block");
+                    }
+                    else{
+                       $("#"+shamplingQnty).attr("style", "display:none");
+                    }
+            });
+
+            $("#FarmerWiseWeightmentDetail").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("#FarmerWiseWeightmentDetail").on("change", "select.ShrimpType", function (evt) {
+                var id = $(this).attr('id');
+                var shrimpTypeId = id.split('_')[1];
+                console.log("==" + shrimpTypeId);
+                var shrimpType = $(this).val();
+                var baseurl = "{% url 'SItemBySType' %}";
+                $('#ShrimpItemSelect_' + shrimpTypeId).html('');
+
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "STypeId=" + shrimpType + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        $('#ShrimpItemSelect_' + shrimpTypeId).html(html);
+                    }
+                });
+            });
+
+
+            $("#FarmerWiseWeightmentDetail").on("click", "input.add_child_row", function (evt) {
+                var id = $(this).attr('id');
+                var tableId = id.split('_');
+                var shrimpType = $(this).val();
+
+                var sItem = "ShrimpItemSelect_" + tableId[1];
+                var ShrimpItem = '';
+                $("#" + sItem + " option").each(function () {
+                    ShrimpItem = ShrimpItem + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
+                });
+                var addTable = 'AllPartsAdd_' + tableId[1];
+
+                var tableRow = '<tr>' +
+                    '<td><select name="Weightment_' + tableId[1] + '" class="form-control" required="required">' + ShrimpItem + '</select></td>' +
+                    '<td><input name="Weightment_' + tableId[1] + '" class="form-control numeric" required="required" value=""/></td>' +
+                    '<td><input name="Weightment_' + tableId[1] + '"  class="form-control numeric" required="required" value=""/></td>' +
+                    '<td><input name="Weightment_' + tableId[1] + '" class="form-control" required="required" value="N/A"/></td>' +
+                    '<td><input type="button" class="btn btn-danger btn-block remove_child_row"  value="Remove"></td>' +
+                    '</tr>';
+
+                $("#" + addTable).prepend(tableRow);
+                return false;
+            });
+
+            $("#FarmerWiseWeightmentDetail").on("click", "input.remove_child_row", function (evt) {
+                $(this).parent().parent().remove();
+                return false;
+            });
+
+            $('.document_updatedate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+            $('#SparepartsDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+        });
+
+        Array.prototype.checkArrayItem = function () {
+            for (var i = 0; i < this.length; i++) {
+                for (var j = 0; j < this.length; j++) {
+                    if (this[i] == this[j] && i != j) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+
+    </script>
+
+{% endblock %}

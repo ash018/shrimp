@@ -357,7 +357,7 @@ def VWAbstraction(request):
 
             wegNwegDetail[weg['Id']] = tmp
 
-        print("====="+ str(weByAbs))
+        #print("====="+ str(weByAbs))
 
         context = {'PageTitle': 'Weightment View',
                    'weightMent': weByAbs,
@@ -368,9 +368,7 @@ def VWAbstraction(request):
                    'shrimpItem':shrimpItem,
                    'shrimpType':shrimpType,
                    'absObValues':absObValues,
-                   'wegNwegDetail':wegNwegDetail
-
-                   }
+                   'wegNwegDetail':wegNwegDetail }
         return render(request, 'shrimpapp/VWAbstraction.html', context)
 
 
@@ -381,7 +379,57 @@ def EdAbstraction(request):
         print("Success")
         userId = request.session['uid']
         user = UserManager.objects.filter(pk=int(userId)).first()
-        wegtId = request.GET.get('WeightmentId')
+        absId = request.GET.get('AbsId')
+
+        shrimpType = ShrimpType.objects.all().values('Id', 'Name')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        gradTypeList = GradingType.objects.all().values('Id', 'Name')
+        receiveTypeList = ReceiveType.objects.all().values('Id', 'Name')
+
+        absObj = Abstraction.objects.filter(pk=int(absId)).first()
+        absObValues = Abstraction.objects.filter(pk=int(absId)).values('Id', 'RcvTypeId__Id', 'LocDate',
+                                                                       'TotalKg').first()
+
+        wegNwegDetail = {}
+        weByAbs = Weightment.objects.filter(AbsId=absObj, EntryBy=user).values('Id', 'FarmerId__Id',
+                                                                               'FarmerId__FarmerName',
+                                                                               'FarmerId__FarmerMobile',
+                                                                               'FarmerId__Address',
+                                                                               'GrdTypeId__Id', 'GrdTypeId__Name',
+                                                                               'Total',
+                                                                               'TotalSmpQnty', 'MeasurUnit',
+                                                                               'AbsId__Id')
+        weDtlByAbs = WeightmentDetail.objects.filter(AbsId=absObj).values('AbsId__Id', 'Id', 'WgId__Id',
+                                                                          'ShrItemId__Id', 'ShrItemId__Name',
+                                                                          'CngCount', 'SmpQnty', 'MeasurQnty',
+                                                                          'Remarks')
+
+        for weg in weByAbs:
+            tmp = {}
+
+            for wd in weDtlByAbs:
+                temp = []
+                if weg['Id'] == wd['WgId__Id']:
+                    temp = wd
+                    tmp[wd['Id']] = temp
+
+            wegNwegDetail[weg['Id']] = tmp
+
+        context = {'PageTitle': 'Weightment View',
+                   'weightMent': weByAbs,
+                   'farmerList': farmerList,
+                   'supplierList': supplierList,
+                   'gradTypeList': gradTypeList,
+                   'receiveTypeList': receiveTypeList,
+                   'shrimpItem': shrimpItem,
+                   'shrimpType': shrimpType,
+                   'absObValues': absObValues,
+                   'wegNwegDetail': wegNwegDetail}
+
+        return render(request, 'shrimpapp/EdAbstraction.html', context)
 
 def PrAbstraction(request):
     if 'uid' not in request.session:
