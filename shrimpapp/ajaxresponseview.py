@@ -67,7 +67,15 @@ def FarmerListBySupplier(request):
         return render(request, 'shrimpapp/Login.html')
     else:
         supler = request.GET.get('Supplier')
-        farmerList = Supplier.objects.filter(pk=int(supler)).values('FarmerId__Id','FarmerId__FarmerName','FarmerId__FarmerCode')
+        farmerList= ''
+        if str(supler) == 0:
+            farmerList = Supplier.objects.all().values('FarmerId__Id', 'FarmerId__FarmerName',
+                                                                       'FarmerId__FarmerCode')
+        else:
+            farmerList = Supplier.objects.filter(pk=int(supler)).values('FarmerId__Id', 'FarmerId__FarmerName',
+                                                                        'FarmerId__FarmerCode')
+
+        #farmerList = Supplier.objects.filter(pk=int(supler)).values('FarmerId__Id','FarmerId__FarmerName','FarmerId__FarmerCode')
 
         context = {'farmerList': farmerList,'param':'CascadingFarmer'}
         template = 'shrimpapp/Suppliers.html'

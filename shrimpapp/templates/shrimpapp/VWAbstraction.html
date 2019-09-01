@@ -1,0 +1,212 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+    <style type="text/css">
+        .tbl_view_space {
+            width: 100%;
+            overflow: scroll;
+        }
+
+    </style>
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/form-validation.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+
+    <div id="page-wrapper" class="gray-bg">
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+
+        <div class="wrapper wrapper-content animated fadeInRight ">
+
+            <div class="row">
+                <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
+                    <div class="ibox float-e-margins">
+
+
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <label for="SparepartsDate">Collection Date</label>
+                                        <input type="text" name="WgDate" value="{{ absObValues.LocDate }}"
+                                               class="form-control"
+                                               id="SparepartsDate" required/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                    <div class="form-group  col-lg-3 col-md-3 col-sm-3">
+                                        <label for="SparepartsDate">Approximate Total Kg</label>
+                                        <input name="TotalKg" class="form-control numeric" id="TotalKg"
+                                               value="{{ absObValues.TotalKg }}" required/>
+                                    </div>
+
+                                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <label for="Machine">Choose R/C Type</label>
+                                        <select id="RcType" name="RcType" class="form-control">
+                                            <option value="0">Select Type</option>
+                                            {% for sType in receiveTypeList %}
+                                                <option value="{{ sType.Id }}"
+                                                        {% if absObValues.RcvTypeId__Id == sType.Id %}selected{% endif %}>{{ sType.Name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <div id="RcTypeHold">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <div id="FarmerHolder">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+
+
+                        <div id="FarmerWiseWeightmentDetail">
+                            {% for k1,v1 in wegNwegDetail.items %}
+                                <div class="ibox-content">
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            {% for mk in weightMent %}
+                                                {% if k1 == mk.Id %}
+                                                    <label for="Machine">{{ mk.FarmerId__FarmerName }}--{{ mk.FarmerId__FarmerMobile }}</label>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered number_input_check">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Grading Type</th>
+                                                        <th>Shrimp Type</th>
+                                                        <th>Unit (Kg/Lb)</th>
+                                                        <th>Total</th>
+                                                        <th>SmpQty</th>
+                                                        <th style="width: 100px;">Remove Farmer</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    {% for mk in weightMent %}
+                                                        {% if k1 == mk.Id %}
+                                                            <tr>
+                                                                <td>{{ mk.GrdTypeId__Name }}</td>
+                                                                <td>Bagda/Galda</td>
+                                                                <td>{{ mk.MeasurUnit }}</td>
+
+                                                                <td>{{ mk.Total }}</td>
+                                                                <td>{{ mk.TotalSmpQnty }}</td>
+                                                                <td>
+                                                                    <input type="button" data="{{ mk.Id }}"
+                                                                           class="btn btn-success btn-block  RemoveThisFarmer Print"
+                                                                           value="Print">
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <label for="Machine">Weightment Details</label>
+                                            <div class="table-responsive">
+                                                <table id="AllPartsAdd_{{ farmerData.Id }}"
+                                                       class=" table table-bordered number_input_check">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Change Count</th>
+                                                        <th>Measure Qnty</th>
+                                                        <th>Remarks</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for k2,v2 in v1.items %}
+                                                        <tr>
+                                                            <td>{{ v2.ShrItemId__Name }}</td>
+                                                            <td>{{ v2.CngCount }}</td>
+                                                            <td>{{ v2.MeasurQnty }}</td>
+                                                            <td>{{ v2.Remarks }}</td>
+
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+                        </div>
+
+
+                        <br/>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="form-group ">
+                                                <button type="submit" class="btn btn-primary  full-width m-b">
+                                                    Print
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+        });
+    </script>
+
+{% endblock %}

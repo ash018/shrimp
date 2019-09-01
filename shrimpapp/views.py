@@ -140,6 +140,7 @@ def SaveWeightment(request):
             rcType = request.POST.get('RcType')
 
             supplier = request.POST.get('Supplier')
+            farmer = request.POST.get('Farmer')
 
 
             userId = request.session['uid']
@@ -176,209 +177,115 @@ def SaveWeightment(request):
                           EntryBy=user)
             logAbstraction.save()
 
-            #RC Type Supplier
+            supplierId = ''
             if int(rcType) == 1:
-                print("=R/C=" + str(rcType))
                 supplierId = Supplier.objects.filter(pk=int(supplier)).first()
-                allFarmers = request.POST.getlist('AllFarmers')
-                for i in range(len(allFarmers)):
-                    farmerId = Farmer.objects.filter(pk=int(allFarmers[i])).first()
-                    gradingTypeName = "GradingType_" + str(allFarmers[i])
-                    gradingTypeData = request.POST.get(gradingTypeName)
-                    grdTypeId = GradingType.objects.filter(pk=int(gradingTypeData)).first()
-                    farmerUnitTypeName = "FarmerUnitType_" + str(allFarmers[i])
-                    farmerUnitTypeData = request.POST.get(farmerUnitTypeName)
-
-                    farmerTotalKgName = "FarmerTotalKg_" + str(allFarmers[i])
-                    farmerTotalKgData = request.POST.get(farmerTotalKgName)
-
-                    farmerShamplingKgName = "FarmerShamplingKg_" + str(allFarmers[i])
-                    farmerShamplingKgDate = request.POST.get(farmerShamplingKgName)
-                    if str(farmerShamplingKgDate) == '':
-                        farmerShamplingKgDate = 0.0
-
-                    weightmentName = "Weightment_" + str(allFarmers[i])
-                    weightmentDetail = request.POST.getlist(str(weightmentName))
-                    srv = np.reshape(weightmentDetail, (-1, 4))
-
-                    weightment = Weightment(AbsId=abstraction, FarmerId=farmerId,
-                                            SupplierId=supplierId, GrdTypeId=grdTypeId,
-                                            WgDate=abstractionDate, IsQcPass='N',
-                                            Total=Decimal(farmerTotalKgData),
-                                            TotalSmpQnty=Decimal(farmerShamplingKgDate),
-                                            MeasurUnit=str(farmerUnitTypeData), EntryDate=wgEntryDate,
-                                            EditDate=wgEntryDate, EntryBy=user)
-                    weightment.save()
-
-                    logWeightment = LogWeightment(AbsId=abstraction, FarmerId=farmerId,
-                                                    WgId=weightment.Id,SupplierId=supplierId, GrdTypeId=grdTypeId,
-                                                    WgDate=abstractionDate, IsQcPass='N',
-                                                    Total=Decimal(farmerTotalKgData),
-                                                    TotalSmpQnty=Decimal(farmerShamplingKgDate),
-                                                    MeasurUnit=str(farmerUnitTypeData), EntryDate=wgEntryDate,
-                                                    EditDate=wgEntryDate, EntryBy=user)
-                    logWeightment.save()
-
-                    for m in range(len(srv)):
-                        j = 0
-                        sMQnty = 0.0
-                        changeCount = 0.0
-                        rmk = ''
-                        for j in range(len(srv[m])):
-                            if j == 0:
-                                sType = srv[m][j]
-                                shrimpItem = ShrimpItem.objects.filter(pk=int(sType)).first()
-                                shrmpItValues = ShrimpItem.objects.filter(pk=int(sType)).values('ItemCount','Price').first()
-                            if j == 1:
-                                changeCount = srv[m][j]
-                            if j == 2:
-                                sMQnty = srv[m][j]
-                            if j == 3:
-                                rmk = srv[m][j]
-
-                        if int(gradingTypeData) == 1:
-                            realMQnty = Decimal(Decimal(farmerTotalKgData)*Decimal(sMQnty)/Decimal(farmerShamplingKgDate))
-                            weightmentDetail = WeightmentDetail(AbsId=abstraction, WgId=weightment,
-                                             ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                             SmpQnty=Decimal(sMQnty),
-                                             MeasurUnit=str(farmerUnitTypeData),
-                                             MeasurQnty=Decimal(realMQnty),
-                                             Rate=Decimal(shrmpItValues['Price']),
-                                             Price=realMQnty*Decimal(shrmpItValues['Price']), Remarks=str(rmk))
-                            weightmentDetail.save()
-                            LogWeightmentDetail(AbsId=abstraction, LgWgId=logWeightment, WgId=weightment.Id,
-                                             ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                             SmpQnty=Decimal(sMQnty),
-                                             MeasurUnit=str(farmerUnitTypeData),
-                                             MeasurQnty=Decimal(realMQnty),
-                                             Rate=Decimal(shrmpItValues['Price']),
-                                             Price=realMQnty*Decimal(shrmpItValues['Price']), Remarks=str(rmk)).save()
-
-
-                        if int(gradingTypeData) == 2:
-                            #print("=Grading Type=" + str(gradingTypeData))
-                            weightmentDetail = WeightmentDetail(AbsId=abstraction, WgId=weightment,
-                                             ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                             SmpQnty=Decimal(farmerShamplingKgDate), MeasurUnit=str(farmerUnitTypeData),
-                                             MeasurQnty=Decimal(sMQnty), Rate=Decimal(shrmpItValues['Price']),
-                                             Price=Decimal(shrmpItValues['Price']*Decimal(sMQnty)), Remarks=str(rmk))
-                            weightmentDetail.save()
-                            LogWeightmentDetail(AbsId=abstraction, WgId=weightment.Id,
-                                             ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                             SmpQnty=Decimal(farmerShamplingKgDate), MeasurUnit=str(farmerUnitTypeData),
-                                             MeasurQnty=Decimal(sMQnty), Rate=Decimal(shrmpItValues['Price']),
-                                             Price=Decimal(shrmpItValues['Price']*Decimal(sMQnty)), Remarks=str(rmk)).save()
-
-                        if int(gradingTypeData) == 3:
-                            print("=Grading Type=" + str(gradingTypeData))
-
-            # RC Type Farmer
             elif int(rcType) == 2:
                 print("=R/C=" + str(rcType))
-
-                supplierId = Supplier.objects.filter(pk=int(supplier)).first()
-                allFarmers = request.POST.getlist('AllFarmers')
-                for i in range(len(allFarmers)):
-                    farmerId = Farmer.objects.filter(pk=int(allFarmers[i])).first()
-                    gradingTypeName = "GradingType_" + str(allFarmers[i])
-                    gradingTypeData = request.POST.get(gradingTypeName)
-                    grdTypeId = GradingType.objects.filter(pk=int(gradingTypeData)).first()
-                    farmerUnitTypeName = "FarmerUnitType_" + str(allFarmers[i])
-                    farmerUnitTypeData = request.POST.get(farmerUnitTypeName)
-
-                    farmerTotalKgName = "FarmerTotalKg_" + str(allFarmers[i])
-                    farmerTotalKgData = request.POST.get(farmerTotalKgName)
-
-                    farmerShamplingKgName = "FarmerShamplingKg_" + str(allFarmers[i])
-                    farmerShamplingKgDate = request.POST.get(farmerShamplingKgName)
-                    if str(farmerShamplingKgDate) == '':
-                        farmerShamplingKgDate = 0.0
-
-                    weightmentName = "Weightment_" + str(allFarmers[i])
-                    weightmentDetail = request.POST.getlist(str(weightmentName))
-                    srv = np.reshape(weightmentDetail, (-1, 4))
-
-                    weightment = Weightment(AbsId=abstraction, FarmerId=farmerId,
-                                            SupplierId=supplierId, GrdTypeId=grdTypeId,
-                                            WgDate=abstractionDate, IsQcPass='N',
-                                            Total=Decimal(farmerTotalKgData),
-                                            TotalSmpQnty=Decimal(farmerShamplingKgDate),
-                                            MeasurUnit=str(farmerUnitTypeData), EntryDate=wgEntryDate,
-                                            EditDate=wgEntryDate, EntryBy=user)
-                    weightment.save()
-
-                    logWeightment = LogWeightment(AbsId=abstraction, FarmerId=farmerId,
-                                                  WgId=weightment.Id, SupplierId=supplierId, GrdTypeId=grdTypeId,
-                                                  WgDate=abstractionDate, IsQcPass='N',
-                                                  Total=Decimal(farmerTotalKgData),
-                                                  TotalSmpQnty=Decimal(farmerShamplingKgDate),
-                                                  MeasurUnit=str(farmerUnitTypeData), EntryDate=wgEntryDate,
-                                                  EditDate=wgEntryDate, EntryBy=user)
-                    logWeightment.save()
-
-                    for m in range(len(srv)):
-                        j = 0
-                        sMQnty = 0.0
-                        changeCount = 0.0
-                        rmk = ''
-                        for j in range(len(srv[m])):
-                            if j == 0:
-                                sType = srv[m][j]
-                                shrimpItem = ShrimpItem.objects.filter(pk=int(sType)).first()
-                                shrmpItValues = ShrimpItem.objects.filter(pk=int(sType)).values('ItemCount',
-                                                                                                'Price').first()
-                            if j == 1:
-                                changeCount = srv[m][j]
-                            if j == 2:
-                                sMQnty = srv[m][j]
-                            if j == 3:
-                                rmk = srv[m][j]
-
-                        if int(gradingTypeData) == 1:
-                            realMQnty = Decimal(
-                                Decimal(farmerTotalKgData) * Decimal(sMQnty) / Decimal(farmerShamplingKgDate))
-                            weightmentDetail = WeightmentDetail(AbsId=abstraction, WgId=weightment,
-                                                                ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                                                SmpQnty=Decimal(sMQnty),
-                                                                MeasurUnit=str(farmerUnitTypeData),
-                                                                MeasurQnty=Decimal(realMQnty),
-                                                                Rate=Decimal(shrmpItValues['Price']),
-                                                                Price=realMQnty * Decimal(shrmpItValues['Price']),
-                                                                Remarks=str(rmk))
-                            weightmentDetail.save()
-                            LogWeightmentDetail(AbsId=abstraction, LgWgId=logWeightment, WgId=weightment.Id,
-                                                ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                                SmpQnty=Decimal(sMQnty),
-                                                MeasurUnit=str(farmerUnitTypeData),
-                                                MeasurQnty=Decimal(realMQnty),
-                                                Rate=Decimal(shrmpItValues['Price']),
-                                                Price=realMQnty * Decimal(shrmpItValues['Price']), Remarks=str(rmk)).save()
-
-                        if int(gradingTypeData) == 2:
-                            # print("=Grading Type=" + str(gradingTypeData))
-                            weightmentDetail = WeightmentDetail(AbsId=abstraction, WgId=weightment,
-                                                                ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                                                SmpQnty=Decimal(farmerShamplingKgDate),
-                                                                MeasurUnit=str(farmerUnitTypeData),
-                                                                MeasurQnty=Decimal(sMQnty),
-                                                                Rate=Decimal(shrmpItValues['Price']),
-                                                                Price=Decimal(shrmpItValues['Price'] * Decimal(sMQnty)),
-                                                                Remarks=str(rmk))
-                            weightmentDetail.save()
-                            LogWeightmentDetail(AbsId=abstraction, WgId=weightment.Id,
-                                                ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
-                                                SmpQnty=Decimal(farmerShamplingKgDate), MeasurUnit=str(farmerUnitTypeData),
-                                                MeasurQnty=Decimal(sMQnty), Rate=Decimal(shrmpItValues['Price']),
-                                                Price=Decimal(shrmpItValues['Price'] * Decimal(sMQnty)),
-                                                Remarks=str(rmk)).save()
-
-                        if int(gradingTypeData) == 3:
-                            print("=Grading Type=" + str(gradingTypeData))
-
-
-            # RC Type Supplier
+                fCodeValues = Farmer.objects.filter(pk=int(farmer)).values('FarmerCode').first()
+                supplierId = Supplier.objects.filter(SupplierCode=str(fCodeValues['FarmerCode'])).first()
             else:
-                print("=R/C="+str(rcType))
+                print("=R/C=" + str(rcType))
+
+            allFarmers = request.POST.getlist('AllFarmers')
+
+            for i in range(len(allFarmers)):
+                farmerId = Farmer.objects.filter(pk=int(allFarmers[i])).first()
+                gradingTypeName = "GradingType_" + str(allFarmers[i])
+                gradingTypeData = request.POST.get(gradingTypeName)
+                grdTypeId = GradingType.objects.filter(pk=int(gradingTypeData)).first()
+                farmerUnitTypeName = "FarmerUnitType_" + str(allFarmers[i])
+                farmerUnitTypeData = request.POST.get(farmerUnitTypeName)
+
+                farmerTotalKgName = "FarmerTotalKg_" + str(allFarmers[i])
+                farmerTotalKgData = request.POST.get(farmerTotalKgName)
+
+                farmerShamplingKgName = "FarmerShamplingKg_" + str(allFarmers[i])
+                farmerShamplingKgDate = request.POST.get(farmerShamplingKgName)
+                if str(farmerShamplingKgDate) == '':
+                    farmerShamplingKgDate = 0.0
+
+                weightmentName = "Weightment_" + str(allFarmers[i])
+                weightmentDetail = request.POST.getlist(str(weightmentName))
+                srv = np.reshape(weightmentDetail, (-1, 4))
+
+                weightment = Weightment(AbsId=abstraction, FarmerId=farmerId,
+                                        SupplierId=supplierId, GrdTypeId=grdTypeId,
+                                        WgDate=abstractionDate, IsQcPass='N',
+                                        Total=Decimal(farmerTotalKgData),
+                                        TotalSmpQnty=Decimal(farmerShamplingKgDate),
+                                        MeasurUnit=str(farmerUnitTypeData), EntryDate=wgEntryDate,
+                                        EditDate=wgEntryDate, EntryBy=user)
+                weightment.save()
+
+                logWeightment = LogWeightment(AbsId=abstraction, FarmerId=farmerId,
+                                                WgId=weightment.Id,SupplierId=supplierId, GrdTypeId=grdTypeId,
+                                                WgDate=abstractionDate, IsQcPass='N',
+                                                Total=Decimal(farmerTotalKgData),
+                                                TotalSmpQnty=Decimal(farmerShamplingKgDate),
+                                                MeasurUnit=str(farmerUnitTypeData), EntryDate=wgEntryDate,
+                                                EditDate=wgEntryDate, EntryBy=user)
+                logWeightment.save()
+
+                for m in range(len(srv)):
+                    j = 0
+                    sMQnty = 0.0
+                    changeCount = 0.0
+                    rmk = ''
+                    for j in range(len(srv[m])):
+                        if j == 0:
+                            sType = srv[m][j]
+                            shrimpItem = ShrimpItem.objects.filter(pk=int(sType)).first()
+                            shrmpItValues = ShrimpItem.objects.filter(pk=int(sType)).values('ItemCount','Price').first()
+                        if j == 1:
+                            changeCount = srv[m][j]
+                        if j == 2:
+                            sMQnty = srv[m][j]
+                        if j == 3:
+                            rmk = srv[m][j]
+
+                    if int(gradingTypeData) == 1:
+                        realMQnty = Decimal(Decimal(farmerTotalKgData)*Decimal(sMQnty)/Decimal(farmerShamplingKgDate))
+                        weightmentDetail = WeightmentDetail(AbsId=abstraction, WgId=weightment,
+                                         ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
+                                         SmpQnty=Decimal(sMQnty),
+                                         MeasurUnit=str(farmerUnitTypeData),
+                                         MeasurQnty=Decimal(realMQnty),
+                                         Rate=Decimal(shrmpItValues['Price']),
+                                         Price=realMQnty*Decimal(shrmpItValues['Price']), Remarks=str(rmk))
+                        weightmentDetail.save()
+                        LogWeightmentDetail(AbsId=abstraction, LgWgId=logWeightment, WgId=weightment.Id,
+                                         ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
+                                         SmpQnty=Decimal(sMQnty),
+                                         MeasurUnit=str(farmerUnitTypeData),
+                                         MeasurQnty=Decimal(realMQnty),
+                                         Rate=Decimal(shrmpItValues['Price']),
+                                         Price=realMQnty*Decimal(shrmpItValues['Price']), Remarks=str(rmk)).save()
+
+
+                    if int(gradingTypeData) == 2:
+                        #print("=Grading Type=" + str(gradingTypeData))
+                        weightmentDetail = WeightmentDetail(AbsId=abstraction, WgId=weightment,
+                                         ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
+                                         SmpQnty=Decimal(farmerShamplingKgDate), MeasurUnit=str(farmerUnitTypeData),
+                                         MeasurQnty=Decimal(sMQnty), Rate=Decimal(shrmpItValues['Price']),
+                                         Price=Decimal(shrmpItValues['Price']*Decimal(sMQnty)), Remarks=str(rmk))
+                        weightmentDetail.save()
+                        LogWeightmentDetail(AbsId=abstraction, WgId=weightment.Id, LgWgId=logWeightment,
+                                         ShrItemId=shrimpItem, CngCount=Decimal(changeCount),
+                                         SmpQnty=Decimal(farmerShamplingKgDate), MeasurUnit=str(farmerUnitTypeData),
+                                         MeasurQnty=Decimal(sMQnty), Rate=Decimal(shrmpItValues['Price']),
+                                         Price=Decimal(shrmpItValues['Price']*Decimal(sMQnty)), Remarks=str(rmk)).save()
+
+            # if int(gradingTypeData) == 3:
+            #     print("=Grading Type=" + str(gradingTypeData))
+            #
+            # # RC Type Farmer
+            # elif int(rcType) == 2:
+            #     print("=R/C=" + str(rcType))
+            # # RC Type Supplier
+            # else:
+            #     print("=R/C="+str(rcType))
 
             return HttpResponseRedirect('/Weightment')
 
@@ -393,14 +300,98 @@ def ListWeightment(request):
         userId = request.session['uid']
         user = UserManager.objects.filter(pk=int(userId)).first()
 
-        weghtmentList = Weightment.objects.filter(EntryBy=user).values('Id','WgDate','FarmerId__FarmerCode', 'SupplierId__SupplierCode', 'IsQcPass').order_by('-Id')
+        weghtmentList = Weightment.objects.filter(EntryBy=user).values('Id','AbsId__Id','AbsId__LocDate', 'AbsId__TotalKg','AbsId__TotalLb','AbsId__IsQcPass').order_by('-Id')
 
+
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+        toDate = _datetime.strftime("%Y-%m-%d")
+        #Abstraction.objects.filter()
 
         context = {'PageTitle': 'Weightment List',
                    'farmerList':farmerList,
                    'supplierList' : supplierList,
-                   'weghtmentList':weghtmentList}
+                   'weghtmentList':weghtmentList,
+                   'fromDate':fromDate,
+                   'toDate':toDate,
+                   'farmer': 0,
+                   'supplier': 0
+                   }
         return render(request, 'shrimpapp/WeightmentList.html',context)
+
+
+def VWAbstraction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        absId = request.GET.get('AbsId')
+
+        shrimpType = ShrimpType.objects.all().values('Id', 'Name')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        gradTypeList = GradingType.objects.all().values('Id', 'Name')
+        receiveTypeList = ReceiveType.objects.all().values('Id', 'Name')
+
+        absObj = Abstraction.objects.filter(pk=int(absId)).first()
+        absObValues = Abstraction.objects.filter(pk=int(absId)).values('Id', 'RcvTypeId__Id', 'LocDate', 'TotalKg').first()
+
+        wegNwegDetail = {}
+        weByAbs = Weightment.objects.filter(AbsId=absObj, EntryBy=user).values('Id', 'FarmerId__Id', 'FarmerId__FarmerName',
+                                                                 'FarmerId__FarmerMobile','FarmerId__Address',
+                                                                 'GrdTypeId__Id', 'GrdTypeId__Name', 'Total',
+                                                                 'TotalSmpQnty','MeasurUnit', 'AbsId__Id' )
+        weDtlByAbs = WeightmentDetail.objects.filter(AbsId=absObj).values('AbsId__Id', 'Id','WgId__Id','ShrItemId__Id', 'ShrItemId__Name', 'CngCount', 'SmpQnty', 'MeasurQnty', 'Remarks')
+
+        for weg in weByAbs:
+            tmp={}
+
+            for wd in weDtlByAbs:
+                temp = []
+                if weg['Id'] == wd['WgId__Id']:
+                    temp = wd
+                    tmp[wd['Id']] = temp
+
+            wegNwegDetail[weg['Id']] = tmp
+
+        print("====="+ str(weByAbs))
+
+        context = {'PageTitle': 'Weightment View',
+                   'weightMent': weByAbs,
+                   'farmerList': farmerList,
+                   'supplierList': supplierList,
+                   'gradTypeList': gradTypeList,
+                   'receiveTypeList': receiveTypeList,
+                   'shrimpItem':shrimpItem,
+                   'shrimpType':shrimpType,
+                   'absObValues':absObValues,
+                   'wegNwegDetail':wegNwegDetail
+
+                   }
+        return render(request, 'shrimpapp/VWAbstraction.html', context)
+
+
+def EdAbstraction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        print("Success")
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        wegtId = request.GET.get('WeightmentId')
+
+def PrAbstraction(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        wegtId = request.GET.get('WeightmentId')
+        print("Success")
+
 
 
 
@@ -527,8 +518,20 @@ def ListSearchWeightment(request):
         toDate = request.POST.get('ToDate')
         userId = request.session['uid']
 
-        frmObj = Farmer.objects.filter(pk=int(farmer)).first()
-        supObj = Supplier.objects.filter(pk=int(supplier)).first()
+        frmObj = ''
+        supObj = ''
+
+        if str(supplier) == '0':
+            supObj = Supplier.objects.all()
+        else:
+            supObj = Supplier.objects.filter(pk=int(supplier))
+
+        if str(farmer) == '0':
+            frmObj = Farmer.objects.all()
+        else:
+            frmObj = Farmer.objects.filter(pk=int(farmer))
+
+
         serDayTime = fromDate.split('-')
         serToDayTime = toDate.split('-')
 
@@ -543,14 +546,19 @@ def ListSearchWeightment(request):
         supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
 
         user = UserManager.objects.filter(pk=int(userId)).first()
+        weghtmentList = Weightment.objects.filter(EntryBy=user,
+                                                  EntryDate__range=(wegFromDate, wegToDate),SupplierId__in=supObj,
+                                                  FarmerId__in=frmObj).values('Id', 'AbsId__Id',
+                                                                              'AbsId__LocDate','AbsId__TotalKg',
+                                                                              'AbsId__TotalLb', 'AbsId__IsQcPass').order_by('-Id')
 
-        weghtmentList = Weightment.objects.filter(EntryBy=user, FarmerId=frmObj, SupplierId=supObj, EntryDate__range=(wegFromDate, wegToDate)).values('Id', 'WgDate', 'FarmerId__FarmerCode',
-                                                                       'SupplierId__SupplierCode', 'IsQcPass').order_by(
-            '-Id')
+        # weghtmentList = Weightment.objects.filter(EntryBy=user, FarmerId=frmObj, SupplierId=supObj, EntryDate__range=(wegFromDate, wegToDate)).values('Id', 'WgDate', 'FarmerId__FarmerCode',
+        #                                                                'SupplierId__SupplierCode', 'IsQcPass').order_by(
+        #     '-Id')
 
         context = {'PageTitle': 'Weightment List', 'farmerList': farmerList,
                    'supplierList': supplierList, 'weghtmentList': weghtmentList,
-                   'wegFromDate':wegFromDate, 'wegToDate':wegToDate }
+                   'fromDate':fromDate, 'toDate':toDate, 'farmer': int(farmer), 'supplier':int(supplier)}
         return render(request, 'shrimpapp/WeightmentList.html', context)
 
 #@csrf_exempt
