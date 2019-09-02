@@ -402,14 +402,13 @@ def EdAbstraction(request):
                                                                                'Total',
                                                                                'TotalSmpQnty', 'MeasurUnit',
                                                                                'AbsId__Id')
-        weDtlByAbs = WeightmentDetail.objects.filter(AbsId=absObj).values('AbsId__Id', 'Id', 'WgId__Id',
+        weDtlByAbs = WeightmentDetail.objects.filter(AbsId=absObj).values('AbsId__Id', 'Id', 'WgId__Id','WgId__FarmerId__Id',
                                                                           'ShrItemId__Id', 'ShrItemId__Name',
                                                                           'CngCount', 'SmpQnty', 'MeasurQnty',
                                                                           'Remarks')
 
         for weg in weByAbs:
             tmp = {}
-
             for wd in weDtlByAbs:
                 temp = []
                 if weg['Id'] == wd['WgId__Id']:
@@ -418,13 +417,14 @@ def EdAbstraction(request):
 
             wegNwegDetail[weg['Id']] = tmp
 
-        context = {'PageTitle': 'Weightment View',
+        #print("_++++----"+str(wegNwegDetail))
+        context = {'PageTitle': 'Edit Weightment',
                    'weightMent': weByAbs,
                    'farmerList': farmerList,
                    'supplierList': supplierList,
-                   'gradTypeList': gradTypeList,
+                   'gradingtype': gradTypeList,
                    'receiveTypeList': receiveTypeList,
-                   'shrimpItem': shrimpItem,
+                   'sItemList': shrimpItem,
                    'shrimpType': shrimpType,
                    'absObValues': absObValues,
                    'wegNwegDetail': wegNwegDetail}
