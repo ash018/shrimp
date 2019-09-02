@@ -15,6 +15,17 @@ class RowStatus(models.Model):
         managed = False
         db_table = 'RowStatus'
 
+class IsFarmerStatus(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='Id')
+    Name = models.CharField(max_length=50, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'IsFarmerStatus'
+
 class Department(models.Model):
     Id = models.AutoField(primary_key=True, db_column='DepartmentId')
     DepartmentCode = models.CharField(max_length=50, db_column='DepartmentCode')
@@ -106,6 +117,7 @@ class Supplier(models.Model):
     SupplierMobile = models.CharField(max_length=20, db_column='SupplierMobile')
     Address = models.CharField(max_length=100, db_column='Address')
     IsActive = models.ForeignKey(RowStatus, db_column='IsActive', on_delete=models.CASCADE)
+    IsFarmer = models.ForeignKey(IsFarmerStatus, db_column='IsFarmer', on_delete=models.CASCADE)
     FarmerId = models.ManyToManyField(Farmer, db_column='FarmerId')
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')

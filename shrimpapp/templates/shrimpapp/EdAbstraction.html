@@ -25,7 +25,7 @@
             <div class="row">
                 <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
                     <div class="ibox float-e-margins">
-                        <form method="post" enctype="multipart/form-data" action="{% url 'SaveWeightment' %}">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'UpdAbstraction' %}">
                             {% csrf_token %}
 
                             <div class="ibox-content">
@@ -41,8 +41,7 @@
 
                                         <div class="form-group  col-lg-3 col-md-3 col-sm-3">
                                             <label for="SparepartsDate">Approximate Total Kg</label>
-                                            <input name="TotalKg" class="form-control numeric" id="TotalKg"
-                                                   value="{{ absObValues.TotalKg }}" required/>
+                                            <input name="TotalKg" class="form-control numeric" id="TotalKg" value="{{ absObValues.TotalKg }}" required/>
                                         </div>
 
                                         <div class="col-lg-1 col-md-1 col-sm-1"></div>
@@ -71,7 +70,7 @@
                                                 <select id="Supplier" name="Supplier" class="form-control">
                                                     <option value="0">Select</option>
                                                     {% for sType in supplierList %}
-                                                        <option value="{{ sType.Id }}" {% if supplier == sType.Id %}
+                                                        <option value="{{ sType.Id }}" {% if seletedSupplier == sType.Id and absObValues.RcvTypeId__Id == 1%}
                                                                 selected {% endif %}>{{ sType.SupplierName }}--{{ sType.SupplierCode }}</option>{% endfor %}
                                                 </select>
 
@@ -86,8 +85,8 @@
                                                 <select id="Farmer" name="Farmer" class="form-control">
                                                     <option value="0">Select</option>
                                                     {% for sType in farmerList %}
-                                                        <option value="{{ sType.Id }}" {% if farmer == sType.Id %}
-                                                                selected {% endif %} >{{ sType.FarmerName }}--{{ sType.FarmerCode }}</option>{% endfor %}
+                                                        <option value="{{ sType.FarmerId__Id }}" {% if seletedFarmer == sType.FarmerId__Id and absObValues.RcvTypeId__Id == 2%}
+                                                                selected {% endif %}>{{ sType.FarmerId__FarmerName }}--{{ sType.FarmerId__FarmerCode }}</option>{% endfor %}
                                                 </select>
                                             </div>
                                         </div>

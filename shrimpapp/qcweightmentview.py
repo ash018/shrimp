@@ -40,12 +40,21 @@ def QCWeightmentList(request):
         farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
         supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
         userId = request.session['uid']
-        user = UserManager.objects.filter(pk=int(userId)).first()
-        weghtmentList = Weightment.objects.filter(IsQcPass='N').values('Id', 'WgDate', 'FarmerId__FarmerCode',
-                                                                       'SupplierId__SupplierCode', 'IsQcPass').order_by(
-            '-Id')
-        context = {'PageTitle': 'Weightment For QC','weghtmentList':weghtmentList,
-                   'farmerList':farmerList,'supplierList' : supplierList,}
+        #user = UserManager.objects.filter(pk=int(userId)).first()
+        #weghtmentList = Weightment.objects.filter(IsQcPass='N').values('Id', 'WgDate', 'FarmerId__FarmerCode', 'SupplierId__SupplierCode', 'IsQcPass').order_by('-Id')
+
+        allAbsValue = Abstraction.objects.filter(IsQcPass='N').values('Id', 'LocDate', 'TotalKg', 'TotalLb', 'RcvTypeId__Name','IsQcPass').order_by('-Id')
+
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+        toDate = _datetime.strftime("%Y-%m-%d")
+
+        context = {'PageTitle':'Weightment QC',
+                   'farmerList':farmerList,
+                   'supplierList':supplierList,
+                   'fromDate':fromDate,
+                   'toDate':toDate,
+                   'allAbsValue':allAbsValue}
         return render(request, 'shrimpapp/QCWeightmentList.html', context)
 
 
@@ -155,35 +164,50 @@ def QCSearch(request):
         supplier = request.POST.get('Supplier')
         fromDate = request.POST.get('FromDate')
         toDate = request.POST.get('ToDate')
-        userId = request.session['uid']
+        #print("==="+str(farmer))
+        frmObj = ''
+        supObj = ''
 
-        frmObj = Farmer.objects.filter(pk=int(farmer)).first()
-        supObj = Supplier.objects.filter(pk=int(supplier)).first()
-        serDayTime = fromDate.split('-')
-        serToDayTime = toDate.split('-')
+        if fromDate is None or  toDate is None or supplier is None or farmer is None:
+            return HttpResponseRedirect('/QCWeightmentList')
+        else:
+            if str(supplier) == '0':
+                supObj = Supplier.objects.all()
+            else:
+                supObj = Supplier.objects.filter(pk=int(supplier))
 
-        wegFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
-                                        int(0), int(0),
-                                        int(0), 0)
-        wegToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
-                                      int(23), int(59),
-                                      int(59), 0)
+            if str(farmer) == '0':
+                frmObj = Farmer.objects.all()
+            else:
+                frmObj = Farmer.objects.filter(pk=int(farmer))
 
-        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
-        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+            serDayTime = fromDate.split('-')
+            serToDayTime = toDate.split('-')
+            wegFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                            int(0), int(0),
+                                            int(0), 0)
+            wegToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                          int(23), int(59),
+                                          int(59), 0)
 
-        user = UserManager.objects.filter(pk=int(userId)).first()
+            farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+            supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
 
-        weghtmentList = Weightment.objects.filter(IsQcPass='N', FarmerId=frmObj, SupplierId=supObj,
-                                                  EntryDate__range=(wegFromDate, wegToDate)).values('Id', 'WgDate',
-                                                                                                    'FarmerId__FarmerCode',
-                                                                                                    'SupplierId__SupplierCode',
-                                                                                                    'IsQcPass').order_by(
-            '-Id')
+            wegList = Weightment.objects.filter(IsQcPass='N',
+                                                      EntryDate__range=(wegFromDate, wegToDate),
+                                                      SupplierId__in=supObj,
+                                                      FarmerId__in=frmObj).values('AbsId__Id')
 
-        context = {'PageTitle': 'Weightment List', 'farmerList': farmerList,
-                   'supplierList': supplierList, 'weghtmentList': weghtmentList,
-                   'wegFromDate': wegFromDate, 'wegToDate': wegToDate
-                   }
+            allAbsValue = Abstraction.objects.filter(Id__in=wegList).values('Id', 'LocDate', 'TotalKg', 'TotalLb', 'RcvTypeId__Name', 'IsQcPass')
 
-        return render(request, 'shrimpapp/QCWeightmentList.html', context)
+            context = {'PageTitle': 'Weightment List',
+                       'farmerList': farmerList,
+                       'supplierList': supplierList,
+                       'allAbsValue': allAbsValue,
+                       'fromDate':fromDate,
+                       'toDate':toDate,
+                       'farmer': int(farmer),
+                       'supplier':int(supplier)
+                       }
+
+            return render(request, 'shrimpapp/QCWeightmentList.html', context)

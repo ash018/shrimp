@@ -17,6 +17,8 @@ urlpatterns = [
     url(r'^EdAbstraction', views.EdAbstraction, name='EdAbstraction'),
     url(r'^PrAbstraction', views.PrAbstraction, name='PrAbstraction'),
 
+    url(r'^UpdAbstraction', views.UpdAbstraction, name='UpdAbstraction'),
+
     url(r'^EditWeightment', views.EditWeightment, name='EditWeightment'),
     url(r'^UpdateWeightment', views.UpdateWeightment, name='UpdateWeightment'),
     url(r'^SaveWeightment', views.SaveWeightment, name='SaveWeightment'),

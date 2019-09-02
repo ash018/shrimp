@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django import forms
-from .models import Department, Designation, Farmer, Supplier, SupplierFarmer, ShrimpType, ShrimpItem, UserManager
+from .models import Department, Designation, Farmer, Supplier, SupplierFarmer, ShrimpType, ShrimpItem, UserManager, RowStatus
 from .inventorymodel import ShrimpProdItem, PackagingMaterial
 # Register your models here.
 
@@ -42,11 +42,13 @@ class FarmerAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('SupplierName', 'SupplierCode', 'SupplierMobile', 'Address', 'IsActive')
+    list_display = ('SupplierName', 'SupplierCode', 'SupplierMobile', 'Address', 'IsActive', 'IsFarmer')
     filter_horizontal = ['FarmerId']
     search_fields = ['SupplierName', 'SupplierCode', 'SupplierMobile']
     list_filter = ['SupplierCode', 'SupplierMobile']
     list_per_page = 20
+
+
 
 admin.site.register(UserManager, UserManagerAdmin)
 admin.site.register(Farmer, FarmerAdmin)
