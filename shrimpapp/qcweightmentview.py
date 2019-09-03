@@ -200,7 +200,7 @@ def QCSearch(request):
 
             allAbsValue = Abstraction.objects.filter(Id__in=wegList).values('Id', 'LocDate', 'TotalKg', 'TotalLb', 'RcvTypeId__Name', 'IsQcPass')
 
-            context = {'PageTitle': 'Weightment List',
+            context = {'PageTitle': 'QC Weightment List',
                        'farmerList': farmerList,
                        'supplierList': supplierList,
                        'allAbsValue': allAbsValue,
