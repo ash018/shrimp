@@ -49,7 +49,7 @@ def QCWeightmentList(request):
         fromDate = _datetime.strftime("%Y-%m-%d")
         toDate = _datetime.strftime("%Y-%m-%d")
 
-        context = {'PageTitle':'Weightment QC',
+        context = {'PageTitle':'QC List',
                    'farmerList':farmerList,
                    'supplierList':supplierList,
                    'fromDate':fromDate,
@@ -62,29 +62,57 @@ def ShowDetailForQC(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
+        #userId = request.session['uid']
+        #user = UserManager.objects.filter(pk=int(userId)).first()
+        absId = request.GET.get('AbsId')
+
+        shrimpType = ShrimpType.objects.all().values('Id', 'Name')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
         farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
         supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
 
-        userId = request.session['uid']
-        user = UserManager.objects.filter(pk=int(userId)).first()
-        wegtId = request.GET.get('WeightmentId')
+        gradTypeList = GradingType.objects.all().values('Id', 'Name')
 
-        weightment = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).first()
-        weightmentDetails = WeightmentDetail.objects.filter(WgId=weightment).values('Id', 'CngCount', 'ShrItemId__Id',
-                                                                                    'ShrItemId__ShrimpTypeId__Id',
-                                                                                    'MeasurUnit','MeasurQnty',
-                                                                                    'Rate', 'Remarks')
+        receiveTypeList = ReceiveType.objects.all().values('Id', 'Name')
 
-        weightData = Weightment.objects.filter(pk=int(wegtId), EntryBy=user).values('Id', 'FarmerId__Id',
-                                                                                    'SupplierId__Id', 'WgDate').first()
-        shrimpType = ShrimpType.objects.all().values('Id', 'Name')
-        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        absObj = Abstraction.objects.filter(pk=int(absId)).first()
+        absObValues = Abstraction.objects.filter(pk=int(absId)).values('Id', 'RcvTypeId__Id', 'LocDate','TotalKg').first()
 
-        context = {'PageTitle': 'QC', 'shrimpType': shrimpType,
-                   'shrimpItem': shrimpItem, 'farmerList': farmerList,
-                   'supplierList': supplierList, 'weightData': weightData,
-                   'weightmentDetails': weightmentDetails,
-                   }
+        wegNwegDetail = {}
+        weByAbs = Weightment.objects.filter(AbsId=absObj).values('Id', 'FarmerId__Id',
+                                                                               'FarmerId__FarmerName',
+                                                                               'FarmerId__FarmerMobile',
+                                                                               'FarmerId__Address',
+                                                                               'GrdTypeId__Id', 'GrdTypeId__Name',
+                                                                               'Total',
+                                                                               'TotalSmpQnty', 'MeasurUnit',
+                                                                               'AbsId__Id')
+        weDtlByAbs = WeightmentDetail.objects.filter(AbsId=absObj).values('AbsId__Id', 'Id', 'WgId__Id',
+                                                                          'ShrItemId__Id', 'ShrItemId__Name',
+                                                                          'CngCount', 'SmpQnty', 'MeasurQnty',
+                                                                          'Remarks')
+
+        for weg in weByAbs:
+            tmp = {}
+
+            for wd in weDtlByAbs:
+                temp = []
+                if weg['Id'] == wd['WgId__Id']:
+                    temp = wd
+                    tmp[wd['Id']] = temp
+
+            wegNwegDetail[weg['Id']] = tmp
+
+        context = {'PageTitle': 'Weightment QC',
+                   'weightMent': weByAbs,
+                   'farmerList': farmerList,
+                   'supplierList': supplierList,
+                   'gradTypeList': gradTypeList,
+                   'receiveTypeList': receiveTypeList,
+                   'sItemList': shrimpItem,
+                   'shrimpType': shrimpType,
+                   'absObValues': absObValues,
+                   'wegNwegDetail': wegNwegDetail}
         return render(request, 'shrimpapp/ShowDetailForQC.html', context)
 
 def QCPassOfWeightment(request):
