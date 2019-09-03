@@ -8,7 +8,12 @@
             overflow: scroll;
         }
 
+        .disabledbutton {
+            pointer-events: none;
+            opacity: 0.7;
+        }
     </style>
+
     <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
     <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
     <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
@@ -25,17 +30,17 @@
             <div class="row">
                 <div class="col-lg-12 col-xs-12 col-md-12 col-sm-12">
                     <div class="ibox float-e-margins">
-                        <form method="post" enctype="multipart/form-data" action="{% url 'UpdAbstraction' %}">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'QCPassOfWeightment' %}">
                             {% csrf_token %}
 
                             <div class="ibox-content">
+                                <input type="hidden" name="AbsId" value="{{ absObValues.Id }}"/>
                                 <div class="row">
                                     <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
                                         <div class="form-group col-lg-3 col-md-3 col-sm-3">
                                             <label for="SparepartsDate">Collection Date</label>
                                             <input type="text" name="WgDate" value="{{ absObValues.LocDate }}"
-                                                   class="form-control" id="SparepartsDate" required/>
-                                            <input type="hidden" name="AbsId" value="{{ absObValues.Id }}"/>
+                                                   class="form-control disabledbutton" id="SparepartsDate" required/>
                                         </div>
                                         <div class="col-lg-1 col-md-1 col-sm-1"></div>
 
@@ -49,7 +54,7 @@
 
                                         <div class="form-group col-lg-3 col-md-3 col-sm-3">
                                             <label for="Machine">Choose R/C Type</label>
-                                            <select id="RcType" name="RcType" class="form-control">
+                                            <select id="RcType" name="RcType" class="form-control disabledbutton">
                                                 <option value="0">Select Type</option>
                                                 {% for sType in receiveTypeList %}
                                                     <option value="{{ sType.Id }}"
@@ -58,17 +63,15 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-
                                     </div>
                                 </div>
-
-
                                 <div class="row">
                                     <div class="col-lg-12 col-lg-12 col-md-12 col-sm-12">
                                         <div class="form-group col-lg-3 col-md-3 col-sm-3">
                                             <div id="RcTypeHold">
+
                                                 <label for="Machine">Choose Supplier</label>
-                                                <select id="Supplier" name="Supplier" class="form-control">
+                                                <select id="Supplier" name="Supplier" class="form-control disabledbutton">
                                                     <option value="0">Select</option>
                                                     {% for sType in supplierList %}
                                                         <option value="{{ sType.Id }}"
@@ -84,7 +87,7 @@
                                         <div class="form-group col-lg-3 col-md-3 col-sm-3">
                                             <div id="FarmerHolder">
                                                 <label for="Machine">Choose Farmer</label>
-                                                <select id="Farmer" name="Farmer" class="form-control">
+                                                <select id="Farmer" name="Farmer" class="form-control disabledbutton">
                                                     <option value="0">Select</option>
                                                     {% for sType in farmerList %}
                                                         <option value="{{ sType.FarmerId__Id }}"
@@ -122,8 +125,8 @@
                                                             <th>Grading Type</th>
                                                             <th>Shrimp Type</th>
                                                             <th>Unit (Kg/Lb)</th>
-                                                            <th>Total</th>
-                                                            <th>SmpQty</th>
+                                                            <th>Total QC</th>
+                                                            <th>SmpQty QC</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
@@ -132,14 +135,10 @@
                                                             {% if k1 == mk.Id %}
                                                                 <tr>
                                                                     <td>
-
-                                                                        <select name="GradingType_{{ mk.FarmerId__Id }}"
-                                                                                class="form-control GradingType"
-                                                                                id="GradingType_{{ mk.FarmerId__Id }}">
+                                                                        <select name="GradingType_{{ mk.FarmerId__Id }}" class="form-control GradingType" id="GradingType_{{ mk.FarmerId__Id }}">
                                                                             <option value="0">Select</option>
                                                                             {% for cType in gradTypeList %}
-                                                                                <option value="{{ cType.Id }}"
-                                                                                        {% if mk.GrdTypeId__Id == cType.Id %}selected{% endif %}>{{ cType.Name }}</option>
+                                                                                <option value="{{ cType.Id }}">{{ cType.Name }}</option>
                                                                             {% endfor %}
                                                                         </select>
                                                                         <input type="hidden" name="AllFarmers"
@@ -173,13 +172,13 @@
 
                                                                     <td><input
                                                                             name="FarmerTotalKg_{{ mk.FarmerId__Id }}"
-                                                                            value="{{ mk.Total }}"
+                                                                            value="0.0"
                                                                             class="form-control numeric" required/></td>
                                                                     <td>
                                                                         <div id="ShamplingQntyShow_{{ mk.FarmerId__Id }}">
                                                                             <input name="FarmerShamplingKg_{{ mk.FarmerId__Id }}"
                                                                                    class="form-control numeric" required
-                                                                                   value="{{ mk.TotalSmpQnty }} "/>
+                                                                                   value="0.0"/>
                                                                         </div>
                                                                     </td>
 
