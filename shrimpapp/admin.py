@@ -55,8 +55,8 @@ admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(ShrimpType)
 admin.site.register(ShrimpItem)
-#admin.site.register(ShrimpProdItem)
-#admin.site.register(PackagingMaterial)
+admin.site.register(ShrimpProdItem)
+admin.site.register(PackagingMaterial)
 
 
 admin.site.unregister(Group)

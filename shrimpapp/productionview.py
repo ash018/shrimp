@@ -82,8 +82,15 @@ def AllPassWgForProduction(request):
                                       int(23), int(59),
                                       int(59), 0)
 
-        weghtmentList = QCWeightmentDetail.objects.filter(QCWgId__in=(QCWeightment.objects.filter(IsProductionUsed='N', IsQcPass='Y', EntryDate__range=(wegFromDate,wegToDate)))).values('QCWgId','QCWgId__IsProductionUsed','QCWgId__EntryDate' ).annotate(total_count=Sum('QCCngCount'), total_kgs=Sum('QCMeasurQnty'))
+        #weghtmentList = QCWeightmentDetail.objects.filter(QCWgId__in=(QCWeightment.objects.filter(IsProductionUsed='N', IsQcPass='Y', EntryDate__range=(wegFromDate,wegToDate)))).values('QCWgId','QCWgId__IsProductionUsed','QCWgId__EntryDate' ).annotate(total_count=Sum('QCCngCount'), total_kgs=Sum('QCMeasurQnty'))
+        # weghtmentList = QCWeightmentDetail.objects.filter(QCWgId__in=(
+        # QCWeightment.objects.filter( IsQcPass='Y',
+        #                             EntryDate__range=(wegFromDate, wegToDate)))).values('QCWgId',
+        #                                                                                 'QCWgId__IsProductionUsed',
+        #                                                                                 'QCWgId__EntryDate').annotate(
+        #     total_count=Sum('QCCngCount'), total_kgs=Sum('QCMeasurQnty'))
 
+        weghtmentList = Abstraction.objects.filter(IsQcPass='Y').values('Id','RcvTypeId__Name','TotalKg', 'LocDate', 'EditDate')
         html = render_to_string('shrimpapp/AllPassWgForProduction.html', {'weghtmentList': weghtmentList})
         context = {'weghtmentList': weghtmentList}
         template = 'shrimpapp/AllPassWgForProduction.html'
