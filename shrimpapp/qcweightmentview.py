@@ -226,8 +226,6 @@ def QCPassOfWeightment(request):
                                  EntryBy=user)
             logQcWeg.save()
 
-
-
             for m in range(len(srv)):
                 j = 0
                 sMQnty = 0.0

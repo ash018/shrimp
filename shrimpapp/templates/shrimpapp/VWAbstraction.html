@@ -122,7 +122,11 @@
                                                                 <td>{{ mk.Total }}</td>
                                                                 <td>{{ mk.TotalSmpQnty }}</td>
                                                                 <td>
-                                                                    <input type="button" data="{{ mk.Id }}" class="btn btn-success btn-block  RemoveThisFarmer Print" value="Print">
+                                                                    <a href="http://mis.digital:90/ShrimpReporting/Shrimp/FarmerGradeReport?ReportName=SRM_FarmerGradeReport&ReportDescription=Farmer%20Grade%20Report&Width=100&Height=600&abtractionid={{ mk.AbsId__Id }}&farmerid={{ mk.FarmerId__Id }}"
+                                                                       target="_blank"
+                                                                       class="btn btn-info btn-success ">Print</a>
+
+
                                                                 </td>
                                                             </tr>
                                                         {% endif %}

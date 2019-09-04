@@ -124,7 +124,7 @@
                                                         <a href="{% url 'EdAbstraction' %}?AbsId={{ us.Id }} "
                                                            class="btn {% if us.IsQcPass == 'N' %}btn-info{% endif %}{% if us.IsQcPass == 'Y' %}btn-success{% endif %} ">
                                                             Edit</a>
-                                                        <a href="{% url 'PrAbstraction' %}?AbsId={{ us.Id }} "
+                                                        <a href="http://mis.digital:90/ShrimpReporting/Shrimp/ReceiveChalan?ReportName=SRM_ReceiveChalan&ReportDescription=Receive%Chalan%20Report&Width=300&Height=600&abtractionid={{ us.Id }} " target="_blank"
                                                            class="btn btn-info btn-success ">
                                                             Print</a>
                                                     </td>
