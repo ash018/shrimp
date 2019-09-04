@@ -3,8 +3,8 @@
     <tr>
         <th>SL</th>
         <th>Weightment Date</th>
-        <th>Total QC Count</th>
-        <th>Total Weight(kg/lb)</th>
+        <th>Total Kg</th>
+        <th>Total Lb</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -12,12 +12,11 @@
     {% for us in weghtmentList %}
         <tr>
             <td> {{ forloop.counter }}</td>
-            <td> {{ us.EditDate|date:'Y-m-d' }}</td>
-            <td> {{ us.RcvTypeId_Name }}</td>
-            <td> {{ us.TotalKg }}</td>
+            <td> {{ us.LocDate }}</td>
+            <td> {{ us.total_kg }}</td>
+            <td> {{ us.total_lb }}</td>
             <td>
-                <a href="{% url 'StartProduction' %}?QcWgId={{ us.Id }}"
-                   class="btn btn-info">Production</a>
+                <a href="{% url 'StartProduction' %}?WgDate={{ us.LocDate }}" class="btn btn-info">Production</a>
             </td>
         </tr>
     {% endfor %}

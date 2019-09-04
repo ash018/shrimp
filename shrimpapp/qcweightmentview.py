@@ -144,6 +144,9 @@ def QCPassOfWeightment(request):
 
         Abstraction.objects.filter(pk=int(absId)).update(IsQcPass='Y', EditDate=qcWgEntryDate)
         absObje = Abstraction.objects.filter(pk=int(absId)).first()
+
+        Weightment.objects.filter(AbsId=absObje).update(IsQcPass='Y',EditDate=qcWgEntryDate)
+
         absValue = Abstraction.objects.filter(pk=int(absId)).values('RcvTypeId__Id','LocDate').first()
         rcType = ReceiveType.objects.filter(pk=int(absValue['RcvTypeId__Id'])).first()
 

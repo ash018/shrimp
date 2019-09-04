@@ -35,7 +35,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import JsonResponse
 from django.contrib.auth.decorators import permission_required
-
+from django.db.models import QuerySet
 import numpy as np
 import datetime
 from decimal import Decimal
@@ -54,12 +54,34 @@ def SearchWgForProduction(request):
         user = UserManager.objects.filter(pk=int(userId)).first()
         wegtId = request.GET.get('WeightmentId')
 
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+        serDayTime = fromDate.split('-')
+        toDate = _datetime.strftime("%Y-%m-%d")
+        serToDayTime = fromDate.split('-')
+
+        wegFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        wegToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                      int(23), int(59),
+                                      int(59), 0)
+
+
+        weghtmentList = Abstraction.objects.filter(IsQcPass='Y', IsProductionUsed='N',
+                                                   EntryDate__range=(wegFromDate, wegToDate)).values(
+            'LocDate').annotate(total_kg=Sum('TotalKg'), total_lb=Sum('TotalLb'))
 
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
 
-        context = {'PageTitle': 'Production Process', 'shrimpType': shrimpType,
-                   'shrimpItem': shrimpItem, 'farmerList': farmerList,
+        context = {'PageTitle': 'Production Process',
+                   'shrimpType': shrimpType,
+                   'shrimpItem': shrimpItem,
+                   'farmerList': farmerList,
+                   'fromDate':fromDate,
+                   'toDate':toDate,
+                   'weghtmentList':weghtmentList
                    }
         return render(request, 'shrimpapp/SearchWgForProduction.html', context)
 
@@ -90,8 +112,12 @@ def AllPassWgForProduction(request):
         #                                                                                 'QCWgId__EntryDate').annotate(
         #     total_count=Sum('QCCngCount'), total_kgs=Sum('QCMeasurQnty'))
 
-        weghtmentList = Abstraction.objects.filter(IsQcPass='Y').values('Id','RcvTypeId__Name','TotalKg', 'LocDate', 'EditDate')
+        weghtmentList = Abstraction.objects.filter(IsQcPass='Y', IsProductionUsed='N',EntryDate__range=(wegFromDate, wegToDate)).values('LocDate').annotate(total_kg=Sum('TotalKg'), total_lb=Sum('TotalLb'))
+
         html = render_to_string('shrimpapp/AllPassWgForProduction.html', {'weghtmentList': weghtmentList})
+
+
+
         context = {'weghtmentList': weghtmentList}
         template = 'shrimpapp/AllPassWgForProduction.html'
 
@@ -242,13 +268,16 @@ def StartProduction(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
-        userId = request.session['uid']
-        user = UserManager.objects.filter(pk=int(userId)).first()
-        qcWgId = request.GET.get('QcWgId')
+        #userId = request.session['uid']
+        #user = UserManager.objects.filter(pk=int(userId)).first()
+        wgDate = request.GET.get('WgDate')
         produType = ProdType.objects.all().values('Id', 'Name')
 
         shrimpType = ShrimpType.objects.all().values('Id', 'Name')
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+
+        weghtmentList = Abstraction.objects.filter(IsQcPass='Y', IsProductionUsed='N',
+                                                   LocDate=str(wgDate)).values('LocDate').annotate(total_kg=Sum('TotalKg'), total_lb=Sum('TotalLb'))
 
         pakMat = PackagingMaterial.objects.all().values('Id','Name','PackSize','Stock')
 
@@ -256,8 +285,9 @@ def StartProduction(request):
                    'shrimpType': shrimpType,
                    'shrimpItem': shrimpItem,
                    'produType': produType,
-                   'qcWgId':qcWgId,
-                   'pakMat':pakMat}
+                   'qcWgId':wgDate,
+                   'pakMat':pakMat,
+                   'weghtmentList':weghtmentList}
 
         return render(request, 'shrimpapp/StartProduction.html', context)
 
@@ -303,12 +333,30 @@ def SavPrdDetail(request):
                                             int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
                                             int(entryDate.split('-')[5]), 140)
 
-            QCWeightment.objects.filter(pk=int(qcWegId)).update(IsProductionUsed='Y')
-            qcWeg = QCWeightment.objects.filter(pk=int(qcWegId)).first()
-            prod = Production(QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
+            absList = Abstraction.objects.filter(LocDate=str(qcWegId), IsProductionUsed='N', IsQcPass='Y')
+
+            #print("===--==="+ str(len(absList)))
+
+            Abstraction.objects.filter(LocDate=str(qcWegId), IsProductionUsed='N', IsQcPass='Y').update(
+                IsProductionUsed='Y', EditDate=proDate)
+
+
+            QCAbstraction.objects.filter(AbsId__in=absList).update(IsProductionUsed='Y', EditDate=proDate)
+
+            #AbstractionId=absList,
+            prod = Production(IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, LocDate=str(qcWegId), EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
             prod.save()
 
-            lgProd = LogProduction(ProdId=prod, QCWgId=qcWeg, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
+            for ab in absList:
+                #print("========="+str(ab))
+                ProductionAbstraction(ProductionId=prod, AbstractionId=ab).save()
+                #prod.AbstractionId.add(ab)
+
+            #prod.AbstractionId.add(absList)
+            #ProductionAbstractionId(ProductionId=prod, AbstractionId=absList).save()
+            #prod.save_m2m()
+
+            lgProd = LogProduction(ProdId=prod, IsFinishGood='N', ProductionDate=prdDate, ReceivDate=_datetime, LocDate=str(qcWegId), EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
             lgProd.save()
 
             proType = ProdType.objects.all().values('Id', 'Name')
@@ -465,7 +513,16 @@ def ListProduction(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
-        context = {'PageTitle': 'Production List'}
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+        serDayTime = fromDate.split('-')
+        toDate = _datetime.strftime("%Y-%m-%d")
+        serToDayTime = fromDate.split('-')
+
+
+        context = {'PageTitle': 'Production List',
+                   'fromDate':fromDate,
+                   'toDate':toDate}
         return render(request, 'shrimpapp/ListProduction.html', context)
 
 def AllPrdListForEdit(request):
@@ -484,7 +541,7 @@ def AllPrdListForEdit(request):
                                       int(23), int(59),
                                       int(59), 0)
 
-        productionList = Production.objects.filter(IsFinishGood='N', ProductionDate__range=(proFromDate,proToDate)).values('Id','ProductionDate','QCWgId__EntryDate','QCWgId__WgId__EntryDate').order_by('-Id')
+        productionList = Production.objects.filter(IsFinishGood='N', ProductionDate__range=(proFromDate,proToDate)).values('Id','ProductionDate').order_by('-Id')
 
         context = {'productionList': productionList}
         template = 'shrimpapp/AllPrdListForEdit.html'

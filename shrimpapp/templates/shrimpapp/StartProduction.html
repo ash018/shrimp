@@ -14,10 +14,12 @@
             padding: 0px 0px !important;
             height: auto !important;
         }
+
         .btn_s {
             padding: 0px 0px !important;
             font-size: 10px;
         }
+
         .add-pkg-item {
             background: #E07076;
         }
@@ -26,6 +28,7 @@
             table-layout: fixed;
             word-wrap: break-word;
         }
+
         .modal-dialog {
             width: 60%;
             position: absolute;
@@ -45,192 +48,173 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="ibox float-e-margins">
                         <div class="ibox-content">
-                        <form method="post" enctype="multipart/form-data" action="{% url 'SavPrdDetail' %}">
-                        {% csrf_token %}
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                        <label for="Machine">Product Type</label>
-                                        <select id="ProductionType" name="ProductionType" class="form-control">
-                                            <option value="0">--Select--</option>
-                                            {% for sType in produType %}
-                                                <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}
-                                        </select>
-                                        <input type="hidden" name="QcWegId" class="form-control" id="QcWegId"
-                                               value="{{ qcWgId }}"/>
-                                    </div>
+                            <form method="post" enctype="multipart/form-data" action="{% url 'SavPrdDetail' %}">
+                                {% csrf_token %}
 
-                                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                                    </div>
-                                </div>
-                            </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <table id="AllPartsAdd" class=" table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Weightment Date</th>
+                                                <th>Total Kg</th>
+                                                <th>Total Lb</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for us in weghtmentList %}
+                                                <tr>
+                                                    <td> {{ us.LocDate }}</td>
+                                                    <td> {{ us.total_kg }}</td>
+                                                    <td> {{ us.total_lb }}</td>
+                                                </tr>
+                                            {% endfor %}
 
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                        <label for="SparepartsDate">Date</label>
-                                        <input type="text" name="ProdctDate" class="form-control" id="FromDate" required
-                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                                    </div>
+                                            </tbody>
+                                        </table>
 
-                                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
                                     </div>
                                 </div>
-                            </div>
+                                <br/>
 
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div id="add_prod_tab"></div>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="col-lg-5 col-md-5 col-sm-5">
-
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                            <label for="Machine">Product Type</label>
+                                            <select id="ProductionType" name="ProductionType" class="form-control">
+                                                <option value="0">--Select--</option>
+                                                {% for sType in produType %}
+                                                    <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}
+                                            </select>
+                                            <input type="hidden" name="QcWegId" class="form-control" id="QcWegId"
+                                                   value="{{ qcWgId }}"/>
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2">
-                                            <div class="form-group">
-                                                <button id="SaveButtonProduction" type="submit" class="btn btn-primary full-width m-b ">Save</button>
+
+                                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                            <label for="SparepartsDate">Date</label>
+                                            <input type="text" name="ProdctDate" class="form-control" id="FromDate"
+                                                   required
+                                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
+                                        </div>
+
+                                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div id="add_prod_tab"></div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                                <div class="form-group">
+                                                    <button id="SaveButtonProduction" type="submit"
+                                                            class="btn btn-primary full-width m-b ">Save
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+
                                             </div>
                                         </div>
-                                        <div class="col-lg-5 col-md-5 col-sm-5">
-
-                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
 
-        <div class="modal fade modal-lg" id="myModal" role="dialog">
-                    <div class="modal-dialog modal-sm vertical-align-center">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h3 id="myModalLabel">Package Material</h3>
-                                <input type="hidden" id="TableIdForModal" value=""/>
-                                <input type="hidden" id="TableRowIdxForModal" value=""/>
-                                <input type="hidden" id="TableCellIdxForModal" value=""/>
-                            </div>
-                            <div id="PkgMaterailAdd" class="modal-body">
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                                <button id="PkgMatSave" class="btn btn-primary PkgMatSave">Save Package</button>
-                            </div>
+            <div class="modal fade modal-lg" id="myModal" role="dialog">
+                <div class="modal-dialog modal-sm vertical-align-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="myModalLabel">Package Material</h3>
+                            <input type="hidden" id="TableIdForModal" value=""/>
+                            <input type="hidden" id="TableRowIdxForModal" value=""/>
+                            <input type="hidden" id="TableCellIdxForModal" value=""/>
+                        </div>
+                        <div id="PkgMaterailAdd" class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            <button id="PkgMatSave" class="btn btn-primary PkgMatSave">Save Package</button>
                         </div>
                     </div>
                 </div>
-         </div>
-
-            {% comment %}<div class="ibox-content m-b-sm border-bottom col-lg-12 col-md-12 col-sm-12">
-            <div class="wrapper wrapper-content animated fadeInRight ">
-
-                <div style="display:none">
-                    <select name="Weightment" class="form-control" style="width: 100px">{% for cType in sItem %}
-                        <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}</select>
-                </div>
-
-                <form method="post" enctype="multipart/form-data" action="{% url 'SavPrdDetail' %}">
-                    {% csrf_token %}
-                    <div class="row col-lg-6 col-md-6 col-sm-6">
-                        <div class="row col-lg-10 col-md-10 col-sm-10">
-                            <div class="form-group ">
-                                <label for="Machine">Product Type</label>
-                                <select id="ProductionType" name="ProductionType" class="form-control">
-                                    <option value="0">--Select--</option>
-                                    {% for sType in produType %}
-                                        <option value="{{ sType.Id }}">{{ sType.Name }}</option>{% endfor %}
-                                </select>
-                                <input type="hidden" name="QcWegId" class="form-control" id="QcWegId"
-                                       value="{{ qcWgId }}"/>
-                            </div>
-                        </div>
-                        <div class="form-group  col-lg-10 col-md-10 col-sm-10">
-                            <label for="SparepartsDate">Date</label>
-                            <input type="text" name="ProdctDate" class="form-control" id="FromDate" required
-                                   value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                        </div>
-                    </div>
-
-                    <div id="add_prod_tab"></div>
-
-                    <div class="row center col-lg-8 col-md-8 col-sm-8">
-                        <div class="form-group ">
-                            <button id="SaveButtonProduction" type="submit" class="btn btn-primary full-width m-b ">Save</button>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="modal fade modal-lg" id="myModal" role="dialog">
-                    <div class="modal-dialog modal-sm vertical-align-center">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h3 id="myModalLabel">Package Material</h3>
-                                <input type="hidden" id="TableIdForModal" value=""/>
-                                <input type="hidden" id="TableRowIdxForModal" value=""/>
-                                <input type="hidden" id="TableCellIdxForModal" value=""/>
-                            </div>
-                            <div id="PkgMaterailAdd" class="modal-body">
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                                <button id="PkgMatSave" class="btn btn-primary PkgMatSave">Save Package</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-
-        </div>{% endcomment %}
         </div>
 
-        {% csrf_token %}
+    </div>
 
+    {% csrf_token %}
 
-        <script type="text/javascript">
-            window.CSRF_TOKEN = "{{ csrf_token }}";
-            var global_test = 0;
-            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
-            $(document).ready(function () {
-                $("#add_prod_tab").on("input", "input.numeric", function (evt) {
-                    //console.log("This is Input");
-                    var self = $(this);
-                    self.val(self.val().replace(/[^0-9\.]/g, ''));
-                    if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
-                        evt.preventDefault();
-                    }
-                });
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        var global_test = 0;
+        var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+        $(document).ready(function () {
+            $("#add_prod_tab").on("input", "input.numeric", function (evt) {
+                //console.log("This is Input");
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
 
-                $("#myModal").on("input", "input.numeric", function (evt) {
-                    var self = $(this);
-                    self.val(self.val().replace(/[^0-9\.]/g, ''));
-                    if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
-                        evt.preventDefault();
-                    }
-                });
+            $("#myModal").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
 
-                var modalShowTable = "{% url 'ModalTableShow' %}";
-                pkgMatModal(modalShowTable);
-                writeDataModalToCell();
+            var modalShowTable = "{% url 'ModalTableShow' %}";
+            pkgMatModal(modalShowTable);
+            writeDataModalToCell();
 
-                $("#ProductionType").on("change", function () {
-                    var prodType = this.value;
-                    var selectedText = $("#ProductionType option:selected").html();
-                    var baseurl = "{% url 'PrdItemForm' %}";
+            $("#ProductionType").on("change", function () {
+                var prodType = this.value;
+                var selectedText = $("#ProductionType option:selected").html();
+                var baseurl = "{% url 'PrdItemForm' %}";
 
-                    console.log(global_test);
-                    if ($("#hiderowforappend_" + selectedText).length > 0) {
+                //console.log("===="+prodType);
+                if ($("#hiderowforappend_" + selectedText).length > 0) {
+                    sweetAlert({
+                        title: "This Item has already exist in this page.",
+                        text: "Please find the specific Table and add row. Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                    return false;
+                }
+                else {
+                    if (prodType == "0") {
                         sweetAlert({
-                            title: "This Item has already exist in this page.",
-                            text: "Please find the specific Table and add row. Thank You. ",
+                            title: "Please Select a Item",
+                            text: " Thank You. ",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonText: "DISMISS"
@@ -238,10 +222,11 @@
                         return false;
                     }
                     else {
-                        if (prodType == "0") {
+                        var rVal = divTableProducItemCheck();
+                        if (rVal == 1) {
                             sweetAlert({
-                                title: "Please Select a Item",
-                                text: " Thank You. ",
+                                title: "A Table contains Multiple Product Category!!!",
+                                text: "Please find the specific table and select right category. Thank You. ",
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonText: "DISMISS"
@@ -249,80 +234,69 @@
                             return false;
                         }
                         else {
-                            var rVal = divTableProducItemCheck();
-                            if (rVal == 1) {
-                                sweetAlert({
-                                    title: "A Table contains Multiple Product Category!!!",
-                                    text: "Please find the specific table and select right category. Thank You. ",
-                                    type: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonText: "DISMISS"
-                                });
-                                return false;
-                            }
-                            else {
-                                var baseurl = "{% url 'PrdItemForm' %}";
-                                $.ajax({
-                                    url: baseurl,
-                                    type: "GET",
-                                    data: "ProdType=" + prodType + "&csrfmiddlewaretoken=" + csrftoken,
-                                    cache: false,
-                                    dataType: 'json',
-                                    success: function (data) {
-                                        var response = $.parseJSON(JSON.stringify(data));
-                                        var dep = $.parseJSON(JSON.stringify(response.status));
-                                        var html = $.parseJSON(JSON.stringify(response.html));
-                                        $('#add_prod_tab').prepend(html);
-                                    }
-                                });
-                                return true;
-                            }
+                            var baseurl = "{% url 'PrdItemForm' %}";
+                            $.ajax({
+                                url: baseurl,
+                                type: "GET",
+                                data: "ProdType=" + prodType + "&csrfmiddlewaretoken=" + csrftoken,
+                                cache: false,
+                                dataType: 'json',
+                                success: function (data) {
+                                    var response = $.parseJSON(JSON.stringify(data));
+                                    var dep = $.parseJSON(JSON.stringify(response.status));
+                                    var html = $.parseJSON(JSON.stringify(response.html));
+                                    $('#add_prod_tab').prepend(html);
+                                }
+                            });
+                            return true;
                         }
                     }
-                });
-
-                $("#add_prod_tab").on("click", "input.add_child_row", function () {
-                    var addId = $(this).attr("id");
-                    var prodType = addId.split("_")[1];
-
-                    var subProductionRow = "<tr>" + $("#hiderowforappend_" + prodType + " tr:first").html() + "</tr>";
-                    $("#AddProdTo_" + prodType).prepend(subProductionRow);
-                    return false;
-
-                });
-
-                $("#SaveButtonProduction").on('click', function () {
-                    var rVal = divTableProducItemCheck();
-
-                    if (rVal == 1) {
-                        sweetAlert({
-                            title: "A Table contains Multiple Product Category!!!",
-                            text: "Please find the specific table and select right category. Thank You. ",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonText: "DISMISS"
-                        });
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-                });
-
-                $("#add_prod_tab").on("click", "input.RemoveRow", function () {
-                    console.log("thia is a test");
-                    $(this).parent().parent().remove();
-                });
-
-                $('#FromDate').datepicker({
-                    autoclose: true,
-                    format: "yyyy-mm-dd",
-                    todayBtn: true,
-                    calendarWeeks: true,
-                    autoclose: true,
-                    todayHighlight: true,
-                    toggleActive: true
-                });
+                }
             });
-        </script>
+
+            $("#add_prod_tab").on("click", "input.add_child_row", function () {
+                var addId = $(this).attr("id");
+                var prodType = addId.split("_")[1];
+
+                var subProductionRow = "<tr>" + $("#hiderowforappend_" + prodType + " tr:first").html() + "</tr>";
+                $("#AddProdTo_" + prodType).prepend(subProductionRow);
+                //$("#AddProdTo_" + prodType).prepend(subProductionRow);
+                return false;
+
+            });
+
+            $("#SaveButtonProduction").on('click', function () {
+                var rVal = divTableProducItemCheck();
+
+                if (rVal == 1) {
+                    sweetAlert({
+                        title: "A Table contains Multiple Product Category!!!",
+                        text: "Please find the specific table and select right category. Thank You. ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            });
+
+            $("#add_prod_tab").on("click", "input.RemoveRow", function () {
+                console.log("thia is a test");
+                $(this).parent().parent().remove();
+            });
+
+            $('#FromDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+        });
+    </script>
 {% endblock %}

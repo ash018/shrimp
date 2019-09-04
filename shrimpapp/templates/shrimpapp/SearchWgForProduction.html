@@ -13,64 +13,86 @@
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
         <div class="wrapper wrapper-content animated fadeInRight ">
 
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                    <div class="ibox float-e-margins">
 
-                        <div class="ibox-content">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                                    <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                        <label for="SparepartsDate">From Date</label>
-                                        <input type="text" name="FromDate" class="form-control" id="FromDate" required
-                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                                    </div>
-                                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
-                                </div>
-                            </div>
+            <div class="ibox float-e-margins">
 
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                                    <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                        <label for="SparepartsDate">To Date</label>
-                                        <input type="text" name="ToDate" class="form-control" id="ToDate" required
-                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>
-                                    </div>
-                                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
-                                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">From Date</label>
+                                <input type="text" name="FromDate" class="form-control" id="FromDate" required
+                                       value="{{ fromDate }}"/>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                                    <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                        <button style="margin:5px;" type="submit" id="searchbtn" class="btn btn-primary block">Search</button>
-                                    </div>
-                                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
-                                </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">To Date</label>
+                                <input type="text" name="ToDate" class="form-control" id="ToDate" required
+                                       value="{{ toDate }}"/>
                             </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <button style="margin:5px;" type="submit" id="searchbtn"
+                                        class="btn btn-primary block">Search
+                                </button>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
 
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="ibox float-e-margins">
+            <div class="ibox float-e-margins">
+                <div id="ibox-content" class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
 
-                        <div id="ibox-content" class="">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
-                                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                    <table id="AllPartsAdd" class=" table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>SL</th>
+                                            <th>Weightment Date</th>
+                                            <th>Total Kg</th>
+                                            <th>Total Lb</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for us in weghtmentList %}
+                                            <tr>
+                                                <td> {{ forloop.counter }}</td>
+                                                <td> {{ us.LocDate }}</td>
+                                                <td> {{ us.total_kg }}</td>
+                                                <td> {{ us.total_lb }}</td>
+                                                <td>
+                                                    <a href="{% url 'StartProduction' %}?WgDate={{ us.LocDate }}"
+                                                       class="btn btn-info">Production</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
 
-                                        </div>
-                                    </div>
+                                        </tbody>
+                                    </table>
+
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
+
+
             </div>
 
         </div>

@@ -47,16 +47,22 @@ class ProdItem(models.Model):
 
 class Production(models.Model):
     Id = models.AutoField(primary_key=True, db_column='ProdId')
-    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+    #QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+
+    #AbstractionId = models.ManyToManyField(Abstraction, db_column='AbstractionId')
+    #AbstractionId = models.ManyToManyField(Abstraction, db_column='abstraction_id')
+
     IsFinishGood = models.CharField(max_length=10, db_column='IsFinishGood')
     ProductionDate = models.DateTimeField(auto_now_add=True, db_column='ProductionDate')
     ReceivDate = models.DateTimeField(auto_now_add=True, db_column='ReceivDate')
+    LocDate = models.CharField(max_length=100, db_column='LocDate', default='2019-09-03')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Production'
 
 class ProductionDetail(models.Model):
@@ -93,10 +99,12 @@ class ProdDtlPkgMaterial(models.Model):
 class LogProduction(models.Model):
     Id = models.AutoField(primary_key=True, db_column='LogProdId')
     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE, default=100)
-    QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
+    #QCWgId = models.ForeignKey(QCWeightment, db_column='QCWgId', on_delete=models.CASCADE, default=100)
     IsFinishGood = models.CharField(max_length=10, db_column='IsFinishGood')
     ProductionDate = models.DateTimeField(auto_now_add=True, db_column='ProductionDate')
     ReceivDate = models.DateTimeField(auto_now_add=True, db_column='ReceivDate')
+    LocDate = models.CharField(max_length=100, db_column='LocDate', default='2019-09-03')
+
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
     EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
@@ -123,6 +131,15 @@ class LogProductionDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'LogProductionDetail'
+
+class ProductionAbstraction(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='ProAbsId')
+    ProductionId = models.ForeignKey(Production, db_column='ProductionId', on_delete=models.CASCADE)
+    AbstractionId = models.ForeignKey(Abstraction, db_column='AbstractionId', on_delete=models.CASCADE)
+
+    class Meta:
+        managed = False
+        db_table = 'ProductionAbstraction'
 
 # class LogProdDtlPkgMaterial(models.Model):
 #     Id = models.AutoField(primary_key=True, db_column='LogPrDePkId')
