@@ -40,6 +40,9 @@ import numpy as np
 import datetime
 from decimal import Decimal
 from collections import defaultdict
+
+from django.db import connection
+
 SESSION_ID = "ABC"
 
 #@permission_required('polls.can_vote')
@@ -519,10 +522,31 @@ def ListProduction(request):
         toDate = _datetime.strftime("%Y-%m-%d")
         serToDayTime = fromDate.split('-')
 
+        wegFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        wegToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                      int(23), int(59),
+                                      int(59), 0)
+
+        from django.db import connection
+        cursor = connection.cursor()
+
+        cursor.execute("select PD.ProdId, sum(PD.ProdAmount) as ProdAmount from ProductionDetail PD, Production P where P.ProdId = PD.ProdId and P.EntryDate between '"+str(wegFromDate)+"' and '"+str(wegToDate)+"' and PD.ProdAmount > 0 and P.IsFinishGood = 'N' group by PD.ProdId")
+        #row = cursor.fetchone()
+
+
+
+
+        row = cursor.fetchall()
+
+        print("===" + str(row))
+
 
         context = {'PageTitle': 'Production List',
                    'fromDate':fromDate,
-                   'toDate':toDate}
+                   'toDate':toDate,
+                   'productionList':row}
         return render(request, 'shrimpapp/ListProduction.html', context)
 
 def AllPrdListForEdit(request):
@@ -541,9 +565,16 @@ def AllPrdListForEdit(request):
                                       int(23), int(59),
                                       int(59), 0)
 
+        from django.db import connection
+        cursor = connection.cursor()
+
+        cursor.execute("select PD.ProdId, sum(PD.ProdAmount) as ProdAmount from ProductionDetail PD, Production P where P.ProdId = PD.ProdId and P.EntryDate between '"+str(proFromDate)+"' and '"+str(proToDate)+"' and PD.ProdAmount > 0 and P.IsFinishGood = 'N' group by PD.ProdId")
+        # row = cursor.fetchone()
+        row = cursor.fetchall()
+        #print("--===--"+str(row))
         productionList = Production.objects.filter(IsFinishGood='N', ProductionDate__range=(proFromDate,proToDate)).values('Id','ProductionDate').order_by('-Id')
 
-        context = {'productionList': productionList}
+        context = {'productionList': row}
         template = 'shrimpapp/AllPrdListForEdit.html'
 
         if request.is_ajax():
@@ -610,9 +641,6 @@ def EditProduction(request):
                     check = 1
             if check == 1:
                 prTySrTyPrItDisc[sd['PrTyId__Name']] = srTyPrItemDisc
-        #style="background-color:{{ v3.PkgMatId__Id|colorCheck }};
-
-        #print("========"+str(prTySrTyPrItDisc))
 
         context = {'PageTitle': 'Edit Production',
                    'sItem' : sItem,

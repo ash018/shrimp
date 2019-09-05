@@ -42,7 +42,8 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <button style="margin:5px;" type="submit" id="searchbtn" class="btn btn-primary block">Search
+                                <button style="margin:5px;" type="submit" id="searchbtn" class="btn btn-primary block">
+                                    Search
                                 </button>
                             </div>
                             <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
@@ -56,32 +57,6 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="ibox float-e-margins">
 
-                        {#                        <div class="ibox-content">#}
-                        {#                            <div class="row">#}
-                        {#                                <div class="col-lg-12">#}
-                        {#                                    <div class="col-lg-5 col-md-5 col-sm-5">#}
-                        {#                                        <label for="SparepartsDate">From Date</label>#}
-                        {#                                        <input type="text" name="FromDate" class="form-control" id="FromDate" required#}
-                        {#                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>#}
-                        {#                                    </div>#}
-                        {##}
-                        {#                                    <div class="form-group  col-lg-5 col-md-5 col-sm-5">#}
-                        {#                                        <label for="SparepartsDate">To Date</label>#}
-                        {#                                        <input type="text" name="ToDate" class="form-control" id="ToDate" required#}
-                        {#                                               value="{% if wegFromDate %} {{ wegFromDate|date:"Y-m-d" }}{% endif %}"/>#}
-                        {#                                    </div>#}
-                        {##}
-                        {##}
-                        {#                                    <div class="col-lg-2 col-md-2 col-sm-2">#}
-                        {#                                        <label for=""></label>#}
-                        {#                                        <button style="margin:5px;" type="submit" id="searchbtn"#}
-                        {#                                                class="btn btn-primary block">Search#}
-                        {#                                        </button>#}
-                        {#                                    </div>#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-                        {#                        </div>#}
-
 
                     </div>
                 </div>
@@ -94,13 +69,33 @@
                         <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
                             <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
 
+                                <table id="AllPartsAdd" class=" table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Total Production</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for pd in productionList %}
+                                        <tr id="Complain_{{ pd.Id }}">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ pd.1 }}</td>
+
+                                            <td>
+                                                <a href="{% url 'EditProduction' %}?ProductionId={{ pd.0 }}"
+                                                   class="btn btn-info">Edit</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
     {% csrf_token %}

@@ -4,6 +4,7 @@ from . import views
 from . import qcweightmentview
 from . import productionview
 from . import ajaxresponseview
+from . import storekeeper
 
 
 urlpatterns = [
@@ -47,6 +48,12 @@ urlpatterns = [
     url(r'^RCresponse', ajaxresponseview.RCresponse, name='RCresponse'),
     url(r'^FarmerListBySupplier', ajaxresponseview.FarmerListBySupplier, name='FarmerListBySupplier'),
     url(r'^FmWeightMentForm', ajaxresponseview.FmWeightMentForm, name='FmWeightMentForm'),
+
+
+    url(r'^GrnPrint', storekeeper.GrnPrint, name='GrnPrint'),
+    url(r'^GrnbtnDates', storekeeper.GrnbtnDates, name='GrnbtnDates'),
+
+
 
     url(r'^Logout', views.Logout, name='Logout'),
 

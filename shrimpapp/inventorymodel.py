@@ -151,3 +151,20 @@ class ProductionAbstraction(models.Model):
 #     class Meta:
 #         managed = False
 #         db_table = 'LogProdDtlPkgMaterial'
+
+class GrnPrint(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='GrnPrId')
+    AbstractionId = models.ForeignKey(Abstraction, db_column='AbstractionId', on_delete=models.CASCADE)
+
+    TotalPrice = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalPrice', default=0.0)
+    TotalAbsMeasur = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalAbsMeasur', default=0.0)
+    TotalQcMeasur = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalQcMeasur', default=0.0)
+    IsFullPaymentDone = models.CharField(max_length=10, db_column='IsFullPaymentDone', default='Y')
+
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'GrnPrint'

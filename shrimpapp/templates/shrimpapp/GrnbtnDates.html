@@ -1,0 +1,30 @@
+<table id="AllPartsAdd" class=" table table-bordered">
+    <thead>
+    <tr>
+        <th>SL</th>
+        <th>Collection Date</th>
+        <th>Total Kg</th>
+        <th>Suppler Name</th>
+        <th>Suppler Code</th>
+        <th>Is Prented</th>
+        <th>Actions</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for pd in weghtmentList %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ pd.3 }}</td>
+            <td>{{ pd.1 }}</td>
+            <td>{{ pd.5 }}</td>
+            <td>{{ pd.6 }}</td>
+            <td>{{ pd.4 }}</td>
+            <td>
+                <a href="{% url 'EditProduction' %}?AbsId={{ pd.0 }}"
+                   class="btn btn-info">Print</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
