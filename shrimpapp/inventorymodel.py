@@ -178,7 +178,7 @@ class CostDistributionDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='CstDisDtlId')
     CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE, default=100)
     ShrimpItemId = models.ForeignKey(ShrimpItem, db_column='ShrimpItemId', on_delete=models.CASCADE, default=100)
-    ProdItemId = models.ForeignKey(ProdItem, db_column='ProdItemId', on_delete=models.CASCADE, default=100)
+    ShrimpProdItemId = models.ForeignKey(ShrimpProdItem, db_column='ShrimpProdItemId', on_delete=models.CASCADE, default=100)#[ShrimpProdItem]
 
     ProdPercentage = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdPercentage', default=0.0)
     ProdWegKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegKg', default=0.0)
@@ -211,7 +211,8 @@ class LogCostDistributionDetail(models.Model):
     CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE, default=100)
     LogCstDisId = models.ForeignKey(LogCostDistributionMaster, db_column='LogCstDisId', on_delete=models.CASCADE, default=100)
     ShrimpItemId = models.ForeignKey(ShrimpItem, db_column='ShrimpItemId', on_delete=models.CASCADE, default=100)
-    ProdItemId = models.ForeignKey(ProdItem, db_column='ProdItemId', on_delete=models.CASCADE, default=100)
+    ShrimpProdItemId = models.ForeignKey(ShrimpProdItem, db_column='ShrimpProdItemId', on_delete=models.CASCADE,
+                                         default=100)
 
     ProdPercentage = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdPercentage', default=0.0)
     ProdWegKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegKg', default=0.0)

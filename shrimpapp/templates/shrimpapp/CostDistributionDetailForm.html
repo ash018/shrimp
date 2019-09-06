@@ -1,0 +1,80 @@
+<div id="ibox-content" class="ibox-content">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="table-responsive">
+                        <table id="AllPartsAdd" class=" table table-bordered">
+                            <thead>
+                            <tr>
+                                <td>Item<input type="hidden" name="TotalKg" value="{{ total }}"/></td>
+                                {% for spItem in spProductItem %}
+                                    <th class="text-center align-middle">{{ spItem.Name }} in %</th>
+                                {% endfor %}
+                                <td>Total Kg</td>
+                                <td>Total TK</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for k,value in wegDtlList.items %}
+                                <tr>
+                                    <td class="text-center align-middle">
+                                        {% for cItem in shrimpItem %}{% if cItem.Id == k %}
+                                            {{ cItem.Name }}<input type="hidden" class="form-control" name="ShrimpItem"
+                                                                   value="{{ k }}"/>{% endif %} {% endfor %} </td>
+                                    {% for spI in value %}
+                                        <td class="text-center align-middle">
+                                            {% if spI.toalt_item_kg %}
+                                                {{ spI.toalt_item_kg }}
+                                                <input type="hidden" class="form-control numeric"
+                                                       name="ShrimpTotalKg_{{ k }}" value="{{ spI.toalt_item_kg }}"/>
+                                            {% elif spI.total_item_tk %}
+                                                {{ spI.total_item_tk }}
+                                                <input type="hidden" class="form-control numeric"
+                                                       name="ShrimpTotalTK_{{ k }}" value="{{ spI.total_item_tk }}"/>
+                                            {% else %}
+                                                <input type="text" class="form-control numeric" required
+                                                       name="ShrimpProducItem_{{ k }}" value="0.0"/>
+                                                <input type="hidden" class="form-control numeric"
+                                                       name="ShrimpProducItemId_{{ k }}" value="{{ spI.Id }}"/>
+                                            {% endif %}
+
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br/>
+<br/>
+<div id="ibox-content" class="ibox-content">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="col-lg-5 col-md-5 col-sm-5">
+
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <div class="form-group ">
+                            <button type="submit" class="btn btn-primary  full-width m-b">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-5">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -125,15 +125,99 @@ def PriceDistributionCreate(request):
         ProdItem.objects.all().values('Id','Name')
 
         userId = request.session['uid']
-
         _datetime = datetime.datetime.now()
         fromDate = _datetime.strftime("%Y-%m-%d")
 
-        context = {'PageTitle': 'Print GRN',
+        context = {'PageTitle': 'Price Distribution',
                    'supplierList': supplierList,
                    'Date': fromDate
                    }
         return render(request, 'shrimpapp/PriceDistributionCreate.html', context)
+
+def SavePriceDistributionCreate(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+
+        for key, value in request.POST.items():
+            print('Key: %s' % (key))
+            # print(f'Key: {key}') in Python >= 3.7
+            print('Value %s' % (value))
+
+        distributionDate = request.POST.get('DistributionDate')
+        deheadingLoss = request.POST.get('DeheadingLoss')
+        totalKg = request.POST.get('TotalKg')
+
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+
+        dt = str(datetime.datetime.now())
+        _datetime = datetime.datetime.now()
+        entryDate = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
+        serDayTime = distributionDate.split('-')
+        wgEntryDate = datetime.datetime.now()
+
+
+
+        abstractionDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                            int(entryDate.split('-')[3]), int(entryDate.split('-')[4]),
+                                            int(entryDate.split('-')[5]), 140)
+
+        cstDestribution = CostDistributionMaster(IsUsed='N',
+                                                 LocDate=str(distributionDate),
+                                                 DeheadingLoss=Decimal(deheadingLoss),
+                                                 TotalKg=Decimal(totalKg),
+                                                 EntryDate=wgEntryDate,
+                                                 EditDate=wgEntryDate,
+                                                 EntryBy=user)
+
+        cstDestribution.save()
+
+        logCstDistribution = LogCostDistributionMaster(CstDisId= cstDestribution,IsUsed='N', LocDate=str(distributionDate),
+                               DeheadingLoss=Decimal(deheadingLoss),TotalKg=Decimal(totalKg),
+                               EntryDate=wgEntryDate, EditDate=wgEntryDate,
+                                      EntryBy=user)
+        logCstDistribution.save()
+
+        shrimpItem = request.POST.getlist('ShrimpItem')
+
+        for sItm in shrimpItem:
+            shrimmpProItemName = 'ShrimpProducItem_'+str(sItm)
+            sItemObj = ShrimpItem.objects.filter(pk=int(sItm)).first()
+            shrimmpProItemData = request.POST.getlist(shrimmpProItemName)
+            spItemName = 'ShrimpProducItemId_'+str(sItm)
+            spItemData = request.POST.getlist(spItemName)
+
+            shrimpKgName = 'ShrimpTotalKg_'+str(sItm)
+            shrimpKgData = request.POST.get(shrimpKgName)
+
+            shrimpTKName = 'ShrimpTotalTK_' + str(sItm)
+            shrimpTKData = request.POST.get(shrimpTKName)
+            spKg = shrimpKgData
+            spTk = shrimpTKData
+            counter = 0
+            # print("---A----" + str(shrimmpProItemData))
+            # print("----B---" + str(spItemData))
+            # print("---C----" + str(shrimpKgData))
+            # print("---D----" + str(shrimpTKData))
+
+
+            for fs, bs in zip(shrimmpProItemData, spItemData):
+                sProdItem = ShrimpProdItem.objects.filter(pk=int(bs)).first()
+                prodWegKg = Decimal(spKg)*Decimal(fs)/100
+                prodWegTk = Decimal(spTk) * Decimal(fs) / 100
+                costDisDtl = CostDistributionDetail(CstDisId=cstDestribution, ShrimpItemId=sItemObj,
+                                       ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
+                                       ProdWegKg=Decimal(prodWegKg),ProdWegLb = Decimal(2.20462)*Decimal(prodWegKg),
+                                       ColCostOfProdItemTk = Decimal(prodWegTk))
+                costDisDtl.save()
+
+                LogCostDistributionDetail(CstDisId=cstDestribution, LogCstDisId=logCstDistribution, ShrimpItemId=sItemObj,
+                                       ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
+                                       ProdWegKg=Decimal(prodWegKg),ProdWegLb = Decimal(2.20462)*Decimal(prodWegKg),
+                                       ColCostOfProdItemTk = Decimal(prodWegTk)).save()
+
+        return HttpResponseRedirect('/PriceDistributionCreate')
 
 def ShowPriceDistributionBTNDate(request):
     if 'uid' not in request.session:

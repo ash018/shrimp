@@ -8,6 +8,7 @@ import requests
 import time
 import sys
 from .models import *
+from .inventorymodel import *
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -29,6 +30,7 @@ from rest_framework.response import Response
 import numpy as np
 import datetime
 from decimal import Decimal
+from django.db.models import F, Sum, Subquery, OuterRef
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from collections import defaultdict
@@ -111,3 +113,40 @@ def FmWeightMentForm(request):
                 "status": "ok"
             })
 
+def CostDistributionDetailForm(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        disDate = request.GET.get('DistributionDate')
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        spProductItem = ShrimpProdItem.objects.all().values('Id', 'Name').order_by('Id')
+
+        #ProductionDetail.object.filter(Loc)
+
+        absObjList = Abstraction.objects.filter(IsQcPass='Y', IsProductionUsed='Y', LocDate=str(disDate))
+        wegDtlList = WeightmentDetail.objects.filter(AbsId__in=(absObjList)).values('ShrItemId__Id').annotate(
+            toalt_item_kg=Sum('MeasurQnty'), total_item_tk=Sum('Price'))
+        weDtlDscc = {}
+        total = 0.0
+        for wd in wegDtlList:
+            pList = list(spProductItem)
+            total = Decimal(total)+Decimal(wd['toalt_item_kg'])
+            pList.insert(len(spProductItem)+1, {'toalt_item_kg':wd['toalt_item_kg']})
+            pList.insert(len(spProductItem) + 2, {'total_item_tk': wd['total_item_tk']})
+            weDtlDscc[wd['ShrItemId__Id']] = pList
+            #for pItem in prodItemList:
+
+        print("==---=="+str(total))
+
+        context = {'wegDtlList': weDtlDscc,
+                   'spProductItem':spProductItem,
+                   'shrimpItem':shrimpItem,
+                   'total':total}
+        template = 'shrimpapp/CostDistributionDetailForm.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })

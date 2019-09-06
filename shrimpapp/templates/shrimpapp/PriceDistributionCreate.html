@@ -13,7 +13,8 @@
 
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
         <div class="wrapper wrapper-content animated fadeInRight ">
-
+            <form method="post" enctype="multipart/form-data" action="{% url 'SavePriceDistributionCreate' %}">
+                            {% csrf_token %}
 
             <div class="ibox float-e-margins">
 
@@ -21,8 +22,8 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <label for="SparepartsDate">From Date</label>
-                                <input type="text" name="FromDate" class="form-control" id="FromDate" required
+                                <label for="SparepartsDate">Date</label>
+                                <input type="text" name="DistributionDate" class="form-control" id="FromDate" required
                                        value="{{ fromDate }}"/>
                             </div>
                             <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
@@ -32,9 +33,9 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <label for="SparepartsDate">To Date</label>
-                                <input type="text" name="ToDate" class="form-control" id="ToDate" required
-                                       value="{{ toDate }}"/>
+                                <label for="SparepartsDate">Deheading Loss Percentage</label>
+                                <input type="text" name="DeheadingLoss" class="form-control numeric" id="DeheadingLoss" required
+                                       value="0.0"/>
                             </div>
                             <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                         </div>
@@ -42,7 +43,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <button style="margin:5px;" type="submit" id="searchbtn" class="btn btn-primary block">
+                                <button style="margin:5px;" type="button" id="searchbtn" class="btn btn-primary block">
                                     Search
                                 </button>
                             </div>
@@ -53,70 +54,43 @@
             </div>
 
 
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="ibox float-e-margins">
+            <div id="CostDistributionForm">
 
-
-                    </div>
-                </div>
             </div>
+            </form>
 
-            <div id="ibox-content" class="ibox-content">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
-                            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
-
-                                <table id="AllPartsAdd" class=" table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>SL</th>
-                                        <th>Collection Date</th>
-                                        <th>Total Kg</th>
-                                        <th>Suppler Name</th>
-                                        <th>Suppler Code</th>
-                                        <th>Is Prented</th>
-                                        <th>Actions</th>
-
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for pd in weghtmentList %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td>
-                                            <td>{{ pd.3 }}</td>
-                                             <td>{{ pd.1 }}</td>
-                                             <td>{{ pd.5}}</td>
-                                             <td>{{ pd.6 }}</td>
-                                            <td>{{ pd.4 }}</td>
-                                            <td>
-                                                <a href="{% url 'EditProduction' %}?AbsId={{ pd.0 }}"
-                                                   class="btn btn-info">Print</a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     {% csrf_token %}
     <script type="text/javascript">
         window.CSRF_TOKEN = "{{ csrf_token }}";
         $(document).ready(function () {
+
+            $(".numeric").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("table").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
             var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
             $("#searchbtn").click(function () {
-                var fromDate = $("#FromDate").val();
-                var toDate = $("#ToDate").val();
-                var baseurl = "{% url 'GrnbtnDates' %}";
-                if (fromDate == '' || toDate == '') {
+                var distributionDate = $("#FromDate").val();
+
+                var baseurl = "{% url 'CostDistributionDetailForm' %}";
+                $('#CostDistributionForm').html('');
+                if (distributionDate == '') {
                     sweetAlert({
-                        title: "Please Select Two Date.",
+                        title: "Please Select A Date.",
                         text: "Thank You ",
                         type: "warning",
                         showCancelButton: true,
@@ -127,15 +101,15 @@
                     $.ajax({
                         url: baseurl,
                         type: "GET",
-                        data: "FromDate=" + fromDate + "&ToDate=" + toDate + "&csrfmiddlewaretoken=" + csrftoken,
+                        data: "DistributionDate=" + distributionDate + "&csrfmiddlewaretoken=" + csrftoken,
                         cache: false,
                         dataType: 'json',
                         success: function (data) {
                             var response = $.parseJSON(JSON.stringify(data));
                             var dep = $.parseJSON(JSON.stringify(response.status));
                             var html = $.parseJSON(JSON.stringify(response.html));
-                            $('#ibox-content').addClass('ibox-content');
-                            $('#search-data').html(html);
+                            //$('#ibox-content').addClass('ibox-content');
+                            $('#CostDistributionForm').html(html);
                         }
                     });
                 }
@@ -156,15 +130,7 @@
                 toggleActive: true
             });
 
-            $('#SparepartsDate').datepicker({
-                autoclose: true,
-                format: "yyyy-mm-dd",
-                todayBtn: true,
-                calendarWeeks: true,
-                autoclose: true,
-                todayHighlight: true,
-                toggleActive: true
-            });
+
             $('#FromDate').datepicker({
                 autoclose: true,
                 format: "yyyy-mm-dd",
@@ -174,15 +140,7 @@
                 todayHighlight: true,
                 toggleActive: true
             });
-            $('#ToDate').datepicker({
-                autoclose: true,
-                format: "yyyy-mm-dd",
-                todayBtn: true,
-                calendarWeeks: true,
-                autoclose: true,
-                todayHighlight: true,
-                toggleActive: true
-            });
+
         });
     </script>
 

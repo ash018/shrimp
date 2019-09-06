@@ -45,15 +45,20 @@ urlpatterns = [
     url(r'^AllPrdListForEdit', productionview.AllPrdListForEdit, name='AllPrdListForEdit'),
     url(r'^EditProduction', productionview.EditProduction, name='EditProduction'),
     url(r'^UpdateProduction', productionview.UpdateProduction, name='UpdateProduction'),
+
     url(r'^RCresponse', ajaxresponseview.RCresponse, name='RCresponse'),
     url(r'^FarmerListBySupplier', ajaxresponseview.FarmerListBySupplier, name='FarmerListBySupplier'),
     url(r'^FmWeightMentForm', ajaxresponseview.FmWeightMentForm, name='FmWeightMentForm'),
+    url(r'^CostDistributionDetailForm', ajaxresponseview.CostDistributionDetailForm, name='CostDistributionDetailForm'),
 
 
     url(r'^GrnPrint', storekeeper.GrnPrint, name='GrnPrint'),
     url(r'^GrnbtnDates', storekeeper.GrnbtnDates, name='GrnbtnDates'),
 
-
+    url(r'^PriceDistributionCreate', storekeeper.PriceDistributionCreate, name='PriceDistributionCreate'),
+    url(r'^SavePriceDistributionCreate', storekeeper.SavePriceDistributionCreate, name='SavePriceDistributionCreate'),
+    url(r'^ShowPriceDistributionBTNDate', storekeeper.ShowPriceDistributionBTNDate, name='ShowPriceDistributionBTNDate'),
+    url(r'^EditPriceDistribution', storekeeper.EditPriceDistribution, name='EditPriceDistribution'),
 
     url(r'^Logout', views.Logout, name='Logout'),
 
