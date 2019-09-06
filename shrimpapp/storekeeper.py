@@ -112,3 +112,50 @@ def GrnbtnDates(request):
                 "html": render_to_string(template, context),
                 "status": "ok"
             })
+
+
+def PriceDistributionCreate(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        ShrimpItem.objects.all().values('Id','Name')
+        ProdItem.objects.all().values('Id','Name')
+
+        userId = request.session['uid']
+
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+
+        context = {'PageTitle': 'Print GRN',
+                   'supplierList': supplierList,
+                   'Date': fromDate
+                   }
+        return render(request, 'shrimpapp/PriceDistributionCreate.html', context)
+
+def ShowPriceDistributionBTNDate(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        userId = request.session['uid']
+
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+
+
+def EditPriceDistribution(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
+        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+
+        userId = request.session['uid']
+
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")

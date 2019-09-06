@@ -158,6 +158,71 @@ class GrnPrint(models.Model):
         managed = False
         db_table = 'GrnPrint'
 
+class CostDistributionMaster(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='CstDisId')
+    IsUsed = models.CharField(max_length=10, db_column='IsUsed', default='N')
+    LocDate = models.CharField(max_length=50, db_column='LocDate', default='2019-01-01')
+    DeheadingLoss = models.DecimalField(max_digits=18, decimal_places=2, db_column='DeheadingLoss', default=0.0)
+    TotalKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalKg', default=0.0)
+
+
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'CostDistributionMaster'
+
+class CostDistributionDetail(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='CstDisDtlId')
+    CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE, default=100)
+    ShrimpItemId = models.ForeignKey(ShrimpItem, db_column='ShrimpItemId', on_delete=models.CASCADE, default=100)
+    ProdItemId = models.ForeignKey(ProdItem, db_column='ProdItemId', on_delete=models.CASCADE, default=100)
+
+    ProdPercentage = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdPercentage', default=0.0)
+    ProdWegKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegKg', default=0.0)
+    ProdWegLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegLb', default=0.0)
+    ColCostOfProdItemTk = models.DecimalField(max_digits=18, decimal_places=2, db_column='ColCostOfProdItemTk', default=0.0)
+
+    class Meta:
+        managed = False
+        db_table = 'CostDistributionDetail'
+
+class LogCostDistributionMaster(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='LogCstDisId')
+    CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE, default=100)
+    IsUsed = models.CharField(max_length=10, db_column='IsUsed', default='N')
+    LocDate = models.CharField(max_length=50, db_column='LocDate', default='2019-01-01')
+    DeheadingLoss = models.DecimalField(max_digits=18, decimal_places=2, db_column='DeheadingLoss', default=0.0)
+    TotalKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalKg', default=0.0)
+
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'LogCostDistributionMaster'
+
+
+class LogCostDistributionDetail(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='LogCstDtlId')
+    CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE, default=100)
+    LogCstDisId = models.ForeignKey(LogCostDistributionMaster, db_column='LogCstDisId', on_delete=models.CASCADE, default=100)
+    ShrimpItemId = models.ForeignKey(ShrimpItem, db_column='ShrimpItemId', on_delete=models.CASCADE, default=100)
+    ProdItemId = models.ForeignKey(ProdItem, db_column='ProdItemId', on_delete=models.CASCADE, default=100)
+
+    ProdPercentage = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdPercentage', default=0.0)
+    ProdWegKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegKg', default=0.0)
+    ProdWegLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegLb', default=0.0)
+    ColCostOfProdItemTk = models.DecimalField(max_digits=18, decimal_places=2, db_column='ColCostOfProdItemTk', default=0.0)
+
+    class Meta:
+        managed = False
+        db_table = 'LogCostDistributionDetail'
+
+
 class PCode(models.Model):
     Id = models.AutoField(primary_key=True, db_column='GrnPrId')
     ProductCode = models.CharField(max_length=10, db_column='ProductCode')
