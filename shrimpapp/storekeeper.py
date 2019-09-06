@@ -69,10 +69,10 @@ def GrnPrint(request):
         #from django.db import connection
         cursor = connection.cursor()
 
-        cursor.execute("select AB.AbsId AS AbsId, AB.TotalKg, AB.TotalLb, Ab.LocDate, GPr.IsFullPaymentDone, Spp.SupplierName, Spp.SupplierCode from Abstraction AB FULL OUTER JOIN GrnPrint GPr ON AB.AbsId = GPr.AbsId  INNER JOIN Weightment WEg  ON AB.AbsId = WEg.AbsId INNER JOIN Supplier Spp ON Spp.SupId = WEg.SupplierId  where AB.EntryDate between '"+str(absFromDate)+"' and '"+str(absToDate)+"'")
+        cursor.execute("select AB.AbsId AS AbsId, AB.TotalKg, AB.TotalLb, Ab.LocDate, CASE WHEN GPr.IsFullPaymentDone  IS NULL THEN 'N' ELSE 'Y' END as IsFullPaymentDone, Spp.SupplierName, Spp.SupplierCode from Abstraction AB FULL OUTER JOIN GrnPrint GPr ON AB.AbsId = GPr.AbsId  INNER JOIN Weightment WEg  ON AB.AbsId = WEg.AbsId INNER JOIN Supplier Spp ON Spp.SupId = WEg.SupplierId  where AB.EntryDate between '"+str(absFromDate)+"' and '"+str(absToDate)+"'")
         row = cursor.fetchall()
 
-        print("--====--"+str(row))
+        #print("--====--"+str(row))
 
         context = {'PageTitle': 'Print GRN',
                    'supplierList': supplierList,
@@ -98,9 +98,9 @@ def GrnbtnDates(request):
                                       int(23), int(59),
                                       int(59), 0)
         cursor = connection.cursor()
-        cursor.execute("select AB.AbsId AS AbsId, AB.TotalKg, AB.TotalLb, Ab.LocDate, GPr.IsFullPaymentDone, Spp.SupplierName, Spp.SupplierCode from Abstraction AB FULL OUTER JOIN GrnPrint GPr ON AB.AbsId = GPr.AbsId  INNER JOIN Weightment WEg  ON AB.AbsId = WEg.AbsId INNER JOIN Supplier Spp ON Spp.SupId = WEg.SupplierId  where AB.EntryDate between '"+str(absFromDate)+"' and '"+str(absToDate)+"'")
+        cursor.execute("select AB.AbsId AS AbsId, AB.TotalKg, AB.TotalLb, Ab.LocDate, CASE WHEN GPr.IsFullPaymentDone  IS NULL THEN 'N' ELSE 'Y' END as IsFullPaymentDone, Spp.SupplierName, Spp.SupplierCode from Abstraction AB FULL OUTER JOIN GrnPrint GPr ON AB.AbsId = GPr.AbsId  INNER JOIN Weightment WEg  ON AB.AbsId = WEg.AbsId INNER JOIN Supplier Spp ON Spp.SupId = WEg.SupplierId  where AB.EntryDate between '"+str(absFromDate)+"' and '"+str(absToDate)+"'")
         row = cursor.fetchall()
-        print("--====--" + str(row))
+        #print("--====--" + str(row))
         html = render_to_string('shrimpapp/GrnbtnDates.html', {'weghtmentList': row})
 
         context = {'weghtmentList': row}

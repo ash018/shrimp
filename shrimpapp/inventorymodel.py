@@ -141,17 +141,6 @@ class ProductionAbstraction(models.Model):
         managed = False
         db_table = 'ProductionAbstraction'
 
-# class LogProdDtlPkgMaterial(models.Model):
-#     Id = models.AutoField(primary_key=True, db_column='LogPrDePkId')
-#     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE, default=100)
-#     ProDtlId = models.ForeignKey(ProductionDetail, db_column='ProDtlId', on_delete=models.CASCADE, default=100)
-#     PkgMatId = models.ForeignKey(PackagingMaterial, db_column='PkgMatId', on_delete=models.CASCADE, default=100)
-#     Qnty = models.IntegerField(max_length=100, db_column='Qnty', default=100)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'LogProdDtlPkgMaterial'
-
 class GrnPrint(models.Model):
     Id = models.AutoField(primary_key=True, db_column='GrnPrId')
     AbstractionId = models.ForeignKey(Abstraction, db_column='AbstractionId', on_delete=models.CASCADE)
@@ -168,3 +157,39 @@ class GrnPrint(models.Model):
     class Meta:
         managed = False
         db_table = 'GrnPrint'
+
+class PCode(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='GrnPrId')
+    ProductCode = models.CharField(max_length=10, db_column='ProductCode')
+
+    class Meta:
+        managed = False
+        db_table = 'PCode'
+
+class WareHouse(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='WaHsId')
+    ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE)
+    LocDate = models.CharField(max_length=50, db_column='LocDate')
+    IssueNo = models.CharField(max_length=50, db_column='IssueNo')
+
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'WareHouse'
+
+class WareHouseDetail(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='WHDtId')
+    ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE)
+    LocDate = models.CharField(max_length=50, db_column='LocDate')
+    IssueNo = models.CharField(max_length=50, db_column='IssueNo')
+
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    EditDate = models.DateTimeField(auto_now_add=True, db_column='EditDate')
+    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    class Meta:
+        managed = False
+        db_table = 'WareHouse'
