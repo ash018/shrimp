@@ -21,8 +21,9 @@
             <td>{{ pd.6 }}</td>
             <td>{{ pd.4 }}</td>
             <td>
-                <a href="{% url 'EditProduction' %}?AbsId={{ pd.0 }}"
-                   class="btn btn-info">Print</a>
+{#                {% url 'EditProduction' %}?AbsId={{ pd.0 }}  target="_blank"#}
+                <a href="#" data-index="{{ pd.0 }}"
+                   class="btn btn-info GrnPrintRecord">Print</a>
             </td>
         </tr>
     {% endfor %}

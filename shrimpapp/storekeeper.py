@@ -416,3 +416,48 @@ def ShowPdDtl(request):
 
         _datetime = datetime.datetime.now()
         fromDate = _datetime.strftime("%Y-%m-%d")
+
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        spProductItem = ShrimpProdItem.objects.all().values('Id', 'Name').order_by('Id')
+
+        costDistribution = CostDistributionMaster.objects.filter(pk=int(pdId)).values('Id', 'LocDate', 'DeheadingLoss',
+                                                                                      'TotalKg').first()
+        cstObj = CostDistributionMaster.objects.filter(pk=int(pdId)).first()
+        cstDtl = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Id',
+                                                                               'ShrimpProdItemId__Id', 'ProdPercentage',
+                                                                               'ProdWegKg', 'ColCostOfProdItemTk')
+
+        cstDisDtlShrItem = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Name',
+                                                                                         'ShrimpItemId__Id').distinct()
+
+        total = 0.0
+        totalTk = 0.0
+        weDtlDscc = {}
+
+        for cd in cstDisDtlShrItem:
+            rowList = list()
+            i = 0
+            sumKg = 0.0
+            sumTk = 0.0
+            for cs in cstDtl:
+                if cd['ShrimpItemId__Id'] == cs['ShrimpItemId__Id']:
+                    rowList.insert(i, {'ShrimpProdItemId__Data': cs['ProdPercentage'],
+                                       'ShrimpProdItemId__Id': cs['ShrimpProdItemId__Id']})
+                    i = i + 1
+                    sumKg = Decimal(sumKg) + Decimal(cs['ProdWegKg'])
+                    sumTk = Decimal(sumTk) + Decimal(cs['ColCostOfProdItemTk'])
+
+            rowList.insert(i + 1, {'ItemKg': sumKg})
+            rowList.insert(i + 2, {'ItemTk': sumTk})
+            weDtlDscc[cd['ShrimpItemId__Id']] = rowList
+
+        print('---====---' + str(weDtlDscc))
+
+        context = {'PageTitle': 'Price Distribution Edit',
+                   'fromDate': fromDate,
+                   'costDistribution': costDistribution,
+                   'wegDtlList': weDtlDscc,
+                   'shrimpItem': shrimpItem,
+                   'spProductItem': spProductItem
+                   }
+        return render(request, 'shrimpapp/ShowPdDtl.html', context)

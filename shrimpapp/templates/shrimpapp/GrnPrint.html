@@ -86,9 +86,9 @@
                                         <tr>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ pd.3 }}</td>
-                                             <td>{{ pd.1 }}</td>
-                                             <td>{{ pd.5}}</td>
-                                             <td>{{ pd.6 }}</td>
+                                            <td>{{ pd.1 }}</td>
+                                            <td>{{ pd.5 }}</td>
+                                            <td>{{ pd.6 }}</td>
                                             <td>{{ pd.4 }}</td>
                                             <td>
                                                 <a href="{% url 'EditProduction' %}?AbsId={{ pd.0 }}"
@@ -146,6 +146,27 @@
                 radioClass: 'iradio_square-green',
             });
 
+            $('#search-data').on('click','a.GrnPrintRecord', function () {
+                var absId = $(this).attr("data-index");
+                //console.log("====+++===="+absId);
+                var baseurl = "{% url 'RecordGRNPrint' %}";
+                $.ajax({
+                    url: baseurl,
+                    type: "GET",
+                    data: "AbsId=" + absId + "&csrfmiddlewaretoken=" + csrftoken,
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        var response = $.parseJSON(JSON.stringify(data));
+                        var dep = $.parseJSON(JSON.stringify(response.status));
+                        var html = $.parseJSON(JSON.stringify(response.html));
+                        //$('#ibox-content').addClass('ibox-content');
+                        $('#search-data').html(html);
+                    }
+                });
+
+            });
+
             $('.document_updatedate').datepicker({
                 autoclose: true,
                 format: "yyyy-mm-dd",
@@ -156,15 +177,7 @@
                 toggleActive: true
             });
 
-            $('#SparepartsDate').datepicker({
-                autoclose: true,
-                format: "yyyy-mm-dd",
-                todayBtn: true,
-                calendarWeeks: true,
-                autoclose: true,
-                todayHighlight: true,
-                toggleActive: true
-            });
+
             $('#FromDate').datepicker({
                 autoclose: true,
                 format: "yyyy-mm-dd",

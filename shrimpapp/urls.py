@@ -50,7 +50,7 @@ urlpatterns = [
     url(r'^FarmerListBySupplier', ajaxresponseview.FarmerListBySupplier, name='FarmerListBySupplier'),
     url(r'^FmWeightMentForm', ajaxresponseview.FmWeightMentForm, name='FmWeightMentForm'),
     url(r'^CostDistributionDetailForm', ajaxresponseview.CostDistributionDetailForm, name='CostDistributionDetailForm'),
-
+    url(r'^RecordGRNPrint', ajaxresponseview.RecordGRNPrint, name='RecordGRNPrint'),
 
     url(r'^GrnPrint', storekeeper.GrnPrint, name='GrnPrint'),
     url(r'^GrnbtnDates', storekeeper.GrnbtnDates, name='GrnbtnDates'),

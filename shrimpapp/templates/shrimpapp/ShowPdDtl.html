@@ -1,0 +1,224 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+        <div class="wrapper wrapper-content animated fadeInRight ">
+
+            <div class="ibox float-e-margins">
+
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">Date</label>
+                                <input type="text" name="DistributionDate" class="form-control" id="FromDate"
+                                       required disabled
+                                       value="{{ costDistribution.LocDate }}"/>
+                                <input type="hidden" name="DistributionDate" class="form-control"
+                                       value="{{ costDistribution.LocDate }}"/>
+                                <input type="hidden" name="CostDisMasterId" class="form-control"
+                                       value="{{ costDistribution.Id }}"/>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">Deheading Loss Percentage</label>
+                                <input type="text" name="DeheadingLoss" class="form-control numeric"
+                                       id="DeheadingLoss" required
+                                       value="{{ costDistribution.DeheadingLoss }}"/>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">Total Kg</label>
+                                <input type="text" name="TotalKg" class="form-control numeric"
+                                       id="TotalKg" required
+                                       value="{{ costDistribution.TotalKg }}"/>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div id="CostDistributionForm">
+
+                <div id="ibox-content" class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="table-responsive">
+                                        <table id="AllPartsAdd" class=" table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <td>Item</td>
+                                                {% for spItem in spProductItem %}
+                                                    <th class="text-center align-middle">{{ spItem.Name }} in
+                                                        %
+                                                    </th>
+                                                {% endfor %}
+                                                <td>Total Kg</td>
+                                                <td>Total Tk</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for k,value in wegDtlList.items %}
+                                                <tr>
+                                                    <td class="text-center align-middle">
+                                                        {% for cItem in shrimpItem %}{% if cItem.Id == k %}
+                                                            {{ cItem.Name }}
+                                                            <input type="hidden" class="form-control"
+                                                                   name="ShrimpItem"
+                                                                   value="{{ k }}"/>{% endif %} {% endfor %}
+                                                    </td>
+                                                    {% for spI in value %}
+                                                        <td class="text-center align-middle">
+                                                            {% if spI.ItemKg %}
+                                                                {{ spI.ItemKg }}
+                                                                <input type="hidden" class="form-control numeric"
+                                                                       name="ShrimpTotalKg_{{ k }}"
+                                                                       value="{{ spI.ItemKg }}"/>
+
+                                                            {% endif %}
+                                                            {% if spI.ItemTk %}
+                                                                {{ spI.ItemTk }}
+                                                                <input type="hidden" class="form-control numeric"
+                                                                       name="ShrimpTotalTK_{{ k }}"
+                                                                       value="{{ spI.ItemTk }}"/>
+
+                                                            {% endif %}
+                                                            {% for sItem in spProductItem %}
+                                                                {% if sItem.Id == spI.ShrimpProdItemId__Id %}
+                                                                    {{ spI.ShrimpProdItemId__Data }}
+                                                                {% endif %}
+
+                                                            {% endfor %}
+
+                                                        </td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <br/>
+
+
+        </div>
+    </div>
+    {% csrf_token %}
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+
+            $(".numeric").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("#CostDistributionForm").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+            $("#searchbtn").click(function () {
+                var distributionDate = $("#FromDate").val();
+
+                var baseurl = "{% url 'CostDistributionDetailForm' %}";
+                $('#CostDistributionForm').html('');
+                if (distributionDate == '') {
+                    sweetAlert({
+                        title: "Please Select A Date.",
+                        text: "Thank You ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: baseurl,
+                        type: "GET",
+                        data: "DistributionDate=" + distributionDate + "&csrfmiddlewaretoken=" + csrftoken,
+                        cache: false,
+                        dataType: 'json',
+                        success: function (data) {
+                            var response = $.parseJSON(JSON.stringify(data));
+                            var dep = $.parseJSON(JSON.stringify(response.status));
+                            var html = $.parseJSON(JSON.stringify(response.html));
+                            //$('#ibox-content').addClass('ibox-content');
+                            $('#CostDistributionForm').html(html);
+                        }
+                    });
+                }
+
+            });
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.document_updatedate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+
+            $('#FromDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+        });
+    </script>
+
+{% endblock %}

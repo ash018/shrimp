@@ -143,7 +143,7 @@ class ProductionAbstraction(models.Model):
 
 class GrnPrint(models.Model):
     Id = models.AutoField(primary_key=True, db_column='GrnPrId')
-    AbstractionId = models.ForeignKey(Abstraction, db_column='AbstractionId', on_delete=models.CASCADE)
+    AbstractionId = models.ForeignKey(Abstraction, db_column='AbsId', on_delete=models.CASCADE)
 
     TotalPrice = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalPrice', default=0.0)
     TotalAbsMeasur = models.DecimalField(max_digits=18, decimal_places=2, db_column='TotalAbsMeasur', default=0.0)

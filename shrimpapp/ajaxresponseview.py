@@ -154,3 +154,56 @@ def CostDistributionDetailForm(request):
                 "html": render_to_string(template, context),
                 "status": "ok"
             })
+
+
+def RecordGRNPrint(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        absId = request.GET.get('AbsId')
+
+        print("--XXXX--"+str(absId))
+
+        _datetime = datetime.datetime.now()
+        absOb = Abstraction.objects.filter(pk=int(absId)).first()
+
+        collWegDtl = WeightmentDetail.objects.filter(AbsId=absOb).values('MeasurQnty','Price')
+        qcWegDtl = QCWeightmentDetail.objects.filter(AbsId=absOb).values('QCMeasurQnty')
+
+        price = 0.0
+        measurQnty = 0.0
+        qCMeasurQnty = 0.0
+
+        for cq in qcWegDtl:
+            print("--=collWegDtl==--" + str(cq['QCMeasurQnty']))
+            qCMeasurQnty = Decimal(qCMeasurQnty)+Decimal(cq['QCMeasurQnty'])
+
+        for cw in collWegDtl:
+            print("--=collWegDtl==--" + str(cw['Price']))
+            price = Decimal(price)+Decimal(cw['Price'])
+            measurQnty = Decimal(measurQnty)+Decimal(cw['MeasurQnty'])
+
+        print("--=collWegDtl==--"+str(price))
+        print("--=qcWegDtl==--" + str(qCMeasurQnty))
+        # totalPrice = collWegDtl[0]['Price']
+        # totalAbsMeasur = collWegDtl[0]['MeasurQnty']
+        # totalQcMeasur = qcWegDtl[0]['QCMeasurQnty']
+
+
+        GrnPrint(AbstractionId=absOb,
+                 TotalPrice=Decimal(price),
+                 TotalAbsMeasur=Decimal(measurQnty),
+                 TotalQcMeasur=Decimal(qCMeasurQnty),
+                 IsFullPaymentDone='Y',
+                 EntryDate=_datetime,
+                 EditDate=_datetime,
+                 EntryBy=user).save()
+
+        if request.is_ajax():
+            #html = render_to_string(template, context)
+            return JsonResponse({
+                "html": "Success",
+                "status": "ok"
+            })
