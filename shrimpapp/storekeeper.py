@@ -293,21 +293,29 @@ def EditPriceDistribution(request):
 
         costDistribution = CostDistributionMaster.objects.filter(pk=int(pdId)).values('Id','LocDate', 'DeheadingLoss', 'TotalKg').first()
         cstObj = CostDistributionMaster.objects.filter(pk=int(pdId)).first()
-        cstDtl = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Id', 'ShrimpProdItemId__Id', 'ProdPercentage')
+        cstDtl = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Id', 'ShrimpProdItemId__Id', 'ProdPercentage', 'ProdWegKg', 'ColCostOfProdItemTk')
 
-        cstDisDtlShrItem = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Id').distinct()
+        cstDisDtlShrItem = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Name','ShrimpItemId__Id').distinct()
 
         total = 0.0
+        totalTk = 0.0
         weDtlDscc={}
 
         for cd in cstDisDtlShrItem:
             rowList = list()
             i=0
+            sumKg = 0.0
+            sumTk = 0.0
             for cs in cstDtl:
                 if cd['ShrimpItemId__Id'] == cs['ShrimpItemId__Id']:
                     rowList.insert(i,{'ShrimpProdItemId__Data':cs['ProdPercentage'],'ShrimpProdItemId__Id':cs['ShrimpProdItemId__Id']})
-                    i=i+1
+                    i = i+1
+                    sumKg = Decimal(sumKg)+Decimal(cs['ProdWegKg'])
+                    sumTk = Decimal(sumTk)+Decimal(cs['ColCostOfProdItemTk'])
 
+
+            rowList.insert(i+1,{'ItemKg':sumKg})
+            rowList.insert(i+2, {'ItemTk': sumTk})
             weDtlDscc[cd['ShrimpItemId__Id']]= rowList
 
         print('---====---'+str(weDtlDscc))
@@ -322,12 +330,81 @@ def EditPriceDistribution(request):
         context = {'PageTitle': 'Price Distribution Edit',
                    'fromDate': fromDate,
                    'costDistribution':costDistribution,
-                   'weDtlDscc': weDtlDscc,
+                   'wegDtlList': weDtlDscc,
                    'shrimpItem':shrimpItem,
                    'spProductItem':spProductItem
                    }
         return render(request, 'shrimpapp/EditPriceDistribution.html', context)
 
+def UpdPriceDistribution(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        userId = request.session['uid']
+        user = UserManager.objects.filter(pk=int(userId)).first()
+        costDisMasterId = request.POST.get('CostDisMasterId')
+        deheadingLoss = request.POST.get('DeheadingLoss')
+        totalKg = request.POST.get('TotalKg')
+        locDate = request.POST.get('DistributionDate')
+
+        _datetime = datetime.datetime.now()
+
+        for key, value in request.POST.items():
+            print('Key: %s' % (key))
+            # print(f'Key: {key}') in Python >= 3.7
+            print('Value %s' % (value))
+
+        CostDistributionMaster.objects.filter(pk=int(costDisMasterId)).update(EditDate=_datetime,DeheadingLoss=Decimal(deheadingLoss))
+        cstDestribution = CostDistributionMaster.objects.filter(pk=int(costDisMasterId)).first()
+        CostDistributionDetail.objects.filter(CstDisId=cstDestribution).delete()
+
+        logCstDistribution = LogCostDistributionMaster(CstDisId=cstDestribution,
+                                                       IsUsed='N',
+                                                       LocDate=str(locDate),
+                                                       DeheadingLoss=Decimal(deheadingLoss),
+                                                       TotalKg=Decimal(totalKg),
+                                                       EntryDate=_datetime,
+                                                       EditDate=_datetime,
+                                                       EntryBy=user)
+        logCstDistribution.save()
+
+
+        shrimpItem = request.POST.getlist('ShrimpItem')
+
+        for sItm in shrimpItem:
+            shrimmpProItemName = 'ShrimpProducItem_' + str(sItm)
+            sItemObj = ShrimpItem.objects.filter(pk=int(sItm)).first()
+            shrimmpProItemData = request.POST.getlist(shrimmpProItemName)
+            spItemName = 'ShrimpProducItemId_' + str(sItm)
+            spItemData = request.POST.getlist(spItemName)
+
+            shrimpKgName = 'ShrimpTotalKg_' + str(sItm)
+            shrimpKgData = request.POST.get(shrimpKgName)
+
+            shrimpTKName = 'ShrimpTotalTK_' + str(sItm)
+            shrimpTKData = request.POST.get(shrimpTKName)
+            spKg = shrimpKgData
+            spTk = shrimpTKData
+            counter = 0
+
+            for fs, bs in zip(shrimmpProItemData, spItemData):
+                sProdItem = ShrimpProdItem.objects.filter(pk=int(bs)).first()
+                prodWegKg = Decimal(spKg) * Decimal(fs) / Decimal(100)
+                prodWegTk = Decimal(spTk) * Decimal(fs) / Decimal(100)
+                costDisDtl = CostDistributionDetail(CstDisId=cstDestribution, ShrimpItemId=sItemObj,
+                                                    ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
+                                                    ProdWegKg=Decimal(prodWegKg),
+                                                    ProdWegLb=Decimal(2.20462) * Decimal(prodWegKg),
+                                                    ColCostOfProdItemTk=Decimal(prodWegTk))
+                costDisDtl.save()
+
+                LogCostDistributionDetail(CstDisId=cstDestribution, LogCstDisId=logCstDistribution,
+                                          ShrimpItemId=sItemObj,
+                                          ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
+                                          ProdWegKg=Decimal(prodWegKg), ProdWegLb=Decimal(2.20462) * Decimal(prodWegKg),
+                                          ColCostOfProdItemTk=Decimal(prodWegTk)).save()
+
+    return HttpResponseRedirect('/ShowPriceDistributionBTNDate')
 
 
 def ShowPdDtl(request):

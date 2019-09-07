@@ -13,46 +13,162 @@
 
         {% include 'shrimpapp/public/CommonHeadBar.html' %}
         <div class="wrapper wrapper-content animated fadeInRight ">
-            <form method="post" enctype="multipart/form-data" action="{% url 'SavePriceDistributionCreate' %}">
-                            {% csrf_token %}
+            <form method="post" enctype="multipart/form-data" action="{% url 'UpdPriceDistribution' %}">
+                {% csrf_token %}
 
-            <div class="ibox float-e-margins">
+                <div class="ibox float-e-margins">
 
-                <div class="ibox-content">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <label for="SparepartsDate">Date</label>
-                                <input type="text" name="DistributionDate" class="form-control" id="FromDate" required
-                                       value="{{ costDistribution.LocDate }}"/>
-
-                                <input type="hidden" name="CostDisMasterId" class="form-control"
-                                       value="{{ costDistribution.Id }}"/>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                    <label for="SparepartsDate">Date</label>
+                                    <input type="text" name="DistributionDate" class="form-control" id="FromDate"
+                                           required disabled
+                                           value="{{ costDistribution.LocDate }}"/>
+                                    <input type="hidden" name="DistributionDate" class="form-control"
+                                           value="{{ costDistribution.LocDate }}"/>
+                                    <input type="hidden" name="CostDisMasterId" class="form-control"
+                                           value="{{ costDistribution.Id }}"/>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                             </div>
-                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <label for="SparepartsDate">Deheading Loss Percentage</label>
-                                <input type="text" name="DeheadingLoss" class="form-control numeric" id="DeheadingLoss" required
-                                       value="{{ costDistribution.DeheadingLoss }}"/>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                    <label for="SparepartsDate">Deheading Loss Percentage</label>
+                                    <input type="text" name="DeheadingLoss" class="form-control numeric"
+                                           id="DeheadingLoss" required
+                                           value="{{ costDistribution.DeheadingLoss }}"/>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                             </div>
-                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                         </div>
-                    </div>
 
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                    <label for="SparepartsDate">Total Kg</label>
+                                    <input type="text" name="TotalKg" class="form-control numeric"
+                                           id="TotalKg" required
+                                           value="{{ costDistribution.TotalKg }}"/>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
 
 
-            <div id="CostDistributionForm">
+                <div id="CostDistributionForm">
 
-            </div>
+                    <div id="ibox-content" class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                    <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="table-responsive">
+                                            <table id="AllPartsAdd" class=" table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <td>Item</td>
+                                                    {% for spItem in spProductItem %}
+                                                        <th class="text-center align-middle">{{ spItem.Name }} in
+                                                            %
+                                                        </th>
+                                                    {% endfor %}
+                                                    <td>Total Kg</td>
+                                                    <td>Total Tk</td>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                {% for k,value in wegDtlList.items %}
+                                                    <tr>
+                                                        <td class="text-center align-middle">
+                                                            {% for cItem in shrimpItem %}{% if cItem.Id == k %}
+                                                                {{ cItem.Name }}
+                                                                <input type="hidden" class="form-control"
+                                                                       name="ShrimpItem"
+                                                                       value="{{ k }}"/>{% endif %} {% endfor %}
+                                                        </td>
+                                                        {% for spI in value %}
+                                                            <td class="text-center align-middle">
+                                                                {% if spI.ItemKg %}
+                                                                    {{ spI.ItemKg }}
+                                                                    <input type="hidden" class="form-control numeric"
+                                                                           name="ShrimpTotalKg_{{ k }}"
+                                                                           value="{{ spI.ItemKg }}"/>
+
+                                                                {% endif %}
+                                                                {% if spI.ItemTk %}
+                                                                    {{ spI.ItemTk }}
+                                                                    <input type="hidden" class="form-control numeric"
+                                                                           name="ShrimpTotalTK_{{ k }}"
+                                                                           value="{{ spI.ItemTk }}"/>
+
+                                                                {% endif %}
+                                                                {% for sItem in spProductItem %}
+                                                                    {% if sItem.Id == spI.ShrimpProdItemId__Id %}
+                                                                        <input type="text"
+                                                                               class="form-control numeric"
+                                                                               required
+                                                                               name="ShrimpProducItem_{{ k }}"
+                                                                               value="{{ spI.ShrimpProdItemId__Data }}"/>
+                                                                        <input type="hidden"
+                                                                               class="form-control numeric"
+                                                                               name="ShrimpProducItemId_{{ k }}"
+                                                                               value="{{ sItem.Id }}"/>
+                                                                    {% endif %}
+
+                                                                {% endfor %}
+
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div id="ibox-content" class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="form-group ">
+                                            <button type="submit" class="btn btn-primary  full-width m-b">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-5 col-md-5 col-sm-5">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </form>
-
         </div>
     </div>
     {% csrf_token %}

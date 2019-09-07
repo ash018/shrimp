@@ -60,6 +60,8 @@ urlpatterns = [
     url(r'^ShowPriceDistributionBTNDate', storekeeper.ShowPriceDistributionBTNDate, name='ShowPriceDistributionBTNDate'),
     url(r'^PDSearchBTNDates', storekeeper.PDSearchBTNDates, name='PDSearchBTNDates'),
     url(r'^EditPriceDistribution', storekeeper.EditPriceDistribution, name='EditPriceDistribution'),
+
+    url(r'^UpdPriceDistribution', storekeeper.UpdPriceDistribution, name='UpdPriceDistribution'),
     url(r'^ShowPdDtl', storekeeper.ShowPdDtl, name='ShowPdDtl'),
 
     url(r'^Logout', views.Logout, name='Logout'),
