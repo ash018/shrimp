@@ -1,0 +1,31 @@
+<table id="AllPartsAdd" class=" table table-bordered">
+    <thead>
+    <tr>
+        <th>SL</th>
+        <th>Date</th>
+        <th>Total Kg</th>
+        <th>Deheading Loss</th>
+        <th>Stock Evaluated</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cd in costDistribution %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ cd.LocDate }}</td>
+            <td>{{ cd.TotalKg }}</td>
+            <td>{{ cd.DeheadingLoss }}</td>
+            <td {% if cd.IsUsed == 'N' %} style="background:#FFB6C1;" {% endif %}
+                    {% if cd.IsUsed == 'Y' %} style="background:#E6E6FA;" {% endif %}>
+                {% if cd.IsUsed == 'Y' %}Yes{% else %}No{% endif %}</td>
+            <td>
+                {% if cd.IsUsed == 'N' %} <a href="{% url 'EditPriceDistribution' %}?PdId={{ cd.Id }}"
+                                             class="btn btn-info">Edit</a> {% endif %}
+                {% if cd.IsUsed == 'Y' %} <a href="{% url 'ShowPdDtl' %}?PdId={{ cd.Id }}"
+                                             class="btn btn-info">View</a>{% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

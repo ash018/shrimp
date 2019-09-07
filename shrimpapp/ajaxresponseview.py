@@ -121,24 +121,28 @@ def CostDistributionDetailForm(request):
         shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
         spProductItem = ShrimpProdItem.objects.all().values('Id', 'Name').order_by('Id')
 
-        #ProductionDetail.object.filter(Loc)
+        costDes = CostDistributionMaster.objects.filter(LocDate=str(disDate))
+        weDtlDscc = {}
+        showForm = ''
+        if costDes:
+            showForm = 0
+        else:
+            showForm = 1
 
         absObjList = Abstraction.objects.filter(IsQcPass='Y', IsProductionUsed='Y', LocDate=str(disDate))
         wegDtlList = WeightmentDetail.objects.filter(AbsId__in=(absObjList)).values('ShrItemId__Id').annotate(
             toalt_item_kg=Sum('MeasurQnty'), total_item_tk=Sum('Price'))
-        weDtlDscc = {}
+        # weDtlDscc = {}
         total = 0.0
         for wd in wegDtlList:
             pList = list(spProductItem)
-            total = Decimal(total)+Decimal(wd['toalt_item_kg'])
-            pList.insert(len(spProductItem)+1, {'toalt_item_kg':wd['toalt_item_kg']})
+            total = Decimal(total) + Decimal(wd['toalt_item_kg'])
+            pList.insert(len(spProductItem) + 1, {'toalt_item_kg': wd['toalt_item_kg']})
             pList.insert(len(spProductItem) + 2, {'total_item_tk': wd['total_item_tk']})
             weDtlDscc[wd['ShrItemId__Id']] = pList
-            #for pItem in prodItemList:
 
-        print("==---=="+str(total))
-
-        context = {'wegDtlList': weDtlDscc,
+        context = {'showForm':showForm,
+                   'wegDtlList':weDtlDscc,
                    'spProductItem':spProductItem,
                    'shrimpItem':shrimpItem,
                    'total':total}

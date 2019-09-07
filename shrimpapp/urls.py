@@ -58,7 +58,9 @@ urlpatterns = [
     url(r'^PriceDistributionCreate', storekeeper.PriceDistributionCreate, name='PriceDistributionCreate'),
     url(r'^SavePriceDistributionCreate', storekeeper.SavePriceDistributionCreate, name='SavePriceDistributionCreate'),
     url(r'^ShowPriceDistributionBTNDate', storekeeper.ShowPriceDistributionBTNDate, name='ShowPriceDistributionBTNDate'),
+    url(r'^PDSearchBTNDates', storekeeper.PDSearchBTNDates, name='PDSearchBTNDates'),
     url(r'^EditPriceDistribution', storekeeper.EditPriceDistribution, name='EditPriceDistribution'),
+    url(r'^ShowPdDtl', storekeeper.ShowPdDtl, name='ShowPdDtl'),
 
     url(r'^Logout', views.Logout, name='Logout'),
 

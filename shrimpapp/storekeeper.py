@@ -196,11 +196,6 @@ def SavePriceDistributionCreate(request):
             spKg = shrimpKgData
             spTk = shrimpTKData
             counter = 0
-            # print("---A----" + str(shrimmpProItemData))
-            # print("----B---" + str(spItemData))
-            # print("---C----" + str(shrimpKgData))
-            # print("---D----" + str(shrimpTKData))
-
 
             for fs, bs in zip(shrimmpProItemData, spItemData):
                 sProdItem = ShrimpProdItem.objects.filter(pk=int(bs)).first()
@@ -223,22 +218,123 @@ def ShowPriceDistributionBTNDate(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
-        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
-        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
 
         userId = request.session['uid']
 
         _datetime = datetime.datetime.now()
         fromDate = _datetime.strftime("%Y-%m-%d")
 
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+        serDayTime = fromDate.split('-')
+        toDate = _datetime.strftime("%Y-%m-%d")
+        serToDayTime = fromDate.split('-')
+
+        absFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        absToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                      int(23), int(59),
+                                      int(59), 0)
+
+        costDistribution = CostDistributionMaster.objects.filter(EntryDate__range=(absFromDate, absToDate)).values('Id','IsUsed','LocDate', 'DeheadingLoss', 'TotalKg')
+
+        context = {'PageTitle': 'Price Distribution',
+                   'fromDate': fromDate,
+                   'toDate': toDate,
+                   'costDistribution': costDistribution
+                   }
+        return render(request, 'shrimpapp/ShowPriceDistributionBTNDate.html', context)
+
+def PDSearchBTNDates(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        fromDate = request.GET.get('FromDate')
+        toDate = request.GET.get('ToDate')
+        serDayTime = fromDate.split('-')
+        serToDayTime = toDate.split('-')
+
+        absFromDate = datetime.datetime(int(serDayTime[0]), int(serDayTime[1]), int(serDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        absToDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                      int(23), int(59),
+                                      int(59), 0)
+
+        costDistribution = CostDistributionMaster.objects.filter(EntryDate__range=(absFromDate, absToDate)).values('Id',
+                                                                                                                   'IsUsed',
+                                                                                                                   'LocDate',
+                                                                                                                   'DeheadingLoss',
+                                                                                                                   'TotalKg').order_by('-Id')
+
+        context = {'costDistribution': costDistribution}
+        template = 'shrimpapp/PDSearchBTNDates.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })
 
 def EditPriceDistribution(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
-        farmerList = Farmer.objects.all().values('Id', 'FarmerName', 'FarmerCode')
-        supplierList = Supplier.objects.all().values('Id', 'SupplierName', 'SupplierCode')
+        pdId = request.GET.get('PdId')
+        userId = request.session['uid']
 
+        _datetime = datetime.datetime.now()
+        fromDate = _datetime.strftime("%Y-%m-%d")
+
+        shrimpItem = ShrimpItem.objects.all().values('Id', 'Name')
+        spProductItem = ShrimpProdItem.objects.all().values('Id', 'Name').order_by('Id')
+
+        costDistribution = CostDistributionMaster.objects.filter(pk=int(pdId)).values('Id','LocDate', 'DeheadingLoss', 'TotalKg').first()
+        cstObj = CostDistributionMaster.objects.filter(pk=int(pdId)).first()
+        cstDtl = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Id', 'ShrimpProdItemId__Id', 'ProdPercentage')
+
+        cstDisDtlShrItem = CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpItemId__Id').distinct()
+
+        total = 0.0
+        weDtlDscc={}
+
+        for cd in cstDisDtlShrItem:
+            rowList = list()
+            i=0
+            for cs in cstDtl:
+                if cd['ShrimpItemId__Id'] == cs['ShrimpItemId__Id']:
+                    rowList.insert(i,{'ShrimpProdItemId__Data':cs['ProdPercentage'],'ShrimpProdItemId__Id':cs['ShrimpProdItemId__Id']})
+                    i=i+1
+
+            weDtlDscc[cd['ShrimpItemId__Id']]= rowList
+
+        print('---====---'+str(weDtlDscc))
+        # for wd in wegDtlList:
+        #     pList = list(spProductItem)
+        #     total = Decimal(total) + Decimal(wd['toalt_item_kg'])
+        #     pList.insert(len(spProductItem) + 1, {'toalt_item_kg': wd['toalt_item_kg']})
+        #     pList.insert(len(spProductItem) + 2, {'total_item_tk': wd['total_item_tk']})
+        #     weDtlDscc[wd['ShrItemId__Id']] = pList
+
+
+        context = {'PageTitle': 'Price Distribution Edit',
+                   'fromDate': fromDate,
+                   'costDistribution':costDistribution,
+                   'weDtlDscc': weDtlDscc,
+                   'shrimpItem':shrimpItem,
+                   'spProductItem':spProductItem
+                   }
+        return render(request, 'shrimpapp/EditPriceDistribution.html', context)
+
+
+
+def ShowPdDtl(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        pdId = request.GET.get('PdId')
         userId = request.session['uid']
 
         _datetime = datetime.datetime.now()

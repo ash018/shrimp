@@ -24,7 +24,10 @@
                             <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
                                 <label for="SparepartsDate">Date</label>
                                 <input type="text" name="DistributionDate" class="form-control" id="FromDate" required
-                                       value="{{ fromDate }}"/>
+                                       value="{{ costDistribution.LocDate }}"/>
+
+                                <input type="hidden" name="CostDisMasterId" class="form-control"
+                                       value="{{ costDistribution.Id }}"/>
                             </div>
                             <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                         </div>
@@ -35,21 +38,12 @@
                             <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
                                 <label for="SparepartsDate">Deheading Loss Percentage</label>
                                 <input type="text" name="DeheadingLoss" class="form-control numeric" id="DeheadingLoss" required
-                                       value="0.0"/>
+                                       value="{{ costDistribution.DeheadingLoss }}"/>
                             </div>
                             <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                <button style="margin:5px;" type="button" id="searchbtn" class="btn btn-primary block">
-                                    Search
-                                </button>
-                            </div>
-                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
 

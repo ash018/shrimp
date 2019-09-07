@@ -4,6 +4,7 @@
             <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
                 <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
                     <div class="table-responsive">
+                    {% if showForm == 1 %}
                         <table id="AllPartsAdd" class=" table table-bordered">
                             <thead>
                             <tr>
@@ -47,6 +48,10 @@
 
                             </tbody>
                         </table>
+                    {% endif %}
+                    {% if showForm == 0 %}
+                        <h3>Alreasdy a Price distribution has been created on this date. Please have a look of the List of Price Distirbution Menu.</h3>
+                    {% endif %}
                     </div>
                 </div>
             </div>
@@ -55,6 +60,7 @@
 </div>
 <br/>
 <br/>
+ {% if showForm == 1 %}
 <div id="ibox-content" class="ibox-content">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
@@ -78,3 +84,4 @@
         </div>
     </div>
 </div>
+{% endif %}

@@ -25,10 +25,10 @@
             </li>
 
             <li class="{% if request.resolver_match.url_name == "Home" %}active{% endif %}">
-                <a href="{% url 'Home' %}"><i class="fa fa-registered"></i> <span class="nav-label">Home</span></a>
+                <a href="{% url 'Home' %}"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
             </li>
             <li>
-                <a href="{% url 'WeightmentView' %}"><i class="fa fa-ellipsis-h"></i><span class="nav-label">New Weightment</span></a>
+                <a href="{% url 'WeightmentView' %}"><i class="fa fa-balance-scale"></i><span class="nav-label">New Weightment</span></a>
             </li>
 
             <li>
@@ -37,19 +37,25 @@
             </li>
 
             <li>
-                <a href="{% url 'QCWeightmentList' %}"><i class="fa fa-list"></i><span class="nav-label">QC Weightment List</span></a>
+                <a href="{% url 'QCWeightmentList' %}"><i class="fa fa-calendar-check-o"></i><span class="nav-label">QC Weightment List</span></a>
             </li>
 
             <li>
-                <a href="{% url 'SearchWgForProduction' %}"><i class="fa fa-search"></i><span class="nav-label">Production</span></a>
+                <a href="{% url 'SearchWgForProduction' %}"><i class="fa fa-cogs"></i><span
+                        class="nav-label">Production</span></a>
             </li>
 
             <li>
-                <a href="{% url 'ListProduction' %}"><i class="fa fa-search"></i><span class="nav-label">List Production For Edit</span></a>
+                <a href="{% url 'ListProduction' %}"><i class="fa fa-list"></i><span class="nav-label">List Production For Edit</span></a>
             </li>
 
             <li>
-                <a href="{% url 'PriceDistributionCreate' %}"><i class="glyphicon glyphicon-file"></i><span class="nav-label">New Price Distribution</span></a>
+                <a href="{% url 'PriceDistributionCreate' %}"><i class="glyphicon glyphicon-file"></i><span
+                        class="nav-label">New Price Distribution</span></a>
+            </li>
+
+            <li>
+                <a href="{% url 'ShowPriceDistributionBTNDate' %}"><i class="fa fa-list"></i><span class="nav-label">Price Distribution List</span></a>
             </li>
 
             <li>
