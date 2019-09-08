@@ -184,6 +184,8 @@ class CostDistributionDetail(models.Model):
     ProdWegKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegKg', default=0.0)
     ProdWegLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegLb', default=0.0)
     ColCostOfProdItemTk = models.DecimalField(max_digits=18, decimal_places=2, db_column='ColCostOfProdItemTk', default=0.0)
+    ColCostOfProdItemRate = models.DecimalField(max_digits=18, decimal_places=2, db_column='ColCostOfProdItemRate',
+                                              default=0.0)
 
     class Meta:
         managed = False
@@ -218,7 +220,8 @@ class LogCostDistributionDetail(models.Model):
     ProdWegKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegKg', default=0.0)
     ProdWegLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='ProdWegLb', default=0.0)
     ColCostOfProdItemTk = models.DecimalField(max_digits=18, decimal_places=2, db_column='ColCostOfProdItemTk', default=0.0)
-
+    ColCostOfProdItemRate = models.DecimalField(max_digits=18, decimal_places=2, db_column='ColCostOfProdItemRate',
+                                                default=0.0)
     class Meta:
         managed = False
         db_table = 'LogCostDistributionDetail'

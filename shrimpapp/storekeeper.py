@@ -199,18 +199,25 @@ def SavePriceDistributionCreate(request):
 
             for fs, bs in zip(shrimmpProItemData, spItemData):
                 sProdItem = ShrimpProdItem.objects.filter(pk=int(bs)).first()
-                prodWegKg = Decimal(spKg)*Decimal(fs)/100
-                prodWegTk = Decimal(spTk) * Decimal(fs) / 100
+                prodWegKg = Decimal(spKg) * Decimal(fs)/Decimal(100)
+                prodWegTk = Decimal(spTk) * Decimal(fs)/Decimal(100)
+                #print('00000---->'+str(prodWegKg)+'000---000--->'+str(prodWegTk))
+                colCostOfProdItemRate = 0.0
+                if Decimal(prodWegKg) > 0.0 and Decimal(prodWegTk) > 0.0:
+                    colCostOfProdItemRate = Decimal(prodWegTk)/Decimal(prodWegKg)
+                else:
+                    colCostOfProdItemRate = 0.0
+
                 costDisDtl = CostDistributionDetail(CstDisId=cstDestribution, ShrimpItemId=sItemObj,
                                        ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
                                        ProdWegKg=Decimal(prodWegKg),ProdWegLb = Decimal(2.20462)*Decimal(prodWegKg),
-                                       ColCostOfProdItemTk = Decimal(prodWegTk))
+                                       ColCostOfProdItemTk = Decimal(prodWegTk), ColCostOfProdItemRate=Decimal(colCostOfProdItemRate))
                 costDisDtl.save()
 
                 LogCostDistributionDetail(CstDisId=cstDestribution, LogCstDisId=logCstDistribution, ShrimpItemId=sItemObj,
                                        ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
                                        ProdWegKg=Decimal(prodWegKg),ProdWegLb = Decimal(2.20462)*Decimal(prodWegKg),
-                                       ColCostOfProdItemTk = Decimal(prodWegTk)).save()
+                                       ColCostOfProdItemTk = Decimal(prodWegTk), ColCostOfProdItemRate=Decimal(colCostOfProdItemRate)).save()
 
         return HttpResponseRedirect('/PriceDistributionCreate')
 
@@ -349,10 +356,10 @@ def UpdPriceDistribution(request):
 
         _datetime = datetime.datetime.now()
 
-        for key, value in request.POST.items():
-            print('Key: %s' % (key))
-            # print(f'Key: {key}') in Python >= 3.7
-            print('Value %s' % (value))
+        # for key, value in request.POST.items():
+        #     print('Key: %s' % (key))
+        #     # print(f'Key: {key}') in Python >= 3.7
+        #     print('Value %s' % (value))
 
         CostDistributionMaster.objects.filter(pk=int(costDisMasterId)).update(EditDate=_datetime,DeheadingLoss=Decimal(deheadingLoss))
         cstDestribution = CostDistributionMaster.objects.filter(pk=int(costDisMasterId)).first()
@@ -391,18 +398,25 @@ def UpdPriceDistribution(request):
                 sProdItem = ShrimpProdItem.objects.filter(pk=int(bs)).first()
                 prodWegKg = Decimal(spKg) * Decimal(fs) / Decimal(100)
                 prodWegTk = Decimal(spTk) * Decimal(fs) / Decimal(100)
+                #colCostOfProdItemRate = Decimal(Decimal(prodWegTk) / Decimal(prodWegKg))
+                colCostOfProdItemRate = 0.0
+                if Decimal(prodWegKg) > 0.0 and Decimal(prodWegTk) > 0.0:
+                    colCostOfProdItemRate = Decimal(prodWegTk) / Decimal(prodWegKg)
+                else:
+                    colCostOfProdItemRate = 0.0
+
                 costDisDtl = CostDistributionDetail(CstDisId=cstDestribution, ShrimpItemId=sItemObj,
                                                     ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
                                                     ProdWegKg=Decimal(prodWegKg),
                                                     ProdWegLb=Decimal(2.20462) * Decimal(prodWegKg),
-                                                    ColCostOfProdItemTk=Decimal(prodWegTk))
+                                                    ColCostOfProdItemTk=Decimal(prodWegTk), ColCostOfProdItemRate =colCostOfProdItemRate)
                 costDisDtl.save()
 
                 LogCostDistributionDetail(CstDisId=cstDestribution, LogCstDisId=logCstDistribution,
                                           ShrimpItemId=sItemObj,
                                           ShrimpProdItemId=sProdItem, ProdPercentage=Decimal(fs),
                                           ProdWegKg=Decimal(prodWegKg), ProdWegLb=Decimal(2.20462) * Decimal(prodWegKg),
-                                          ColCostOfProdItemTk=Decimal(prodWegTk)).save()
+                                          ColCostOfProdItemTk=Decimal(prodWegTk), ColCostOfProdItemRate=colCostOfProdItemRate).save()
 
     return HttpResponseRedirect('/ShowPriceDistributionBTNDate')
 
