@@ -139,10 +139,10 @@ def SavePriceDistributionCreate(request):
         return render(request, 'shrimpapp/Login.html')
     else:
 
-        for key, value in request.POST.items():
-            print('Key: %s' % (key))
-            # print(f'Key: {key}') in Python >= 3.7
-            print('Value %s' % (value))
+        # for key, value in request.POST.items():
+        #     print('Key: %s' % (key))
+        #     # print(f'Key: {key}') in Python >= 3.7
+        #     print('Value %s' % (value))
 
         distributionDate = request.POST.get('DistributionDate')
         deheadingLoss = request.POST.get('DeheadingLoss')
@@ -325,7 +325,7 @@ def EditPriceDistribution(request):
             rowList.insert(i+2, {'ItemTk': sumTk})
             weDtlDscc[cd['ShrimpItemId__Id']]= rowList
 
-        print('---====---'+str(weDtlDscc))
+        #print('---====---'+str(weDtlDscc))
         # for wd in wegDtlList:
         #     pList = list(spProductItem)
         #     total = Decimal(total) + Decimal(wd['toalt_item_kg'])

@@ -91,8 +91,8 @@
                                             <td>{{ pd.6 }}</td>
                                             <td>{{ pd.4 }}</td>
                                             <td>
-                                                <a href="{% url 'EditProduction' %}?AbsId={{ pd.0 }}"
-                                                   class="btn btn-info">Print</a>
+                                                <a href="http://mis.digital:90/ShrimpReporting/Shrimp/GRNLocalImport?ReportName=SRM_GRNLocalImportReport&ReportDescription=GRN%20Local%20Import&Width=100&Height=600&abtractionid={{ pd.0 }}" data-index="{{ pd.0 }}" target="_blank"
+                   class="btn btn-info GrnPrintRecord">Print</a>
                                             </td>
                                         </tr>
                                     {% endfor %}

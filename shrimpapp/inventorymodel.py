@@ -227,13 +227,16 @@ class LogCostDistributionDetail(models.Model):
         db_table = 'LogCostDistributionDetail'
 
 
-class PCode(models.Model):
-    Id = models.AutoField(primary_key=True, db_column='GrnPrId')
-    ProductCode = models.CharField(max_length=10, db_column='ProductCode')
+class FinishProductCode(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='FinPCId')
+    Code = models.CharField(max_length=10, db_column='Code', default='')
+
+    def __str__(self):
+        return self.Code
 
     class Meta:
         managed = False
-        db_table = 'PCode'
+        db_table = 'FinishProductCode'
 
 class WareHouse(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WaHsId')

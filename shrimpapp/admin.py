@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django import forms
 from .models import Department, Designation, Farmer, Supplier, SupplierFarmer, ShrimpType, ShrimpItem, UserManager, RowStatus
-from .inventorymodel import ShrimpProdItem, PackagingMaterial
+from .inventorymodel import ShrimpProdItem, PackagingMaterial, FinishProductCode
 # Register your models here.
 
 admin.site.site_header = 'Shrimp Administration'
@@ -48,8 +48,6 @@ class SupplierAdmin(admin.ModelAdmin):
     list_filter = ['SupplierCode', 'SupplierMobile']
     list_per_page = 20
 
-
-
 admin.site.register(UserManager, UserManagerAdmin)
 admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
@@ -57,6 +55,8 @@ admin.site.register(ShrimpType)
 admin.site.register(ShrimpItem)
 admin.site.register(ShrimpProdItem)
 admin.site.register(PackagingMaterial)
+
+admin.site.register(FinishProductCode)
 
 
 admin.site.unregister(Group)
