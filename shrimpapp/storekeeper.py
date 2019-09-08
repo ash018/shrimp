@@ -225,11 +225,10 @@ def ShowPriceDistributionBTNDate(request):
     if 'uid' not in request.session:
         return render(request, 'shrimpapp/Login.html')
     else:
-
         userId = request.session['uid']
 
-        _datetime = datetime.datetime.now()
-        fromDate = _datetime.strftime("%Y-%m-%d")
+        #_datetime = datetime.datetime.now()
+        #fromDate = _datetime.strftime("%Y-%m-%d")
 
         _datetime = datetime.datetime.now()
         fromDate = _datetime.strftime("%Y-%m-%d")

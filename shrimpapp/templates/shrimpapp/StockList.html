@@ -1,10 +1,176 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
 
-</body>
-</html>
+{% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+        <div class="wrapper wrapper-content animated fadeInRight ">
+
+            <div class="ibox float-e-margins">
+
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">From Date</label>
+                                <input type="text" name="FromDate" class="form-control" id="FromDate" required
+                                       value="{{ fromDate }}"/>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <label for="SparepartsDate">To Date</label>
+                                <input type="text" name="ToDate" class="form-control" id="ToDate" required
+                                       value="{{ toDate }}"/>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                <button style="margin:5px;" type="submit" id="searchbtn" class="btn btn-primary block">
+                                    Search
+                                </button>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+
+            <div id="ibox-content" class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                            <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+
+                                <table id="AllPartsAdd" class=" table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Date</th>
+                                        <th>Total Kg</th>
+                                        <th>Deheading Loss(%)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for cd in wareList %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ cd.LocDate }}</td>
+                                            <td>{{ cd.IssueNo }}</td>
+                                            <td>{{ cd.EntryDate|date:"M d, Y" }}</td>
+
+                                            <td>
+                                                <a href="{% url 'EditPriceDistribution' %}?WareHouseId={{ cd.Id }}"
+                                                   class="btn btn-info">Edit</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% csrf_token %}
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+            $("#searchbtn").click(function () {
+                var fromDate = $("#FromDate").val();
+                var toDate = $("#ToDate").val();
+                var baseurl = "{% url 'PDSearchBTNDates' %}";
+                if (fromDate == '' || toDate == '') {
+                    sweetAlert({
+                        title: "Please Select Two Date.",
+                        text: "Thank You ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                }
+                else {
+                    $('#search-data').html('');
+                    $.ajax({
+                        url: baseurl,
+                        type: "GET",
+                        data: "FromDate=" + fromDate + "&ToDate=" + toDate + "&csrfmiddlewaretoken=" + csrftoken,
+                        cache: false,
+                        dataType: 'json',
+                        success: function (data) {
+                            var response = $.parseJSON(JSON.stringify(data));
+                            var dep = $.parseJSON(JSON.stringify(response.status));
+                            var html = $.parseJSON(JSON.stringify(response.html));
+                            $('#ibox-content').addClass('ibox-content');
+                            $('#search-data').html(html);
+                        }
+                    });
+                }
+
+            });
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.document_updatedate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+            $('#SparepartsDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+            $('#FromDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+            $('#ToDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+        });
+    </script>
+
+{% endblock %}

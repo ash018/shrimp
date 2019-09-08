@@ -89,10 +89,21 @@ def StockList(request):
     else:
         _datetime = datetime.datetime.now()
         fromDate = _datetime.strftime("%Y-%m-%d")
-        serDayTime = fromDate.split('-')
+        serToDayTime = fromDate.split('-')
+
+        wareRcStartDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                        int(0), int(0),
+                                        int(0), 0)
+        wareRcEndDate = datetime.datetime(int(serToDayTime[0]), int(serToDayTime[1]), int(serToDayTime[2]),
+                                      int(23), int(59),
+                                      int(59), 0)
+
+        wareList = WareHouse.objects.filter(EntryDate__range=(wareRcStartDate, wareRcEndDate)).values('Id','LocDate','IssueNo', 'EntryDate')
 
         context = {'PageTitle': 'Stock List',
                    'fromDate': fromDate,
+                   'toDate':fromDate,
+                   'wareList':wareList
                    }
 
         return render(request, 'shrimpapp/StockList.html', context)
@@ -202,6 +213,12 @@ def SaveWareHouse(request):
                               InLb=Decimal(inKg)*Decimal(2.20462),
                               AvgRateTK=Decimal(row[0]),
                               Remarks=str(remarks)).save()
+
+        Production.objects.filter(LocDate=str(stockReceiveDate), IsFinishGood='N').update(IsFinishGood='Y',
+                                                                                          EditDate=_datetime)
+        CostDistributionMaster.objects.filter(LocDate=str(stockReceiveDate), IsUsed='N').update(IsUsed='Y',
+                                                                                                EditDate=_datetime)
+
         return HttpResponseRedirect('/NewWareHouse')
 
 
