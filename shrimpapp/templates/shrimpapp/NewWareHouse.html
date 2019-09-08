@@ -1,0 +1,201 @@
+{% extends "./public/dashboardBase.html" %}
+{% load static %}
+
+{% block main_content %}
+    <link href="{% static "assets/css/plugins/datapicker/datepicker3.css" %}" rel="stylesheet">
+    <link href="{% static "assets/css/sweetalert.min.css" %}" rel="stylesheet">
+    <script src="{% static "assets/js/plugins/datapicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static "assets/js/plugins/fullcalendar/moment.min.js" %}"></script>
+    <script src="{% static "assets/js/plugins/daterangepicker/daterangepicker.js" %}"></script>
+    <script src="{% static "assets/js/sweetalert.min.js" %}"></script>
+
+    <div id="page-wrapper" class="gray-bg">
+
+        {% include 'shrimpapp/public/CommonHeadBar.html' %}
+        <div class="wrapper wrapper-content animated fadeInRight ">
+
+
+
+                <form method="post" enctype="multipart/form-data" action="{% url 'SaveWareHouse' %}">
+                    {% csrf_token %}
+
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                    <label for="SparepartsDate">Date</label>
+                                    <input type="text" name="StockReceiveDate" class="form-control"
+                                           id="StockReceiveDate" required
+                                           value=""/>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                    <label for="SparepartsDate">Issue No Percentage</label>
+                                    <input type="text" name="IssueNo" class="form-control" id="IssueNo" required
+                                           value="0.0"/>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                                    <button style="margin:5px;" type="button" id="searchbtn"
+                                            class="btn btn-primary block">
+                                        Search
+                                    </button>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <div id="StockRcvForm">
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% csrf_token %}
+    <script type="text/javascript">
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+        $(document).ready(function () {
+
+            $(".numeric").on("input", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("#StockRcvForm").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+            $("#searchbtn").click(function () {
+                var stockReceiveDate = $("#StockReceiveDate").val();
+                var baseurl = "{% url 'CheckCostDistributionIsCreated' %}";
+
+                $('#StockRcvForm').html('');
+                if (stockReceiveDate == '') {
+                    sweetAlert({
+                        title: "Please Select A Date.",
+                        text: "Thank You ",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "DISMISS"
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: baseurl,
+                        type: "GET",
+                        data: "StockReceiveDate=" + stockReceiveDate + "&csrfmiddlewaretoken=" + csrftoken,
+                        cache: false,
+                        dataType: 'json',
+                        success: function (data) {
+                            var response = $.parseJSON(JSON.stringify(data));
+                            var dep = $.parseJSON(JSON.stringify(response.status));
+                            var html = $.parseJSON(JSON.stringify(response.html));
+                            //$('#ibox-content').addClass('ibox-content');
+                            $('#StockRcvForm').html(html);
+                        }
+                    });
+                }
+            });
+
+
+            $("#StockRcvForm").on("click", "input#AddNewRow", function (evt) {
+
+                var prodTypeList = '';
+                var prodItemList = '';
+                var shrProdItem = '';
+                var pkgMatList = '';
+                var finProdList = '';
+
+                console.log("--===---");
+                $("#ProdTypeList option").each(function () {
+                    prodTypeList = prodTypeList + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
+                });
+
+                $("#ProdItemList option").each(function () {
+                    prodItemList = prodItemList + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
+                });
+
+                $("#ShrProdItem option").each(function () {
+                    shrProdItem = shrProdItem + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
+                });
+
+                $("#PkgMatList option").each(function () {
+                    pkgMatList = pkgMatList + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
+                });
+
+                $("#FinProdList option").each(function () {
+                    finProdList = finProdList + '<option value="' + $(this).val() + '">' + $(this).html() + '</option>'
+                });
+
+                var tableRow = '<tr>' +
+                    '<td><select name="WareHouse" class="form-control" required="required">' + prodTypeList + '</select></td>' +
+                    '<td><select name="WareHouse" class="form-control" required="required">' + prodItemList + '</select></td>' +
+                    '<td><select name="WareHouse" class="form-control" required="required">' + shrProdItem + '</select></td>' +
+                    '<td><select name="WareHouse" class="form-control" required="required">' + pkgMatList + '</select></td>' +
+                    '<td><select name="WareHouse" class="form-control" required="required">' + finProdList + '</select></td>' +
+                    '<td><input name="WareHouse" class="form-control numeric" required="required" value="0.0"/></td>' +
+                    '<td><input name="WareHouse"  class="form-control numeric" required="required" value="0.0"/></td>' +
+                    '<td><input name="WareHouse" class="form-control" required="required" value="N/A"/></td>' +
+                    '<td><input type="button" class="btn btn-danger btn-block remove_child_row"  value="Remove"></td>' +
+                    '</tr>';
+
+                $("#AllPartsAdd").prepend(tableRow);
+                return false;
+            });
+
+            $("#AllPartsAdd").on("input", "input.numeric", function (evt) {
+                var self = $(this);
+                self.val(self.val().replace(/[^0-9\.]/g, ''));
+                if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+                    evt.preventDefault();
+                }
+            });
+
+            $("#StockRcvForm").on("click", "input.remove_child_row", function (evt) {
+                $(this).parent().parent().remove();
+                return false;
+            });
+
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('#StockReceiveDate').datepicker({
+                autoclose: true,
+                format: "yyyy-mm-dd",
+                todayBtn: true,
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true,
+                toggleActive: true
+            });
+
+        });
+    </script>
+
+{% endblock %}

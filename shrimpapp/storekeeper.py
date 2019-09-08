@@ -465,7 +465,7 @@ def ShowPdDtl(request):
             rowList.insert(i + 2, {'ItemTk': sumTk})
             weDtlDscc[cd['ShrimpItemId__Id']] = rowList
 
-        print('---====---' + str(weDtlDscc))
+        #print('---====---' + str(weDtlDscc))
 
         context = {'PageTitle': 'Price Distribution Edit',
                    'fromDate': fromDate,

@@ -5,6 +5,7 @@ from . import qcweightmentview
 from . import productionview
 from . import ajaxresponseview
 from . import storekeeper
+from . import warehouseview
 
 
 urlpatterns = [
@@ -63,6 +64,13 @@ urlpatterns = [
 
     url(r'^UpdPriceDistribution', storekeeper.UpdPriceDistribution, name='UpdPriceDistribution'),
     url(r'^ShowPdDtl', storekeeper.ShowPdDtl, name='ShowPdDtl'),
+
+    url(r'^NewWareHouse', warehouseview.NewWareHouse, name='NewWareHouse'),
+    url(r'^StockList', warehouseview.StockList, name='StockList'),
+
+    url(r'^SaveWareHouse', warehouseview.SaveWareHouse, name='SaveWareHouse'),
+
+    url(r'^CheckCostDistributionIsCreated', ajaxresponseview.CheckCostDistributionIsCreated, name='CheckCostDistributionIsCreated'),
 
     url(r'^Logout', views.Logout, name='Logout'),
 

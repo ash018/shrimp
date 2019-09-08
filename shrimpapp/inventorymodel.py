@@ -241,6 +241,7 @@ class FinishProductCode(models.Model):
 class WareHouse(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WaHsId')
     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE)
+    CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE)
     LocDate = models.CharField(max_length=50, db_column='LocDate')
     IssueNo = models.CharField(max_length=50, db_column='IssueNo')
 
@@ -254,7 +255,30 @@ class WareHouse(models.Model):
 
 class WareHouseDetail(models.Model):
     Id = models.AutoField(primary_key=True, db_column='WHDtId')
+    WaHsId = models.ForeignKey(WareHouse, db_column='WaHsId', on_delete=models.CASCADE)
+    PrItmId = models.ForeignKey(ProdItem, db_column='PrItmId', on_delete=models.CASCADE)
+    SmpProdId = models.ForeignKey(ShrimpProdItem, db_column='SmpProdId', on_delete=models.CASCADE)
+    PkgMatId = models.ForeignKey(PackagingMaterial, db_column='PkgMatId', on_delete=models.CASCADE)
+    FinPCId = models.ForeignKey(FinishProductCode, db_column='FinPCId', on_delete=models.CASCADE)
+
+    InCarton = models.DecimalField(max_digits=18, decimal_places=2, db_column='InCarton', default=0.0)
+    InKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='InKg', default=0.0)
+    InLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='InLb', default=0.0)
+
+    RawMaterialValueTK = models.DecimalField(max_digits=18, decimal_places=2, db_column='RawMaterialValueTK', default=0.0)
+    AvgRateTK = models.DecimalField(max_digits=18, decimal_places=2, db_column='AvgRateTK', default=0.0)
+    Remarks = models.CharField(max_length=100, db_column='Remarks')
+
+    class Meta:
+        managed = False
+        db_table = 'WareHouseDetail'
+
+
+class LogWareHouse(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='LogWaHsId')
+    WaHsId = models.ForeignKey(WareHouse, db_column='WaHsId', on_delete=models.CASCADE)
     ProdId = models.ForeignKey(Production, db_column='ProdId', on_delete=models.CASCADE)
+    CstDisId = models.ForeignKey(CostDistributionMaster, db_column='CstDisId', on_delete=models.CASCADE)
     LocDate = models.CharField(max_length=50, db_column='LocDate')
     IssueNo = models.CharField(max_length=50, db_column='IssueNo')
 
@@ -264,4 +288,27 @@ class WareHouseDetail(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'WareHouse'
+        db_table = 'LogWareHouse'
+
+
+class LogWareHouseDetail(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='WHDtId')
+    LogWaHsId = models.ForeignKey(LogWareHouse, db_column='LogWaHsId', on_delete=models.CASCADE)
+    WaHsId = models.ForeignKey(WareHouse, db_column='WaHsId', on_delete=models.CASCADE)
+    PrItmId = models.ForeignKey(ProdItem, db_column='PrItmId', on_delete=models.CASCADE)
+    SmpProdId = models.ForeignKey(ShrimpProdItem, db_column='SmpProdId', on_delete=models.CASCADE)
+    PkgMatId = models.ForeignKey(PackagingMaterial, db_column='PkgMatId', on_delete=models.CASCADE)
+    FinPCId = models.ForeignKey(FinishProductCode, db_column='FinPCId', on_delete=models.CASCADE)
+
+    InCarton = models.DecimalField(max_digits=18, decimal_places=2, db_column='InCarton', default=0.0)
+    InKg = models.DecimalField(max_digits=18, decimal_places=2, db_column='InKg', default=0.0)
+    InLb = models.DecimalField(max_digits=18, decimal_places=2, db_column='InLb', default=0.0)
+
+    RawMaterialValueTK = models.DecimalField(max_digits=18, decimal_places=2, db_column='RawMaterialValueTK',
+                                             default=0.0)
+    AvgRateTK = models.DecimalField(max_digits=18, decimal_places=2, db_column='AvgRateTK', default=0.0)
+    Remarks = models.CharField(max_length=100, db_column='Remarks')
+
+    class Meta:
+        managed = False
+        db_table = 'LogWareHouseDetail'

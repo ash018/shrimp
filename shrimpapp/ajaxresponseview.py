@@ -164,7 +164,7 @@ def RecordGRNPrint(request):
         user = UserManager.objects.filter(pk=int(userId)).first()
         absId = request.GET.get('AbsId')
 
-        print("--XXXX--"+str(absId))
+        #print("--XXXX--"+str(absId))
 
         _datetime = datetime.datetime.now()
         absOb = Abstraction.objects.filter(pk=int(absId)).first()
@@ -177,20 +177,13 @@ def RecordGRNPrint(request):
         qCMeasurQnty = 0.0
 
         for cq in qcWegDtl:
-            print("--=collWegDtl==--" + str(cq['QCMeasurQnty']))
+            #print("--=collWegDtl==--" + str(cq['QCMeasurQnty']))
             qCMeasurQnty = Decimal(qCMeasurQnty)+Decimal(cq['QCMeasurQnty'])
 
         for cw in collWegDtl:
-            print("--=collWegDtl==--" + str(cw['Price']))
+            #print("--=collWegDtl==--" + str(cw['Price']))
             price = Decimal(price)+Decimal(cw['Price'])
             measurQnty = Decimal(measurQnty)+Decimal(cw['MeasurQnty'])
-
-        print("--=collWegDtl==--"+str(price))
-        print("--=qcWegDtl==--" + str(qCMeasurQnty))
-        # totalPrice = collWegDtl[0]['Price']
-        # totalAbsMeasur = collWegDtl[0]['MeasurQnty']
-        # totalQcMeasur = qcWegDtl[0]['QCMeasurQnty']
-
 
         GrnPrint(AbstractionId=absOb,
                  TotalPrice=Decimal(price),
@@ -207,3 +200,42 @@ def RecordGRNPrint(request):
                 "html": "Success",
                 "status": "ok"
             })
+
+def CheckCostDistributionIsCreated(request):
+    if 'uid' not in request.session:
+        return render(request, 'shrimpapp/Login.html')
+    else:
+        userId = request.session['uid']
+        #disDate = request.GET.get('DistributionDate')
+
+        disDate = request.GET.get('StockReceiveDate')
+
+        cstObj = CostDistributionMaster.objects.filter(LocDate=str(disDate), IsUsed='N').first()
+        #CostDistributionDetail.objects.filter(CstDisId=cstObj).values('ShrimpProdItemId__Id','ShrimpProdItemId__Name')
+
+        prodTypeList = ProdType.objects.all().values('Id', 'Name')
+        prodItemList = ProdItem.objects.all().values('Id', 'Name')
+        shrProdItem = CostDistributionDetail.objects.filter(CstDisId=cstObj, ProdWegKg__gt=0.0).values('ShrimpProdItemId__Id','ShrimpProdItemId__Name').distinct()#ShrimpProdItem.objects.filter(Id__gte=1).values('Id', 'Name')
+        pkgMatList = PackagingMaterial.objects.exclude(Id=1).values('Id', 'Name', 'PackSize')
+        finProdList = FinishProductCode.objects.all().values('Id', 'Code')
+        show = 0
+        if cstObj:
+            show = 1
+        else :
+            show = 0
+
+        context = {'prodTypeList':prodTypeList,
+                   'prodItemList':prodItemList,
+                   'shrProdItem':shrProdItem,
+                   'pkgMatList':pkgMatList,
+                   'finProdList':finProdList,
+                   'show':show}
+        template = 'shrimpapp/StockRcForm.html'
+
+        if request.is_ajax():
+            html = render_to_string(template, context)
+            return JsonResponse({
+                "html": render_to_string(template, context),
+                "status": "ok"
+            })
+

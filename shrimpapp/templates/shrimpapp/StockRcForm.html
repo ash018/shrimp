@@ -1,0 +1,128 @@
+
+{% if show == 1 %}
+
+    <div style="display: none;">
+        <select id="ProdTypeList" class="form-control">
+            {% for cType in prodTypeList %}
+                <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+        </select>
+    </div>
+
+    <div style="display: none;">
+        <select id="ProdItemList" class="form-control ">
+            {% for cType in prodItemList %}
+                <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+        </select>
+    </div>
+
+    <div style="display: none;">
+        <select id="ShrProdItem" class="form-control">
+            {% for cType in shrProdItem %}
+                <option value="{{ cType.ShrimpProdItemId__Id }}">{{ cType.ShrimpProdItemId__Name }}</option>{% endfor %}
+        </select>
+    </div>
+
+    <div style="display: none;">
+        <select id="PkgMatList" class="form-control">
+            {% for cType in pkgMatList %}
+                <option value="{{ cType.Id }}">{{ cType.PackSize }}</option>{% endfor %}
+        </select>
+    </div>
+
+    <div style="display: none;">
+        <select id="FinProdList" class="form-control">
+            {% for cType in finProdList %}
+                <option value="{{ cType.Id }}">{{ cType.Code }}</option>{% endfor %}
+        </select>
+    </div>
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <table class="table table-bordered" id="AllPartsAdd">
+                        <thead>
+                        <tr>
+                            <th>Product Type</th>
+                            <th>Prod Item</th>
+                            <th>Production Item</th>
+                            <th>Pkg Type</th>
+                            <th>Prod Code</th>
+                            <th>In Carton</th>
+                            <th>In (Kg)</th>
+                            <th>Remarks</th>
+                            <th>
+                                <input type="button" id="AddNewRow"
+                                       class=" btn btn-success btn-block"
+                                       value="ADD"/>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><select name="WareHouse" class="form-control">
+                                {% for cType in prodTypeList %}
+                                    <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                            </select></td>
+                            <td><select name="WareHouse" class="form-control SparePartsItem">
+                                {% for cType in prodItemList %}
+                                    <option value="{{ cType.Id }}">{{ cType.Name }}</option>{% endfor %}
+                            </select></td>
+                            <td><select name="WareHouse" class="form-control">
+                                {% for cType in shrProdItem %}
+                                    <option value="{{ cType.ShrimpProdItemId__Id }}">{{ cType.ShrimpProdItemId__Name }}</option>{% endfor %}
+                            </select></td>
+                            <td><select name="WareHouse" class="form-control">
+                                {% for cType in pkgMatList %}
+                                    <option value="{{ cType.Id }}">{{ cType.PackSize }}</option>{% endfor %}
+                            </select></td>
+                            <td><select name="WareHouse" class="form-control">
+                                {% for cType in finProdList %}
+                                    <option value="{{ cType.Id }}">{{ cType.Code }}</option>{% endfor %}
+                            </select></td>
+                            <td><input name="WareHouse" class="form-control numeric"
+                                       required="required"
+                                       value="0.0"/></td>
+                            <td><input name="WareHouse" class="form-control numeric"
+                                       required="required"
+                                       value="0.0"/></td>
+
+                            <td><input name="WareHouse" class="form-control" required="required"
+                                       value="N/A"/></td>
+                            <td><input type="button"
+                                       class="btn btn-danger btn-block RemoveRow remove_child_row"
+                                       value="Remove"/></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div id="search-data" class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="col-lg-5 col-md-5 col-sm-5">
+
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <div class="form-group ">
+                            <button type="submit" class="btn btn-primary  full-width m-b">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-5">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% if show == 0 %}
+    <h3>There is Cost Distribution. Please 1st Create Cost Distirbution.</h3>
+{% endif %}
