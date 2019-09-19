@@ -28,18 +28,89 @@ class ShrimpProdItem(models.Model):
         db_table = 'ShrimpProdItem'
 
 
+class BasicShrimpType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='BasicTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'BasicShrimpType'
+
+
 class ProdType(models.Model):
     Id = models.AutoField(primary_key=True, db_column='PrTyId')
     Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
 
     class Meta:
         managed = False
         db_table = 'ProdType'
 
+class SoakingType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='SoakingTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'SoakingType'
+
+
+class GlazinType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='GlazinTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'GlazinType'
+
+class BlockType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='BlockTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'BlockType'
+
+
+class CountType(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='CountTypeId')
+    Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        managed = False
+        db_table = 'CountType'
+
+
 class ProdItem(models.Model):
     Id = models.AutoField(primary_key=True, db_column='PrItmId')
+    BasicShrimpTypeId = models.ForeignKey(BasicShrimpType, db_column='BasicShrimpTypeId', on_delete=models.CASCADE, default=100)
     PrTyId = models.ForeignKey(ProdType, db_column='PrTyId', on_delete=models.CASCADE, default=100)
+    SoakingTypeId = models.ForeignKey(SoakingType, db_column='SoakingTypeId', on_delete=models.CASCADE, default=100)
+    GlazinTypeId = models.ForeignKey(GlazinType, db_column='GlazinTypeId', on_delete=models.CASCADE, default=100)
+    BlockTypeId = models.ForeignKey(BlockType, db_column='BlockTypeId', on_delete=models.CASCADE, default=100)
+    CountTypeId = models.ForeignKey(CountType, db_column='CountTypeId', on_delete=models.CASCADE, default=100)
     Name = models.CharField(max_length=100, db_column='Name')
+
+    def __str__(self):
+        return self.Name
 
     class Meta:
         managed = False
