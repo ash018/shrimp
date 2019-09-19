@@ -531,7 +531,7 @@ def ListProduction(request):
 
         from django.db import connection
         cursor = connection.cursor()
-
+        print("======"+str("select PD.ProdId, sum(PD.ProdAmount) as ProdAmount from ProductionDetail PD, Production P where P.ProdId = PD.ProdId and P.EntryDate between '"+str(wegFromDate)+"' and '"+str(wegToDate)+"' and PD.ProdAmount > 0 and P.IsFinishGood = 'N' group by PD.ProdId"))
         cursor.execute("select PD.ProdId, sum(PD.ProdAmount) as ProdAmount from ProductionDetail PD, Production P where P.ProdId = PD.ProdId and P.EntryDate between '"+str(wegFromDate)+"' and '"+str(wegToDate)+"' and PD.ProdAmount > 0 and P.IsFinishGood = 'N' group by PD.ProdId")
         #row = cursor.fetchone()
 
@@ -682,9 +682,9 @@ def UpdateProduction(request):
 
         ProdDtlPkgMaterial.objects.filter(ProdId=prod).delete()
         ProductionDetail.objects.filter(ProdId=prod).delete()
-        qwId = Production.objects.filter(pk=int(prodId)).values('QCWgId__Id').first()
-        qCWgId = QCWeightment.objects.filter(pk=int(qwId['QCWgId__Id'])).first()
-        lgProd = LogProduction(ProdId=prod, QCWgId=qCWgId, IsFinishGood='N', ProductionDate=prdDate,
+        #qwId = Production.objects.filter(pk=int(prodId)).values('QCWgId__Id').first()
+        #qCWgId = QCWeightment.objects.filter(pk=int(qwId['QCWgId__Id'])).first()#, QCWgId=int(qwId['QCWgId__Id'])
+        lgProd = LogProduction(ProdId=prod, IsFinishGood='N', ProductionDate=prdDate,
                                ReceivDate=_datetime, EntryDate=_datetime, EditDate=_datetime, EntryBy=user)
         lgProd.save()
 
