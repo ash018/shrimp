@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import Group, User
 #python manage.py makemigrations shrimpapp
 #python manage.py migrate
 #Todays Last push
@@ -161,14 +162,35 @@ class ShrimpItem(models.Model):
     Price = models.DecimalField(max_digits=18, decimal_places=2, db_column='Price', default=0.0)
     EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
     ShrimpTypeId = models.ForeignKey(ShrimpType, db_column='ShrimpTypeId', on_delete=models.CASCADE, default=100)
-    EntryBy = models.ForeignKey(UserManager, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+    EntryBy = models.ForeignKey(User, db_column='EntryBy', on_delete=models.CASCADE, default=100)
 
     def __str__(self):
         return self.Name
 
     class Meta:
+        verbose_name = 'Shrimp Collect Item'
         managed = False
         db_table = 'ShrimpItem'
+
+class LogShrimpItem(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='ItemId')
+    Name = models.CharField(max_length=100, db_column='Name')
+    ItemCount = models.IntegerField(db_column='ItemCount', default=0)
+    MeasurUnit = models.CharField(max_length=100, db_column='MeasurUnit')
+    Price = models.DecimalField(max_digits=18, decimal_places=2, db_column='Price', default=0.0)
+    EntryDate = models.DateTimeField(auto_now_add=True, db_column='EntryDate')
+    ShrimpTypeId = models.ForeignKey(ShrimpType, db_column='ShrimpTypeId', on_delete=models.CASCADE, default=100)
+    ShrimpItemId = models.ForeignKey(ShrimpItem, db_column='ShrimpItemId', on_delete=models.CASCADE, default=100)
+    EntryBy = models.ForeignKey(User, db_column='EntryBy', on_delete=models.CASCADE, default=100)
+
+    def __str__(self):
+        return self.Name
+
+    class Meta:
+        #verbose_name = 'Shrimp Collect Item'
+        managed = False
+        db_table = 'LogShrimpItem'
+
 
 class GradingType(models.Model):
     Id = models.AutoField(primary_key=True, db_column='GrdTypeId')
@@ -444,3 +466,22 @@ class LogQCWeightmentDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'LogQCWeightmentDetail'
+
+
+class Author(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='AuthorId')
+    name = models.CharField(max_length=100, db_column='Name')
+
+    class Meta:
+        managed = False
+        db_table = 'Author'
+
+
+class Book(models.Model):
+    Id = models.AutoField(primary_key=True, db_column='BookId')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, db_column='AuthorId')
+    Title = models.CharField(max_length=100, db_column='Title')
+
+    class Meta:
+        managed = False
+        db_table = 'Book'

@@ -1,13 +1,65 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django import forms
-from .models import Department, Designation, Farmer, Supplier, SupplierFarmer, ShrimpType, ShrimpItem, UserManager, RowStatus
-from .inventorymodel import ShrimpProdItem, PackagingMaterial, FinishProductCode
+from .models import Department, Designation, Farmer,\
+    Supplier, SupplierFarmer, ShrimpType, ShrimpItem, \
+    UserManager, RowStatus, Author, Book, LogShrimpItem
+
+
+from .inventorymodel import ShrimpProdItem, \
+    PackagingMaterial, FinishProductCode, \
+    BasicShrimpType, ProdType, SoakingType,\
+    GlazinType, BlockType, CountType, ProdItem
 # Register your models here.
 
 admin.site.site_header = 'Shrimp Administration'
-admin.site.site_title = "Shrimp Admin"
-admin.site.index_title = "Shrimp Admin Portal"
+admin.site.site_title = 'Shrimp Admin'
+admin.site.index_title = 'Shrimp Admin Portal'
+
+
+
+
+admin.site.register(BasicShrimpType)
+admin.site.register(ProdType)
+admin.site.register(SoakingType)
+
+admin.site.register(GlazinType)
+admin.site.register(BlockType)
+admin.site.register(CountType)
+
+
+class ProdItemAdmin(admin.ModelAdmin):
+    list_display = ('Name', 'BasicShrimpTypeId', 'PrTyId', 'SoakingTypeId', 'GlazinTypeId', 'BlockTypeId', 'CountTypeId', )
+    search_fields = ['PrTyId']
+    list_filter = ['GlazinTypeId', 'PrTyId', 'CountTypeId']
+    ordering = ['-Id']
+    list_per_page = 20
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ["Name"]
+        #kwargs['widgets'] = {'Notes': forms.Textarea}
+        form = super(ProdItemAdmin, self).get_form(request, obj, **kwargs)
+        return form
+
+    def save_model(self, request, obj, form, change):
+        #obj.user = request.user
+        pItem = ProdItem.objects.filter(BasicShrimpTypeId=obj.BasicShrimpTypeId,
+                                        PrTyId=obj.PrTyId,
+                                        SoakingTypeId=obj.SoakingTypeId,
+                                        GlazinTypeId=obj.GlazinTypeId,
+                                        BlockTypeId=obj.BlockTypeId,
+                                        CountTypeId=obj.CountTypeId)
+        if pItem:
+            return
+        else:
+            #print("=="+str(obj.BasicShrimpTypeId))
+            obj.Name = str(obj.BasicShrimpTypeId)+' '+str(obj.PrTyId)+' '+str(obj.SoakingTypeId)+' '+str(obj.GlazinTypeId)+'Glazin '+str(obj.BlockTypeId)+' '+str(obj.CountTypeId)
+            return super(ProdItemAdmin, self).save_model(request, obj, form, change)
+
+admin.site.register(ProdItem, ProdItemAdmin)
+
+
+
 
 #admin.site.register(Department)
 #admin.site.register(Designation)
@@ -52,15 +104,69 @@ admin.site.register(UserManager, UserManagerAdmin)
 admin.site.register(Farmer, FarmerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
 admin.site.register(ShrimpType)
-admin.site.register(ShrimpItem)
+
+class ShrimpItemAdmin(admin.ModelAdmin):
+    list_display = ('Name', 'ItemCount', 'MeasurUnit','Price')
+    search_fields = ['Name', 'Price']
+    list_filter = ['Name', 'Price']
+    list_per_page = 20
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ["EntryBy"]
+        #kwargs['widgets'] = {'Notes': forms.Textarea}
+        form = super(ShrimpItemAdmin, self).get_form(request, obj, **kwargs)
+        return form
+
+    def save_model(self, request, obj, form, change):
+        obj.EntryBy = request.user
+        obj.save()
+
+        LogShrimpItem(Name=obj.Name, ItemCount=obj.ItemCount,
+                      MeasurUnit=obj.MeasurUnit, Price=obj.Price,
+                      ShrimpTypeId=obj.ShrimpTypeId, ShrimpItemId=obj,
+                      EntryBy=request.user).save()
+        #return super(ShrimpItemAdmin, self).save_model(request, obj, form, change)
+        return obj
+
+
+admin.site.register(ShrimpItem, ShrimpItemAdmin)
+
+
 admin.site.register(ShrimpProdItem)
-admin.site.register(PackagingMaterial)
+
+class PackagingMaterialAdmin(admin.ModelAdmin):
+    list_display = ('Name', 'PackSize', 'Stock',)
+    search_fields = ['Name', 'PackSize']
+    list_filter = ['Name', 'PackSize']
+    list_per_page = 20
+
+    def get_queryset(self, request):
+        qs = super(PackagingMaterialAdmin, self).get_queryset(request)
+        #return qs.filter(Id=request.user)
+        return qs.exclude(Id=1)
+
+admin.site.register(PackagingMaterial, PackagingMaterialAdmin)
 
 admin.site.register(FinishProductCode)
 
 
+
+
 admin.site.unregister(Group)
 admin.site.unregister(User)
+
+
+# class BookInline(admin.TabularInline):
+#     model = Book
+#
+# class AuthorAdmin(admin.ModelAdmin):
+#     inlines = [
+#         BookInline,
+#     ]
+#
+# admin.site.register(Author, AuthorAdmin)
+
+
 
 # class FarmerAdminForm(forms.ModelForm):
 #     tags = forms.ModelMultipleChoiceField(
