@@ -12,9 +12,9 @@ class PackagingMaterial(models.Model):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Packaging Material'
         managed = False
         db_table = 'PackagingMaterial'
-
 
 class ShrimpProdItem(models.Model):
     Id = models.AutoField(primary_key=True, db_column='Id')
@@ -27,16 +27,15 @@ class ShrimpProdItem(models.Model):
         managed = False
         db_table = 'ShrimpProdItem'
 
-
 class BasicShrimpType(models.Model):
     Id = models.AutoField(primary_key=True, db_column='BasicTypeId')
     Name = models.CharField(max_length=100, db_column='Name')
-
 
     def __str__(self):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Basic Type'
         managed = False
         db_table = 'BasicShrimpType'
 
@@ -49,6 +48,7 @@ class ProdType(models.Model):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Type'
         managed = False
         db_table = 'ProdType'
 
@@ -60,6 +60,7 @@ class SoakingType(models.Model):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Soaking Type'
         managed = False
         db_table = 'SoakingType'
 
@@ -72,6 +73,7 @@ class GlazinType(models.Model):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Glazin Type'
         managed = False
         db_table = 'GlazinType'
 
@@ -83,6 +85,7 @@ class BlockType(models.Model):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Blocking Type'
         managed = False
         db_table = 'BlockType'
 
@@ -95,6 +98,7 @@ class CountType(models.Model):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product Count Type'
         managed = False
         db_table = 'CountType'
 
@@ -107,12 +111,13 @@ class ProdItem(models.Model):
     GlazinTypeId = models.ForeignKey(GlazinType, db_column='GlazinTypeId', on_delete=models.CASCADE, default=100)
     BlockTypeId = models.ForeignKey(BlockType, db_column='BlockTypeId', on_delete=models.CASCADE, default=100)
     CountTypeId = models.ForeignKey(CountType, db_column='CountTypeId', on_delete=models.CASCADE, default=100)
-    Name = models.CharField(max_length=100, db_column='Name')
+    Name = models.CharField(max_length=200, db_column='Name', unique=True)
 
     def __str__(self):
         return self.Name
 
     class Meta:
+        verbose_name = 'Finish Product'
         managed = False
         db_table = 'ProdItem'
 
@@ -306,6 +311,7 @@ class FinishProductCode(models.Model):
         return self.Code
 
     class Meta:
+        verbose_name = 'Finish Product Code'
         managed = False
         db_table = 'FinishProductCode'
 
