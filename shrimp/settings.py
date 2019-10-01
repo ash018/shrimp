@@ -83,8 +83,8 @@ DATABASES = {
             'NAME': 'Shrimp',
             'ENGINE': 'sql_server.pyodbc',
             'HOST': '192.168.100.62',
-            'USER': 'sa',
-            'PASSWORD': 'dataport',
+            'USER': '',
+            'PASSWORD': '',
             'OPTIONS': {
                 'driver' : 'SQL Server Native Client 11.0',
                 'driver_supports_utf8' : 'True',
